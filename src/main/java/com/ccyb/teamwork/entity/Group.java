@@ -11,8 +11,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
@@ -23,8 +22,7 @@ import lombok.experimental.Accessors;
  * @author cccccyb
  * @since 2024-03-01
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 @TableName("t_group")
 public class Group implements Serializable {

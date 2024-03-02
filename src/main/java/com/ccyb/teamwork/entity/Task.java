@@ -12,23 +12,21 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 事项
+ * 任务
  * </p>
  *
  * @author cccccyb
  * @since 2024-03-01
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
-@TableName("t_item")
-public class Item implements Serializable {
+@TableName("t_task")
+public class Task implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -62,12 +60,6 @@ public class Item implements Serializable {
     private Integer priority;
 
     /**
-     * 置顶
-     */
-    @TableField("top")
-    private Integer top;
-
-    /**
      * 创建日期
      */
     @TableField("create_time")
@@ -84,13 +76,6 @@ public class Item implements Serializable {
      */
     @TableField("end_time")
     private LocalDateTime endTime;
-
-    /**
-     * 事项类型
-     */
-    @TableField("item_type_id")
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long itemTypeId;
 
     /**
      * 创建人
@@ -112,6 +97,13 @@ public class Item implements Serializable {
     @TableField("project_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long projectId;
+
+    /**
+     * 所属迭代
+     */
+    @TableField("iteration_id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long iteration_id;
 
     @TableField("deleted")
     @TableLogic

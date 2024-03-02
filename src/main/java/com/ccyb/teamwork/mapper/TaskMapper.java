@@ -1,7 +1,7 @@
 package com.ccyb.teamwork.mapper;
 
-import com.ccyb.teamwork.entity.Item;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ccyb.teamwork.entity.Task;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2024-03-01
  */
 @Mapper
-public interface ItemMapper extends BaseMapper<Item> {
+public interface TaskMapper extends BaseMapper<Task> {
 
 }

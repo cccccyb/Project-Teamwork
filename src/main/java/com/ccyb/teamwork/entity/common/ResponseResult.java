@@ -1,6 +1,5 @@
 package com.ccyb.teamwork.entity.common;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,17 +11,16 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Schema(title = "ResponseResult", description = "响应结果")
 public class ResponseResult<T> implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Schema(description = "响应码")
+
     private int code;
-    @Schema(description = "响应信息")
+
     private String msg;
-    @Schema(description = "响应数据")
+
     private T data;
 
     public static <T> ResponseResult<T> build(int code, String msg, T data) {

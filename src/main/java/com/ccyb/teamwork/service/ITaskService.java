@@ -1,16 +1,16 @@
 package com.ccyb.teamwork.service;
 
-import com.ccyb.teamwork.entity.Item;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.ccyb.teamwork.entity.Task;
 
 /**
  * <p>
- * 事项 服务类
+ * 缺陷 服务类
  * </p>
  *
  * @author cccccyb
  * @since 2024-03-01
  */
-public interface IItemService extends IService<Item> {
+public interface ITaskService extends IService<Task> {
 
 }

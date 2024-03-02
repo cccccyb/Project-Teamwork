@@ -3,13 +3,11 @@ use proj_teamwork_db;
 drop table if exists `t_project`;
 drop table if exists `t_group_project`;
 drop table if exists `t_project_user`;
-drop table if exists `t_item`;
-drop table if exists `t_item_iteration`;
-drop table if exists `t_item_type`;
 drop table if exists `t_requirement`;
 drop table if exists `t_requirement_iteration`;
 drop table if exists `t_iteration`;
 drop table if exists `t_bug`;
+drop table if exists `t_bug_type`;
 drop table if exists `t_user_role`;
 drop table if exists `t_user_group`;
 drop table if exists `t_user`;
@@ -149,79 +147,6 @@ create table `t_project_user`
     constraint t_project_user_user_id_fk foreign key (user_id) references t_user (id)
 ) comment '中间表-用户-项目';
 
-create table `t_item`
-(
-    `id`           bigint      not null primary key,
-    `title`        varchar(30) not null comment '标题',
-    `description`  text        not null comment '描述',
-    `status`       int         not null default 0 comment '事项状态',
-    `priority`     int         not null default 1 comment '优先级',
-    `top`          int         not null default 0 comment '置顶',
-    `create_time`  datetime    not null comment '创建日期',
-    `modify_time`  datetime    not null default (utc_timestamp()) comment '上次更新日期',
-    `end_time`     datetime    not null comment '结束日期',
-    `item_type_id` bigint      not null comment '事项类型',
-    `creator_id`   bigint      not null comment '创建人',
-    `processer_id` bigint      not null comment '处理人',
-    `project_id`   bigint      not null comment '所属项目',
-    `deleted`      int         not null default 0,
-    `version`      int         not null default 0,
-    constraint t_item_item_type_id_fk foreign key (item_type_id) references t_item_type (id),
-    constraint t_item_creator_id_fk foreign key (creator_id) references t_user (id),
-    constraint t_item_processer_id_fk foreign key (processer_id) references t_user (id),
-    constraint t_item_project_id_fk foreign key (project_id) references t_project (id)
-) comment '事项';
-
-create table `t_item_iteration`
-(
-    `id`         bigint not null primary key,
-    `item_id` bigint not null comment '事项',
-    `iteration_id`    bigint not null comment '迭代',
-    `deleted`    int    not null default 0,
-    `version`    int    not null default 0,
-    constraint t_item_iteration_item_id_fk foreign key (item_id) references t_item (id),
-    constraint t_item_iteration_iteration_id_fk foreign key (iteration_id) references t_iteration (id)
-) comment '中间表-事项-迭代';
-
-create table `t_item_type`
-(
-    `id`      bigint      not null primary key auto_increment,
-    `name`    varchar(10) not null comment '事项类型名',
-    `deleted` int         not null default 0,
-    `version` int         not null default 0
-) comment '事项类型';
-
-create table `t_requirement`
-(
-    `id`           bigint      not null primary key,
-    `title`        varchar(30) not null comment '标题',
-    `description`  text        not null comment '描述',
-    `status`       int         not null default 0 comment '需求状态',
-    `priority`     int         not null default 1 comment '优先级',
-    `create_time`  datetime    not null comment '创建日期',
-    `modify_time`  datetime    not null default (utc_timestamp()) comment '上次更新日期',
-    `creator_id`   bigint      not null comment '创建人',
-    `processer_id` bigint      not null comment '处理人',
-    `project_id`   bigint      not null comment '所属项目',
-    `origin`       varchar(30) not null comment '需求来源',
-    `deleted`      int         not null default 0,
-    `version`      int         not null default 0,
-    constraint t_requirement_creator_id_fk foreign key (creator_id) references t_user (id),
-    constraint t_requirement_processer_id_fk foreign key (processer_id) references t_user (id),
-    constraint t_requirement_project_id_fk foreign key (project_id) references t_project (id)
-) comment '需求';
-
-create table `t_requirement_iteration`
-(
-    `id`         bigint not null primary key,
-    `requirement_id` bigint not null comment '需求',
-    `iteration_id`    bigint not null comment '迭代',
-    `deleted`    int    not null default 0,
-    `version`    int    not null default 0,
-    constraint t_requirement_iteration_requirement_id_fk foreign key (requirement_id) references t_requirement (id),
-    constraint t_requirement_iteration_iteration_id_fk foreign key (iteration_id) references t_iteration (id)
-) comment '中间表-需求-迭代';
-
 create table `t_iteration`
 (
     `id`           bigint       not null primary key,
@@ -238,6 +163,60 @@ create table `t_iteration`
     constraint t_iteration_project_id_fk foreign key (project_id) references t_project (id)
 ) comment '迭代';
 
+
+create table `t_task`
+(
+    `id`           bigint      not null primary key,
+    `title`        varchar(30) not null comment '标题',
+    `description`  text        not null comment '描述',
+    `status`       int         not null default 0 comment '任务状态',
+    `priority`     int         not null default 1 comment '优先级',
+    `create_time`  datetime    not null comment '创建日期',
+    `modify_time`  datetime    not null default (utc_timestamp()) comment '上次更新日期',
+    `end_time`     datetime    not null comment '结束日期',
+    `creator_id`   bigint      not null comment '创建人',
+    `processer_id` bigint      not null comment '处理人',
+    `iteration_id` bigint      not null comment '所属迭代',
+    `project_id`   bigint      not null comment '所属项目',
+    `deleted`      int         not null default 0,
+    `version`      int         not null default 0,
+    constraint t_task_creator_id_fk foreign key (creator_id) references t_user (id),
+    constraint t_task_processer_id_fk foreign key (processer_id) references t_user (id),
+    constraint t_task_iteration_id_fk foreign key (iteration_id) references t_iteration (id),
+    constraint t_task_project_id_fk foreign key (project_id) references t_project (id)
+) comment '任务';
+
+
+create table `t_requirement`
+(
+    `id`           bigint      not null primary key,
+    `title`        varchar(30) not null comment '标题',
+    `description`  text        not null comment '描述',
+    `status`       int         not null default 0 comment '需求状态',
+    `priority`     int         not null default 1 comment '优先级',
+    `create_time`  datetime    not null comment '创建日期',
+    `modify_time`  datetime    not null default (utc_timestamp()) comment '上次更新日期',
+    `creator_id`   bigint      not null comment '创建人',
+    `processer_id` bigint      not null comment '处理人',
+    `iteration_id` bigint      not null comment '所属迭代',
+    `project_id`   bigint      not null comment '所属项目',
+    `origin`       varchar(30) not null comment '需求来源',
+    `deleted`      int         not null default 0,
+    `version`      int         not null default 0,
+    constraint t_requirement_creator_id_fk foreign key (creator_id) references t_user (id),
+    constraint t_requirement_processer_id_fk foreign key (processer_id) references t_user (id),
+    constraint t_requirement_iteration_id_fk foreign key (iteration_id) references t_iteration (id),
+    constraint t_requirement_project_id_fk foreign key (project_id) references t_project (id)
+) comment '需求';
+
+create table `t_bug_type`
+(
+    `id`          bigint      not null primary key auto_increment,
+    `name`        varchar(10) not null comment '缺陷类型名',
+    `deleted`     int         not null default 0,
+    `version`     int         not null default 0
+) comment '缺陷类型';
+
 create table `t_bug`
 (
     `id`             bigint      not null primary key,
@@ -251,6 +230,7 @@ create table `t_bug`
     `modify_time`    datetime    not null default (utc_timestamp()) comment '上次更新日期',
     `creator_id`     bigint      not null comment '创建人',
     `processer_id`   bigint      not null comment '处理人',
+    `bug_type_id`    bigint      not null comment '缺陷类型',
     `project_id`     bigint      not null comment '所属项目',
     `discovery_iterate_id`   bigint      not null comment '缺陷发现迭代',
     `plan_iterate_id`   bigint      not null comment '规划迭代',
@@ -260,6 +240,7 @@ create table `t_bug`
     `version`        int         not null default 0,
     constraint t_bug_creator_id_fk foreign key (creator_id) references t_user (id),
     constraint t_bug_processer_id_fk foreign key (processer_id) references t_user (id),
+    constraint t_bug_type_id_fk foreign key (bug_type_id) references t_bug_type (id),
     constraint t_bug_project_id_fk foreign key (project_id) references t_project (id),
     constraint t_bug_discovery_iterate_id_fk foreign key (discovery_iterate_id) references t_iteration (id),
     constraint t_bug_plan_iterate_id_fk foreign key (plan_iterate_id) references t_iteration (id),

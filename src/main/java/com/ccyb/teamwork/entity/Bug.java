@@ -126,6 +126,13 @@ public class Bug implements Serializable {
     private Long requirementId;
 
     /**
+     * 缺陷类型
+     */
+    @TableField("bug_type_id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long bug_type_id;
+
+    /**
      * 缺陷来源
      */
     @TableField("origin")

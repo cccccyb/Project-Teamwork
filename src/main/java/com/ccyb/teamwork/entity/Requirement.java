@@ -95,6 +95,13 @@ public class Requirement implements Serializable {
     private Long projectId;
 
     /**
+     * 所属迭代
+     */
+    @TableField("iteration_id")
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long iteration_id;
+
+    /**
      * 需求来源
      */
     @TableField("origin")

@@ -3,9 +3,13 @@ import {createRouter, createWebHistory} from "vue-router";
 // 创建路由规则
 let routes = [
     {
-        path: '/', // URL 地址
-        name: 'home',  // 名称
-        component: () => import('../components/HelloWorld.vue')  // 渲染该组件
+        path: '/',
+        redirect: '/login'
+    },
+    {
+        path: '/login', // URL 地址
+        name: 'login', // 名称
+        component: () => import('../page/Login.vue')  // 渲染该组件
     },
     {
         path: '/route',
@@ -20,13 +24,11 @@ let routes = [
         children: [
             {
                 path: 'c1',
-                name: 'c1',
-                component: () => import('../components/Menu01.vue')
+                name: 'c1'
             },
             {
                 path: 'c2',
-                name: 'c2',
-                component: () => import('../components/Menu02.vue')
+                name: 'c2'
             }
         ]
     }

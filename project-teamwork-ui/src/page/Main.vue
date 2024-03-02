@@ -4,11 +4,12 @@
             <el-header>Header</el-header>
             <el-container>
                 <el-aside width="200px">
-                    <router-link to="c1">Menu01</router-link><br>
-                    <router-link to="c2">Menu02</router-link>
+
                 </el-aside>
                 <el-main>
-                    <router-view/>
+                  <div>
+                    <h1>欢迎{{$route.query.username}}来到首页</h1>
+                  </div>
                 </el-main>
             </el-container>
         </el-container>

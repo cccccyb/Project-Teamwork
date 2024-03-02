@@ -15,6 +15,16 @@ export default defineConfig({
             resolvers: [ElementPlusResolver()],
         }),],
     server: {
-        port: '8621'
-    }
+        port: '8721'
+    },
+    //代理解决跨域问题
+    // proxy: {
+    //     '/': {
+    //         target: "http://localhost:8621",//实际后端访问的ip
+    //         changeOrigin: true,
+    //         pathRewrite: {
+    //             '^/': "" //实际访问的ip
+    //         }
+    //     },
+    // }
 })

@@ -1,5 +1,6 @@
 package com.ccyb.teamwork.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
@@ -11,44 +12,34 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 中间表-需求-迭代
+ * 缺陷类型
  * </p>
  *
  * @author cccccyb
  * @since 2024-03-01
  */
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
-@TableName("t_requirement_iteration")
-public class RequirementIteration implements Serializable {
+@TableName("t_bug_type")
+public class BugType implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @TableId("id")
+    @TableId(value = "id", type = IdType.AUTO)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
-     * 需求
+     * 缺陷类型名
      */
-    @TableField("requirement_id")
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long requirementId;
-
-    /**
-     * 迭代
-     */
-    @TableField("iteration_id")
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long iterationId;
+    @TableField("name")
+    private String name;
 
     @TableField("deleted")
     @TableLogic

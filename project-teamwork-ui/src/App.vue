@@ -3,18 +3,18 @@
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-  </div>
-  <!--   路由链接，点击是路由地址会切换到属性 to 的地方   -->
-    <router-link to="/">首页</router-link>
-  |
-    <router-link to="/route">路由测试</router-link>
-  |
-    <router-link to="/main">Main</router-link>
-    <hr>
+<!--  <div>-->
+<!--    <a href="https://vitejs.dev" target="_blank">-->
+<!--      <img src="/vite.svg" class="logo" alt="Vite logo" />-->
+<!--    </a>-->
+<!--  </div>-->
+<!--  &lt;!&ndash;   路由链接，点击是路由地址会切换到属性 to 的地方   &ndash;&gt;-->
+<!--    <router-link to="/">首页</router-link>-->
+<!--  |-->
+<!--    <router-link to="/route">路由测试</router-link>-->
+<!--  |-->
+<!--    <router-link to="/main">Main</router-link>-->
+<!--    <hr>-->
   <!--   路由试图，路由切换组件的地方   -->
     <router-view/>
 </template>
