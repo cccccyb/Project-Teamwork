@@ -4,6 +4,7 @@ import com.ccyb.teamwork.entity.User;
 import com.ccyb.teamwork.entity.common.ResponseCode;
 import com.ccyb.teamwork.entity.common.ResponseResult;
 import com.ccyb.teamwork.service.IUserService;
+import com.ccyb.teamwork.util.JWTUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,21 +18,32 @@ import org.springframework.web.bind.annotation.*;
  * @since 2024-03-01
  */
 @Slf4j
-@CrossOrigin
 @RestController
 @RequestMapping("/user")
 public class UserController {
     @Autowired
     private IUserService userService;
 
+
+    @PostMapping("/authentication")
+    public ResponseResult<?> authentication(){
+        return ResponseResult.success("成功",null);
+    }
+
     @PostMapping("/login")
-    public ResponseResult<User> login(@RequestBody User user){
+    public ResponseResult<?> login(@RequestBody User user){
         String name = user.getUsername();
         String password = user.getPasswd();
-        User userDB = userService.getByNameAndPassword(name,password);
-        int code = userDB != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
-        String msg = userDB != null ? "登录成功" : "查询不到该用户，请重试！";
-        return ResponseResult.build(code, msg, userDB);
+        User userLogin = userService.getByNameAndPassword(name,password);
+        int code = userLogin != null ? ResponseCode.LOGIN_SUCCESS : ResponseCode.LOGIN_USERNAME_PASSWORD_ERROR;
+        String msg = userLogin != null ? "登录成功" : "用户不存在，请重新登录！";
+        String token=null;
+        if (null!=userLogin){
+            token = JWTUtils.sign(user);
+        }
+        System.out.println(ResponseResult.build(code, msg, token));
+        return ResponseResult.build(code, msg, token);
     }
+
 
 }

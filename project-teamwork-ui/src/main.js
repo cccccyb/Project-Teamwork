@@ -6,14 +6,13 @@ import 'element-plus/dist/index.css'
 import { createPinia } from 'pinia'
 import './assets/css/base.css'
 import './assets/css/common.css'
-import axios from "axios";
+import request from "./util/request.js";
 
-// 给 axios 设置请求根路径
-axios.defaults.baseURL = 'http://localhost:8621'
+
 
 let app = createApp(App)
 // 全局挂载 axios
-app.config.globalProperties.$axios = axios
+app.config.globalProperties.$request = request
 
 app.use(ElementPlus)
 app.use(router) // 初始化路由插件
