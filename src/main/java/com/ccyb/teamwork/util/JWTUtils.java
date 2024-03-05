@@ -15,7 +15,7 @@ public class JWTUtils {
 
 
     // 有效期
-    private static final long EXPIRE_TIME = 10 * 60 * 60 * 1000; // 10分钟
+    private static final long EXPIRE_TIME = 10 * 60 * 60 * 1000; // 10小时
     // 秘钥明文
     private static final String TOKEN_SECRET = "teamwork";
     //签发者

@@ -10,7 +10,7 @@ const request = axios.create({
 
 // request 拦截器
 // 可以自请求发送前对请求做一些处理
-request.interceptors.request.use(config => {
+request.interceptors.request.use(async config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
     let token = sessionStorage.getItem("token") ? sessionStorage.getItem("token") : null
     if (token) {
@@ -25,7 +25,7 @@ request.interceptors.request.use(config => {
 // response 拦截器
 // 可以在接口响应后统一处理结果
 request.interceptors.response.use(
-    response => {
+    async response => {
         let res = response.data;
         // 如果是返回的文件
         if (response.config.responseType === 'blob') {
@@ -45,7 +45,7 @@ request.interceptors.response.use(
         }
         return res;
     },
-    error => {
+    async error => {
         console.log('err:' + error) // for debug
         return Promise.reject(error)
     }

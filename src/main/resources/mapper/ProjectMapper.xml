@@ -2,4 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ccyb.teamwork.mapper.ProjectMapper">
 
+    <!-- 根据项目id查项目信息及创建人   -->
+    <select id="selectProjectById" resultMap="ProjectByIdResultMap" parameterType="long">
+        select *
+        from t_project p,
+             t_user u
+        where u.id=p.creator_id
+        and p.id=#{pid}
+        and p.deleted=0
+    </select>
+    <resultMap id="ProjectByIdResultMap" type="project" autoMapping="true">
+        <association property="creator" javaType="user" autoMapping="true"/>
+    </resultMap>
+
+
 </mapper>

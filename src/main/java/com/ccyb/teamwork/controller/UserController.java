@@ -27,7 +27,7 @@ public class UserController {
 
     @PostMapping("/authentication")
     public ResponseResult<?> authentication(){
-        return ResponseResult.success("成功",null);
+        return null;
     }
 
     @PostMapping("/login")

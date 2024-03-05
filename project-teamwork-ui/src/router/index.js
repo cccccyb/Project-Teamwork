@@ -31,6 +31,15 @@ let routes = [
                 name: 'c2'
             }
         ]
+    },
+    {
+        path: '/404',
+        name: '404',
+        component: () => import('../page/404.vue')
+    },
+    {
+        path: "/:catchAll(.*)",
+        redirect: '/404'
     }
 ]
 
@@ -44,32 +53,33 @@ const router = createRouter({
 
 // 检查是否存在于免登陆白名单
 function inWhiteList(toPath) {
-    const whiteList = ['/','/user/login', '/404']
-    //find()回调函数会在每个元素上调用，直到它返回一个“真”值
-    const path = whiteList.find((value) => {
+    const whiteList = ['/','/login', '/404']
+    // some()回调函数会在每个元素上调用，直到它返回一个“真”值,否则返回false
+    const path = whiteList.some((value) => {
         // 使用正则匹配
-        const reg = new RegExp('^' + value)
-        return reg.test(toPath)
+        // const reg = new RegExp('^'+value)
+        // return reg.test(toPath)
+        return toPath===value
     })
-    //双感叹号=>强制改成布尔类型
+    // 双感叹号=>强制改成布尔类型
     return !!path
+
 }
 
 //全局前置守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     const token = sessionStorage.getItem("token")
-
     if (inWhiteList(to.path)) {
         next()
     } else {
         //用户已登录
         if (token) {
             //如果判断存在token的话，就请求后端的接口，这样就经过jwt拦截器的验证
-            this.$request.post("/user/authentication").then(res=>{
-                if(res.code===20000){
+            await this.$request.post("/user/authentication").then(res => {
+                if (res.code === 20000) {
                     // 如果请求成功，前端就next()
                     next()
-                }else{
+                } else {
                     // 验证失败就跳转到登录页
                     next("/login")
                 }

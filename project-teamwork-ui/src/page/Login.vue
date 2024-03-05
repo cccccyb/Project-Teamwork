@@ -46,17 +46,17 @@ export default {
     handleClose: function () {
       console.log("Handle Close，空函数");
     },
-    onSubmit() {
+    async onSubmit() {
       const _this = this
-      this.$refs.loginForm.validate((valid) => {
+      await this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.$request.post('/user/login', this.loginForm).then(response => {
+          this.$request.post('/user/login', this.loginForm).then(async response => {
             console.log(response)
             if (response.code === 20010) {
               //后端使用jwt生成token返回到前端，前端存储token
-              window.sessionStorage.setItem("sysUser",this.loginForm.username)
-              sessionStorage.setItem("token",response.data)
-              _this.$router.push({
+              window.sessionStorage.setItem("sysUser", this.loginForm.username)
+              sessionStorage.setItem("token", response.data)
+              await _this.$router.push({
                 path: "/main",
                 query: {username: this.loginForm.username}
               });

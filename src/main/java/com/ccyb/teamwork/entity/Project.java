@@ -68,11 +68,17 @@ public class Project implements Serializable {
     private LocalDateTime endTime;
 
     /**
-     * 创建人
+     * 创建人id
      */
     @TableField("creator_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long creatorId;
+
+    /**
+     * 创建人
+     */
+    @TableField(exist = false)
+    private User creator;
 
     @TableField("deleted")
     @TableLogic
