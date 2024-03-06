@@ -1,11 +1,11 @@
 <template>
   <div>
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" label width=" 80px" class="login-box">
+    <el-form ref="loginForm" :model="loginForm" :rules="this.loginRules" label width=" 80px" class="login-box">
       <h3 class="login-title">欢迎登录</h3>
       <el-form-item label="账号" prop="username">
         <el-input type="text" placeholder=" 请输入账号" v-model="loginForm.username"/>
       </el-form-item>
-      <el-form-item label="密码" prop="password">
+      <el-form-item label="密码" prop="passwd">
         <el-input type="password" placeholder=" 请输入密码" v-model=" loginForm.passwd"/>
       </el-form-item>
       <el-form-item>
@@ -25,6 +25,9 @@
   </div>
 </template>
 <script>
+import request from "../util/request";
+import {LOGIN_SUCCESS} from "../constants/Common.constants.js";
+
 export default {
   name: "Login",
   data() {
@@ -46,24 +49,24 @@ export default {
     handleClose: function () {
       console.log("Handle Close，空函数");
     },
-    async onSubmit() {
+    onSubmit() {
       const _this = this
-      await this.$refs.loginForm.validate((valid) => {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.$request.post('/user/login', this.loginForm).then(async response => {
+          request.post('/user/login', this.loginForm).then(async response => {
             console.log(response)
-            if (response.code === 20010) {
+            if (response.data.code === LOGIN_SUCCESS) {
               //后端使用jwt生成token返回到前端，前端存储token
-              window.sessionStorage.setItem("sysUser", this.loginForm.username)
-              sessionStorage.setItem("token", response.data)
+              localStorage.setItem("sysUser", this.loginForm.username)
+              localStorage.setItem("token", response.data.data)
               await _this.$router.push({
                 path: "/main",
                 query: {username: this.loginForm.username}
               });
-              this.$message.success(response.msg)
+              this.$message.success(response.data.msg)
             } else {
               console.log(response.data);
-              this.$message.error(this.loginForm.username + response.msg)
+              this.$message.error(this.loginForm.username + response.data.msg)
             }
           })
         } else {

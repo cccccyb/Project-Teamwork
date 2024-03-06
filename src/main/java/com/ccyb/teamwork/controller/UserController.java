@@ -27,7 +27,7 @@ public class UserController {
 
     @PostMapping("/authentication")
     public ResponseResult<?> authentication(){
-        return null;
+        return ResponseResult.build(ResponseCode.SYSTEM_OK,"token验证成功",null);
     }
 
     @PostMapping("/login")
@@ -39,7 +39,7 @@ public class UserController {
         String msg = userLogin != null ? "登录成功" : "用户不存在，请重新登录！";
         String token=null;
         if (null!=userLogin){
-            token = JWTUtils.sign(user);
+            token = JWTUtils.sign(userLogin);
         }
         System.out.println(ResponseResult.build(code, msg, token));
         return ResponseResult.build(code, msg, token);

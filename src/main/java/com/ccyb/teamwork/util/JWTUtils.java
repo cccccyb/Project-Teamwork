@@ -15,7 +15,7 @@ public class JWTUtils {
 
 
     // 有效期
-    private static final long EXPIRE_TIME = 10 * 60 * 60 * 1000; // 10小时
+    private static final long EXPIRE_TIME = 20 * 1000; // 20秒
     // 秘钥明文
     private static final String TOKEN_SECRET = "teamwork";
     //签发者
@@ -50,6 +50,14 @@ public class JWTUtils {
     public static DecodedJWT verifyToken(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(TOKEN_SECRET)).withIssuer(ISSUER).build();
             return verifier.verify(token);
+    }
+
+    /**
+     * 判断登陆用户是否过期
+     *
+     */
+    public static boolean isTokenExpired(Date expirationTime) {
+        return expirationTime.before(new Date());
     }
 
 }

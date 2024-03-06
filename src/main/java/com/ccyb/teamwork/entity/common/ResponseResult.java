@@ -59,6 +59,7 @@ public class ResponseResult<T> implements Serializable {
         return build(ResponseCode.SYSTEM_ERROR, msg, data);
     }
 
+
     public static <T> ResponseResult<T> databaseSelectSuccess(T object) {
         return build(ResponseCode.DATABASE_SELECT_OK, "success", object);
     }

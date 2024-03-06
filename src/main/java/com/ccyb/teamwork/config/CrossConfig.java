@@ -26,7 +26,6 @@ public class CrossConfig implements WebMvcConfigurer {
                 .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE")
                 .allowedHeaders("*")
 //                .allowedHeaders("Authorization","Content-Type","Accept","Origin","User-Agent","DNT","Cache-Control","X-Mx-ReqToken","X-Data-Type","X-Requested-With","X-Data-Type","X-Auth-Token","Access-Control-Expose-Headers")
-                .exposedHeaders("token")
                 ;
 
     }

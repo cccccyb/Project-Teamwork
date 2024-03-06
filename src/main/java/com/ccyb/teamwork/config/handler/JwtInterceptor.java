@@ -40,30 +40,30 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // 执行认证
+        // token为空
         if (StringUtils.isBlank(token)) {
-            throw new ServiceException(ResponseCode.TOKEN_IS_ILLEGAL, "无token，请重新登录");
+            log.error("无token，请重新登录!");
+            throw new ServiceException(ResponseCode.TOKEN_IS_BLANK, "无token，请重新登录");
         }
 
 
         // token非空
-        try {
-            DecodedJWT decodedJWT=JWTUtils.verifyToken(token);// 验证token
-            if (null!=decodedJWT){
-                // 获取 token 负载中的 userId
-                User user = userService.getById(decodedJWT.getClaim("userId").asLong());
-                if (user == null) {
-                    throw new ServiceException(ResponseCode.LOGIN_USERNAME_PASSWORD_ERROR, "用户不存在，请重新登录");
-                }
-            }
-        } catch (JWTVerificationException e) {
-            //认证失败
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json; charset=utf-8");
-            response.getOutputStream().print(JSON.toJSONString(ResponseResult.build(ResponseCode.TOKEN_IS_ILLEGAL, "token verify error", null)));
-            log.error("认证失败，未通过拦截器!");
-        }
 
+        DecodedJWT decodedJWT = JWTUtils.verifyToken(token);// 验证token
+        if (null != decodedJWT) {
+            // 获取 token 负载中的 userId
+            User user = userService.getById(decodedJWT.getClaim("userId").asLong());
+            if (user == null) {
+                log.error("用户不存在，请重新登录!");
+                throw new ServiceException(ResponseCode.LOGIN_USERNAME_PASSWORD_ERROR, "用户不存在，请重新登录");
+            }else{
+                boolean tokenIsExpired = JWTUtils.isTokenExpired(decodedJWT.getExpiresAt());
+                if (!tokenIsExpired){
+                    return true;
+                }
+
+            }
+        }
 
         return true;
     }

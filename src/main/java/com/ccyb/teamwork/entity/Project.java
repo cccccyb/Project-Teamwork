@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.Version;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -87,4 +88,11 @@ public class Project implements Serializable {
     @TableField("version")
     @Version
     private Integer version;
+
+    /**
+     * 项目成员
+     */
+    @TableField(exist = false)
+    @JsonSerialize(using = ToStringSerializer.class)
+    private List<Long> members;
 }

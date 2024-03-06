@@ -1,9 +1,13 @@
 package com.ccyb.teamwork.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.common.ResponseCode;
 import com.ccyb.teamwork.entity.common.ResponseResult;
 import com.ccyb.teamwork.service.IProjectService;
+import com.ccyb.teamwork.util.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -65,6 +69,22 @@ public class ProjectController {
         int code = projectById != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = projectById != null ? "" : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, projectById);
+    }
+
+    //分页查询所有项目或分页模糊查询
+    @GetMapping("/page")
+    public ResponseResult<List<Project>> selectPageNotice(Integer currentPage, Integer pageSize, String name, Integer status, String startTime, String endTime, Long creatorId) {
+        Page<Project> projectPage;
+        if (null != currentPage && null != pageSize) {
+            projectPage = PageDTO.of(currentPage, pageSize);
+        } else {
+            // 不进行分页
+            projectPage = PageDTO.of(1, -1);
+        }
+        IPage<Project> projectIPage = projectService.selectPageProject(projectPage, name.trim(), status, startTime.trim(), endTime.trim(), creatorId);
+        int code = projectIPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = projectIPage.getRecords() != null ? String.valueOf(projectIPage.getTotal()) : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, projectIPage.getRecords());
     }
 
 }

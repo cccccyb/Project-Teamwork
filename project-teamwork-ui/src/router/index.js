@@ -1,4 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
+import request from "../util/request";
+import {SYSTEM_OK} from "../constants/Common.constants.js";
 
 // 创建路由规则
 let routes = [
@@ -67,22 +69,23 @@ function inWhiteList(toPath) {
 }
 
 //全局前置守卫
-router.beforeEach(async (to, from, next) => {
-    const token = sessionStorage.getItem("token")
+router.beforeEach( (to, from, next) => {
+    const token = localStorage.getItem("token")
     if (inWhiteList(to.path)) {
         next()
     } else {
         //用户已登录
         if (token) {
             //如果判断存在token的话，就请求后端的接口，这样就经过jwt拦截器的验证
-            await this.$request.post("/user/authentication").then(res => {
-                if (res.code === 20000) {
+             request.post("/user/authentication").then(res => {
+                if (res.data.code === SYSTEM_OK) {
                     // 如果请求成功，前端就next()
                     next()
-                } else {
-                    // 验证失败就跳转到登录页
-                    next("/login")
                 }
+                // else {
+                //     // 验证失败就跳转到登录页
+                //     next("/login")
+                // }
             })
         } else {
             next(`/login`)

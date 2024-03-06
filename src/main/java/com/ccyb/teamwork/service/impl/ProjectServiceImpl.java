@@ -3,6 +3,7 @@ package com.ccyb.teamwork.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.ProjectUser;
 import com.ccyb.teamwork.mapper.ProjectMapper;
@@ -13,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * <p>
@@ -69,6 +73,16 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     @Override
     public Project selectByProjectId(Long pid) {
         return projectMapper.selectProjectById(pid);
+    }
+
+    @Override
+    public IPage<Project> selectPageProject(IPage<Project> page, String name, Integer status, String startTime, String endTime, Long creatorId) {
+        LocalDateTime start = null, end = null;
+        if (!Objects.equals(startTime, "") && !Objects.equals(endTime, "")) {
+            start = LocalDateTime.parse(startTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            end = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+        return projectMapper.selectPageProject(page, name, status, start, end, creatorId);
     }
 
 

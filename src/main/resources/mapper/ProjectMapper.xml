@@ -7,13 +7,53 @@
         select *
         from t_project p,
              t_user u
-        where u.id=p.creator_id
-        and p.id=#{pid}
-        and p.deleted=0
+        where u.id = p.creator_id
+          and p.id = #{pid}
+          and p.deleted = 0
     </select>
     <resultMap id="ProjectByIdResultMap" type="project" autoMapping="true">
         <association property="creator" javaType="user" autoMapping="true"/>
     </resultMap>
 
+
+    <!--   分页查询所有项目及模糊查询-->
+    <select id="selectPageProject" resultMap="ProjectAllResultMap" resultType="project">
+        select u.id uid,
+        u.username,
+        p.id pid,
+        p.name,
+        p.description,
+        p.status,
+        p.start_time,
+        p.end_time,
+        p.creator_id
+        from t_project p
+        left join t_user u on p.creator_id = u.id
+        <where>
+            <if test="null!=name and name!=''">
+                and instr(p.name,#{name})&gt;0
+            </if>
+            <if test="null!=status and status > 0">
+                and p.status=#{status}
+            </if>
+            <if test="null!=startTime">
+                and p.send_time &gt;= #{startTime}
+            </if>
+            <if test="null != endTime">
+                and p.end_time &lt; #{endTime}
+            </if>
+            <if test="null != creatorId">
+                and p.creator_id = #{creatorId}
+            </if>
+            and p.deleted = 0
+        </where>
+        order by p.start_time desc
+    </select>
+    <resultMap id="ProjectAllResultMap" type="project" autoMapping="true">
+        <id property="id" column="pid"/>
+        <association property="creator" javaType="user" autoMapping="true">
+            <id property="id" column="uid"/>
+        </association>
+    </resultMap>
 
 </mapper>
