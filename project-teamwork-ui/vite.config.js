@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
+import * as path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,21 +11,24 @@ export default defineConfig({
         vue(),
         AutoImport({
             resolvers: [ElementPlusResolver()],
+            // 自动导入 Vue 相关函数，如：ref, reactive, toRef 等
+            imports: ['vue', 'vue-router'],
         }),
         Components({
             resolvers: [ElementPlusResolver()],
-        }),],
+        }),
+    ],
     server: {
         port: '8721'
     },
-    //代理解决跨域问题
-    // proxy: {
-    //     '/': {
-    //         target: "http://localhost:8621",//实际后端访问的ip
-    //         changeOrigin: true,
-    //         pathRewrite: {
-    //             '^/': "" //实际访问的ip
-    //         }
-    //     },
-    // }
+    resolve: {
+        // 配置路径别名
+        alias: [
+            // @代替src
+            {
+                find: '@',
+                replacement: path.resolve('./src'),
+            },
+        ],
+    },
 })

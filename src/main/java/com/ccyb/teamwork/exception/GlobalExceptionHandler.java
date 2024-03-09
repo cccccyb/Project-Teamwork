@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLException;
+
 
 /**
  * 全局的异常处理类
@@ -23,6 +25,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataValidationFailedException.class)
     public ResponseResult<?> handleDataValidationFailedException(DataValidationFailedException ex) {
         return ResponseResult.build(ResponseCode.DATA_VALIDATION_FAILED, ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseResult<?> handleSQLException(SQLException ex) {
+        return ResponseResult.build(ResponseCode.DATABASE_CONNECT_ERROR, ex.getMessage(), null);
     }
 
     @ExceptionHandler(JWTVerificationException.class)

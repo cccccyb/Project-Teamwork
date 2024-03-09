@@ -25,8 +25,10 @@
   </div>
 </template>
 <script>
-import request from "../util/request";
-import {LOGIN_SUCCESS} from "../constants/Common.constants.js";
+import {useUserStore} from "@/store/user.js";
+import {mapState} from 'pinia'
+
+const userStore = useUserStore();
 
 export default {
   name: "Login",
@@ -50,32 +52,18 @@ export default {
       console.log("Handle Close，空函数");
     },
     onSubmit() {
-      const _this = this
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          request.post('/user/login', this.loginForm).then(async response => {
-            console.log(response)
-            if (response.data.code === LOGIN_SUCCESS) {
-              //后端使用jwt生成token返回到前端，前端存储token
-              localStorage.setItem("sysUser", this.loginForm.username)
-              localStorage.setItem("token", response.data.data)
-              await _this.$router.push({
-                path: "/main",
-                query: {username: this.loginForm.username}
-              });
-              this.$message.success(response.data.msg)
-            } else {
-              console.log(response.data);
-              this.$message.error(this.loginForm.username + response.data.msg)
-            }
-          })
+          userStore.login(this.loginForm)
         } else {
           this.dialogVisible = true;
           return false;
         }
       });
     },
-
+  },
+  computed: {
+    ...mapState(useUserStore, [])
   }
 }
 </script>

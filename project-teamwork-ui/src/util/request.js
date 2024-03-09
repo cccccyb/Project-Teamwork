@@ -2,12 +2,17 @@ import axios from 'axios'
 import {ElMessage} from 'element-plus'
 import 'element-plus/dist/index.css'
 import {
-    ACCESS_DENIED, DATABASE_DATA_TO_LONG, DATABASE_DATA_VALIDATION_FAILED, DATABASE_EXECUTE_ERROR,
-    LOGIN_USERNAME_PASSWORD_ERROR, SYSTEM_ERROR,
+    ACCESS_DENIED,
+    DATABASE_CONNECT_ERROR,
+    DATABASE_DATA_TO_LONG,
+    DATABASE_DATA_VALIDATION_FAILED,
+    LOGIN_USERNAME_PASSWORD_ERROR,
+    SYSTEM_ERROR,
     TOKEN_Format_ERROR,
     TOKEN_HAS_EXPIRED,
     TOKEN_IS_BLANK,
-    TOKEN_IS_ILLEGAL, TOKEN_Signature_ERROR
+    TOKEN_IS_ILLEGAL,
+    TOKEN_Signature_ERROR
 } from "../constants/Common.constants.js";
 import router from "../router/index.js";
 
@@ -21,7 +26,7 @@ const request = axios.create({
 // 可以自请求发送前对请求做一些处理
 request.interceptors.request.use(async config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-    let token = localStorage.getItem("token") ? localStorage.getItem("token") : null
+    let token =localStorage.getItem("token") ? localStorage.getItem("token"): null
     if (token) {
         config.headers['token'] = token;  // 设置请求头
     }
@@ -126,10 +131,10 @@ request.interceptors.response.use(
                     type:'error'
                 })
                 return  Promise.reject(response?.data)
-            case DATABASE_EXECUTE_ERROR:
+            case DATABASE_CONNECT_ERROR:
                 ElMessage({
                     dangerouslyUseHTMLString: true,
-                    message: '<strong>数据库执行出错</strong>',
+                    message: '<strong>数据库出错了，请稍后再试</strong>',
                     type:'error'
                 })
                 return  Promise.reject(response?.data)

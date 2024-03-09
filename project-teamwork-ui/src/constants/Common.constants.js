@@ -44,6 +44,21 @@ const USER_DISABLE = 30031
 const SYSTEM_ERROR = 50001
 const SYSTEM_TIMEOUT = 50002
 
+const menuText = '#bfcbd9'
+
+const menuActiveText = '#ffffff'
+const subMenuActiveText = '#f4f4f5'
+
+const menuBg = '#304156'
+const menuHover = '#263445'
+
+const subMenuBg = '#1f2d3d'
+const subMenuHover = '#001528'
+
+const sideBarWidth = '210px'
+const hideSideBarWidth = '67px'
+const sideBarDuration = '0.28s'
+
 export {
     PRODUCTION_NAME,
     TOKEN_NAME,
@@ -85,5 +100,14 @@ export {
     ACCESS_DENIED,
     USER_DISABLE,
     SYSTEM_ERROR,
-    SYSTEM_TIMEOUT
+    SYSTEM_TIMEOUT,
+    menuText,
+    menuActiveText,
+    subMenuActiveText,
+    menuBg,
+    menuHover,
+    subMenuBg,
+    subMenuHover,
+    sideBarWidth,
+    hideSideBarWidth,
 }

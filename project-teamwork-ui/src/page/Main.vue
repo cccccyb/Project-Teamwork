@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import {useUserStore} from "@/store/user.js";
+const userStore=useUserStore()
 export default {
   data(){
     return{
@@ -25,14 +27,12 @@ export default {
   },
   methods:{
     logout() {
-      const _this=this
-      sessionStorage.clear()
-      _this.$router.replace("/login")
+      userStore.logout()
     },
 
   },
   created() {
-    this.username = window.sessionStorage.getItem("sysUser");
+    this.username = localStorage.getItem("sysUser");
   }
 }
 </script>
