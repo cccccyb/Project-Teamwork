@@ -1,73 +1,148 @@
 <template>
+<!--    <el-scrollbar>-->
   <el-menu
-      active-text-color="#ffd04b"
-      background-color="#545c64"
-      class="el-menu-vertical-demo"
-      default-active="2"
-      text-color="#fff"
-      @open="handleOpen"
-      @close="handleClose"
+      :collapse="isCollapse"
+      :unique-opened="true"
+      :collapse-transition="true"
+      :default-active="$route.path"
+      :router="true"
+      class="menu"
+      :background-color="COLOR_MENU_BACKGROUND()"
+      :text-color="COLOR_FONT_MAIN()"
+      :active-text-color="COLOR_PRODUCTION()"
   >
-    <el-sub-menu index="1">
+    <!--项目名-->
+    <el-menu-item
+        :disabled="true"
+        style="padding:0 10px;cursor: pointer;opacity: 1;border-bottom: 2px #ddd solid;"
+    >
+      <!--        <el-svg :size="SIZE_ICON_LG()">-->
+      <!--          <svg-pinnacle-pinnacle :color="COLOR_PRODUCTION()"/>-->
+      <!--        </el-svg>-->
+      <SvgIcons width="32px" height="32px" color="#ffffff" icon-class="test" />
       <template #title>
-        <el-icon>
-          <location/>
-        </el-icon>
-        <span>Navigator One</span>
+        <span class="menu-production-name">CYB-TeamWork</span>
       </template>
-      <el-menu-item-group title="Group One">
-        <el-menu-item index="1-1">item one</el-menu-item>
-        <el-menu-item index="1-2">item two</el-menu-item>
-      </el-menu-item-group>
-      <el-menu-item-group title="Group Two">
-        <el-menu-item index="1-3">item three</el-menu-item>
-      </el-menu-item-group>
-      <el-sub-menu index="1-4">
-        <template #title>item four</template>
-        <el-menu-item index="1-4-1">item one</el-menu-item>
+    </el-menu-item>
+    <template v-for="route in this.routers">
+      <!--一级菜单-->
+      <el-menu-item
+          v-if="!route.meta.hasChildren || route.meta.isMenu"
+          :key="route.path"
+          :index="route.path? '/main/'+route.path: ''"
+      >
+        <!--          <el-svg>-->
+        <!--            <component :is="route.meta.svg"/>-->
+        <!--          </el-svg>-->
+        <template #title>{{ route.meta.title }}</template>
+      </el-menu-item>
+      <!--二级菜单-->
+      <el-sub-menu
+          v-if="route.meta.isMenu && route.meta.hasChildren && route.meta.requireChildMenu"
+          :key="route.path"
+          :index="route.path? '/main/'+route.path: ''">
+        <template #title>
+          <!--            <el-svg>-->
+          <!--              <component :is="route.meta.svg"/>-->
+          <!--            </el-svg>-->
+          <span>{{ route.meta.title }}</span>
+        </template>
+        <el-menu-item
+            v-for="sub in route.children"
+            :key="sub.path"
+            :index="sub.path? route.path ? '/main/'+route.path + '/' + sub.path: '': ''"
+        >
+          <!--            <el-svg>-->
+          <!--              <component :is="sub.meta.svg"/>-->
+          <!--            </el-svg>-->
+          <template #title>{{ sub.meta.title }}</template>
+        </el-menu-item>
       </el-sub-menu>
-    </el-sub-menu>
-    <el-menu-item index="2">
-      <el-icon>
-        <icon-menu/>
-      </el-icon>
-      <span>Navigator Two</span>
-    </el-menu-item>
-    <el-menu-item index="3" disabled>
-      <el-icon>
-        <document/>
-      </el-icon>
-      <span>Navigator Three</span>
-    </el-menu-item>
-    <el-menu-item index="4">
-      <el-icon>
-        <setting/>
-      </el-icon>
-      <span>Navigator Four</span>
-    </el-menu-item>
+    </template>
   </el-menu>
+<!--    </el-scrollbar>-->
 </template>
 <script>
+import router from "@/router/index.js";
 import {Document, Location, Setting} from "@element-plus/icons-vue";
+import {
+  COLOR_FONT_MAIN,
+  COLOR_MENU_BACKGROUND,
+  COLOR_PRODUCTION
+} from "@/constants/Common.constants.js";
+import {useUserStore} from "@/store/user.js";
+import {useSettingStore} from "@/store/setting.js"
+import {mapState} from 'pinia'
 
 export default {
   name: "sidebar",
+  props:{isCollapse:Boolean},
   components: {Setting, Document, Location},
   data() {
     return {
-
+      routers: [],
+      activePath: ''
     }
   },
   methods: {
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+    COLOR_MENU_BACKGROUND() {
+      return COLOR_MENU_BACKGROUND
     },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
+    COLOR_PRODUCTION() {
+      return COLOR_PRODUCTION
+    },
+    COLOR_FONT_MAIN() {
+      return COLOR_FONT_MAIN
     }
+  },
+  computed: {
+    SVG_ICONS() {
+      return SVG_ICONS
     }
+  },
+  created() {
+  },
+  mounted() {
+    this.routers = router.options.routes[2].children
+  }
 }
 </script>
 <style scoped lang="scss">
+.menu{
+  height: 100vh;
+}
+.menu:not(.el-menu--collapse) {
+  width: calc(10rem + 5vw);
+}
+
+.menu-top > * {
+  padding: 0;
+}
+
+.menu-production-name {
+  width: 100%;
+  padding: 0 5px;
+  font-size: 18px;
+  color: var(--main-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* el-menu相关样式 */
+.el-menu {
+  height: 100%;
+  border-right-width: 0;
+}
+
+::v-deep .el-menu-item {
+  height: 70px;
+  line-height: 70px;
+  font-size: 15px;
+}
+
+/* 必须设置 */
+.sidebar:not(.el-menu--collapse) {
+  width: 200px;
+}
 
 </style>

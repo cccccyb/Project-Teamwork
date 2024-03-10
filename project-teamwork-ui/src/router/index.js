@@ -1,56 +1,183 @@
 import {createRouter, createWebHistory} from "vue-router";
 import request from "@/util/request.js";
 import {SYSTEM_OK} from "@/constants/Common.constants.js";
+import {ElMessage} from "element-plus";
 
 // 创建路由规则
 let routes = [
     {
         path: '/',
         redirect: '/login',
-        meta:{
-            isParentView: true
+        meta: {
+            title: '',
+            hasChildren: false,
+            isShow: true,
+            isMenu: false
         }
     },
     {
         path: '/login', // URL 地址
         name: 'login', // 名称
-        component: () => import('../page/Login.vue'),  // 渲染该组件
-        meta:{
-            isParentView: true
+        component: () => import('@/page/Login.vue'),  // 渲染该组件
+        meta: {
+            title: '登录',
+            hasChildren: false,
+            isShow: true,
+            isMenu: false
         }
     },
     {
         path: '/main',
         name: 'main',
         component: () => import('@/layout/index.vue'),
-        redirect: '/main/c1', //重定向，默认为第一个子视图
-        meta:{
-            isParentView: true
+        redirect: '/main/workspace', //默认加载第一个children
+        meta: {
+            title: '首页',
+            hasChildren: true,
+            requireChildMenu: false,
+            isShow: true,
+            isMenu: false
         },
         children: [
             {
-                path: 'c1',
-                name: 'c1'
+                path: 'workspace',
+                name: 'workspace',
+                component: () => import('@/page/workspace/WorkSpace.vue'),
+                meta: {
+                    title: '个人工作台',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
             },
             {
-                path: 'c2',
-                name: 'c2'
+                path: 'projectManage',
+                name: 'projectManage',
+                component: () => import('@/page/project/ProjectManage.vue'),
+                meta: {
+                    title: '项目管理',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'requireManage',
+                name: 'requireManage',
+                component: () => import('@/page/require/RequireManage.vue'),
+                meta: {
+                    title: '需求管理',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'iterationManage',
+                name: 'iterationManage',
+                component: () => import('@/page/iteration/IterationManage.vue'),
+                meta: {
+                    title: '迭代管理',
+                    hasChildren: true,
+                    requireChildMenu: false,
+                    isShow: true,
+                    isMenu: true
+                },
+                children: [
+                    {
+                        path: 'iterationTask',
+                        name: 'iterationTask',
+                        component: () => import('@/page/iteration/IterationTask.vue'),
+                        meta: {
+                            title: '迭代所属任务',
+                            hasChildren: false,
+                            isShow: true,
+                            isMenu: false
+                        }
+                    },
+                    {
+                        path: 'iterationRequire',
+                        name: 'iterationRequire',
+                        component: () => import('@/page/iteration/IterationRequire.vue'),
+                        meta: {
+                            title: '迭代所属需求',
+                            hasChildren: false,
+                            isShow: true,
+                            isMenu: false
+                        }
+                    },
+                    {
+                        path: 'iterationBug',
+                        name: 'iterationBug',
+                        component: () => import('@/page/iteration/IterationBug.vue'),
+                        meta: {
+                            title: '迭代所属缺陷',
+                            hasChildren: false,
+                            isShow: true,
+                            isMenu: false
+                        }
+                    }
+                ]
+            },
+            {
+                path: 'bugManage',
+                name: 'bugManage',
+                component: () => import('@/page/bug/BugManage.vue'),
+                meta: {
+                    title: '缺陷管理',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'taskManage',
+                name: 'taskManage',
+                component: () => import('@/page/task/TaskManage.vue'),
+                meta: {
+                    title: '任务管理',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'dashboard',
+                name: 'dashboard',
+                component: () => import('@/page/dashboard/Dashboard.vue'),
+                meta: {
+                    title: '仪表盘',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'powerManage',
+                name: 'powerManage',
+                component: () => import('@/page/power/PowerManage.vue'),
+                meta: {
+                    title: '权限管理',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
             }
         ]
     },
     {
         path: '/404',
         name: '404',
-        component: () => import('../page/404.vue'),
-        meta:{
-            isParentView: true
+        component: () => import('@/page/404.vue'),
+        meta: {
+            hasChildren: false
         }
     },
     {
         path: "/:catchAll(.*)",
         redirect: '/404',
-        meta:{
-            isParentView: true
+        meta: {
+            hasChildren: false
         }
     }
 ]
@@ -63,24 +190,29 @@ const router = createRouter({
     routes
 })
 
-const inWhiteList=['/','/login', '/404'];
+const inWhiteList = ['/', '/login', '/404'];
 //全局前置守卫
-router.beforeEach( (to, from, next) => {
+router.beforeEach((to, from, next) => {
     const token = localStorage.getItem("token")
     //白名单 放行
     if (inWhiteList.includes(to.path)) {
         next()
     } else {
         //用户已登录
-        if (token!=null) {
+        if (token != null) {
             //如果判断存在token的话，就请求后端的接口，这样就经过jwt拦截器的验证
-             request.post("/user/authentication").then(res => {
+            request.post("/user/authentication").then(res => {
                 if (res.data.code === SYSTEM_OK) {
                     // 如果请求成功，前端就next()
                     next()
                 }
             })
         } else {
+            ElMessage({
+                dangerouslyUseHTMLString: true,
+                message: `<strong>您尚未登录，请先进行登录！</strong>`,
+                type: 'warning'
+            });
             next(`/login`)
         }
     }

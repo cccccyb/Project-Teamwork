@@ -4,6 +4,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import {ElementPlusResolver} from 'unplugin-vue-components/resolvers'
 import * as path from 'path'
+import {createSvgIconsPlugin} from 'vite-plugin-svg-icons';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,6 +18,12 @@ export default defineConfig({
         Components({
             resolvers: [ElementPlusResolver()],
         }),
+        createSvgIconsPlugin({
+            // 需要自动导入的 svg 文件目录
+            iconDirs: [path.resolve(process.cwd(), "src/assets/svg")],
+            // 执行icon name的格式（可自行修改）
+            symbolId: "icon-[dir]-[name]",
+        })
     ],
     server: {
         port: '8721'

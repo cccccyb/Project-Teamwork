@@ -11,7 +11,7 @@
   flex-wrap: wrap; // 子元素换行
 }
 // .flex-1{flex:1}
-@for $i from 1 through 6 {
+@for $i from 1 through 10 {
   .flex-#{$i} {
     flex: #{$i};
   }
