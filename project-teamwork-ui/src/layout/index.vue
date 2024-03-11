@@ -10,13 +10,10 @@
       </div>
       <!-- 右侧 -->
       <div id="LayoutRight" class="layout-right">
-        <div id="top">
+        <div id="top" style="height: 60px">
           <!-- 顶部导航栏 -->
-          <navbar style="height: 50px"/>
-          <!-- Tabs标签页 -->
-          <div style="height: 20px">
+          <navbar/>
           </div>
-        </div>
         <div class="layout-content">
           <!-- 主页面 -->
           <app-main/>
@@ -75,20 +72,21 @@ export default {
   /* flex布局 */
   display: flex;
   width: 100vw;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .layout-left {
   /* 左侧不设置宽度 */
   width: auto;
-  height: 100vh;
+  height: 100%;
   position: relative;
 }
 .layout-right {
   height: 100%;
   /* flex关键代码，让右侧占满剩余宽度 */
   flex: 1;
-  background: #dbe9f8;
+  background: #dfe2e5;
   padding: 15px;
   box-sizing: border-box;
 }
@@ -96,6 +94,7 @@ export default {
 .layout-content {
   width: 100%;
   height: 100%;
+  margin-top: 10px;
   background: #fff;
 }
 

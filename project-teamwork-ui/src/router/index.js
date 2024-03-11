@@ -33,7 +33,7 @@ let routes = [
         redirect: '/main/workspace', //默认加载第一个children
         meta: {
             title: '首页',
-            hasChildren: true,
+            hasChildren: false,
             requireChildMenu: false,
             isShow: true,
             isMenu: false
@@ -45,6 +45,7 @@ let routes = [
                 component: () => import('@/page/workspace/WorkSpace.vue'),
                 meta: {
                     title: '个人工作台',
+                    icon: 'workspace',
                     hasChildren: false,
                     isShow: true,
                     isMenu: true
@@ -53,13 +54,53 @@ let routes = [
             {
                 path: 'projectManage',
                 name: 'projectManage',
-                component: () => import('@/page/project/ProjectManage.vue'),
+                redirect:'/main/projectManage/projectPerson',
                 meta: {
                     title: '项目管理',
-                    hasChildren: false,
+                    icon: 'project_parent_menu',
+                    requireChildMenu: true,
+                    hasChildren: true,
                     isShow: true,
                     isMenu: true
-                }
+                },
+                children: [
+                    {
+                        path: 'projectPerson',
+                        name: 'projectPerson',
+                        component: () => import('@/page/project/ProjectPerson.vue'),
+                        meta: {
+                            title: '我参与的',
+                            icon: 'project_person',
+                            hasChildren: false,
+                            isShow: true,
+                            isMenu: true
+                        }
+                    },
+                    {
+                        path: 'projectMyManage',
+                        name: 'projectMyManage',
+                        component: () => import('@/page/project/ProjectMyManage.vue'),
+                        meta: {
+                            title: '我管理的',
+                            icon: 'project_myManage',
+                            hasChildren: false,
+                            isShow: true,
+                            isMenu: true
+                        }
+                    },
+                    {
+                        path: 'projectAll',
+                        name: 'projectAll',
+                        component: () => import('@/page/project/ProjectAll.vue'),
+                        meta: {
+                            title: '所有项目',
+                            icon: 'project_all',
+                            hasChildren: false,
+                            isShow: true,
+                            isMenu: true
+                        }
+                    }
+                ]
             },
             {
                 path: 'requireManage',
@@ -67,6 +108,7 @@ let routes = [
                 component: () => import('@/page/require/RequireManage.vue'),
                 meta: {
                     title: '需求管理',
+                    icon: 'require_menu',
                     hasChildren: false,
                     isShow: true,
                     isMenu: true
@@ -78,6 +120,7 @@ let routes = [
                 component: () => import('@/page/iteration/IterationManage.vue'),
                 meta: {
                     title: '迭代管理',
+                    icon: 'iteration_menu',
                     hasChildren: true,
                     requireChildMenu: false,
                     isShow: true,
@@ -125,6 +168,7 @@ let routes = [
                 component: () => import('@/page/bug/BugManage.vue'),
                 meta: {
                     title: '缺陷管理',
+                    icon: 'bug_menu',
                     hasChildren: false,
                     isShow: true,
                     isMenu: true
@@ -136,6 +180,7 @@ let routes = [
                 component: () => import('@/page/task/TaskManage.vue'),
                 meta: {
                     title: '任务管理',
+                    icon: 'task_menu',
                     hasChildren: false,
                     isShow: true,
                     isMenu: true
@@ -147,6 +192,7 @@ let routes = [
                 component: () => import('@/page/dashboard/Dashboard.vue'),
                 meta: {
                     title: '仪表盘',
+                    icon: 'dashboard_menu',
                     hasChildren: false,
                     isShow: true,
                     isMenu: true
@@ -158,6 +204,7 @@ let routes = [
                 component: () => import('@/page/power/PowerManage.vue'),
                 meta: {
                     title: '权限管理',
+                    icon: 'power_menu',
                     hasChildren: false,
                     isShow: true,
                     isMenu: true

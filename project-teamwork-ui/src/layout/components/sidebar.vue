@@ -16,10 +16,7 @@
         :disabled="true"
         style="padding:0 10px;cursor: pointer;opacity: 1;border-bottom: 2px #ddd solid;"
     >
-      <!--        <el-svg :size="SIZE_ICON_LG()">-->
-      <!--          <svg-pinnacle-pinnacle :color="COLOR_PRODUCTION()"/>-->
-      <!--        </el-svg>-->
-      <SvgIcons width="32px" height="32px" color="#ffffff" icon-class="test" />
+      <SvgIcons width="32px" height="32px" color="#ffffff" icon-class="project_logo" />
       <template #title>
         <span class="menu-production-name">CYB-TeamWork</span>
       </template>
@@ -27,14 +24,12 @@
     <template v-for="route in this.routers">
       <!--一级菜单-->
       <el-menu-item
-          v-if="!route.meta.hasChildren || route.meta.isMenu"
+          v-if=" (!route.meta.hasChildren && route.meta.isMenu)|| (!route.meta.requireChildMenu)"
           :key="route.path"
           :index="route.path? '/main/'+route.path: ''"
       >
-        <!--          <el-svg>-->
-        <!--            <component :is="route.meta.svg"/>-->
-        <!--          </el-svg>-->
-        <template #title>{{ route.meta.title }}</template>
+        <SvgIcons width="28px" height="28px" color="#ffaa00" :icon-class="route.meta.icon" />
+        <template #title><span style="margin-left: 10px">{{ route.meta.title }}</span></template>
       </el-menu-item>
       <!--二级菜单-->
       <el-sub-menu
@@ -42,20 +37,17 @@
           :key="route.path"
           :index="route.path? '/main/'+route.path: ''">
         <template #title>
-          <!--            <el-svg>-->
-          <!--              <component :is="route.meta.svg"/>-->
-          <!--            </el-svg>-->
-          <span>{{ route.meta.title }}</span>
+          <SvgIcons width="28px" height="28px" color="#ffaa00" :icon-class="route.meta.icon" />
+          <span style="margin-left: 10px;font-size: 16px;height: 75px;line-height: 75px;">{{ route.meta.title }}</span>
         </template>
         <el-menu-item
             v-for="sub in route.children"
             :key="sub.path"
             :index="sub.path? route.path ? '/main/'+route.path + '/' + sub.path: '': ''"
         >
-          <!--            <el-svg>-->
-          <!--              <component :is="sub.meta.svg"/>-->
-          <!--            </el-svg>-->
-          <template #title>{{ sub.meta.title }}</template>
+
+          <SvgIcons width="28px" height="28px" color="#ffaa00" :icon-class="sub.meta.icon" />
+          <template #title><span style="margin-left: 10px">{{ sub.meta.title }}</span></template>
         </el-menu-item>
       </el-sub-menu>
     </template>
@@ -80,7 +72,7 @@ export default {
   components: {Setting, Document, Location},
   data() {
     return {
-      routers: [],
+      // routers: [],
       activePath: ''
     }
   },
@@ -96,14 +88,14 @@ export default {
     }
   },
   computed: {
-    SVG_ICONS() {
-      return SVG_ICONS
+    routers(){
+      return router.options.routes[2].children
     }
   },
   created() {
   },
   mounted() {
-    this.routers = router.options.routes[2].children
+    // this.routers = router.options.routes[2].children
   }
 }
 </script>
@@ -134,15 +126,16 @@ export default {
   border-right-width: 0;
 }
 
-::v-deep .el-menu-item {
-  height: 70px;
-  line-height: 70px;
-  font-size: 15px;
+::v-deep .el-menu-item,{
+  height: 75px;
+  line-height: 75px;
+  font-size: 16px;
 }
 
 /* 必须设置 */
 .sidebar:not(.el-menu--collapse) {
   width: 200px;
 }
+
 
 </style>

@@ -6,7 +6,8 @@ import {ElMessage} from "element-plus";
 export const useUserStore=defineStore('user',{
     state:()=>{
         return{
-            isLogin:true
+            isLogin:true,
+            username:''
         }
     },
     persist:true,
@@ -18,7 +19,7 @@ export const useUserStore=defineStore('user',{
                 console.log(response)
                 if (response.data.code === LOGIN_SUCCESS) {
                     //后端使用jwt生成token返回到前端，前端存储token
-                    localStorage.setItem("sysUser", loginForm.username)
+                    localStorage.setItem("username", loginForm.username)
                     localStorage.setItem("token", response.data.data)
                     await router.push({
                         path: "/main",
