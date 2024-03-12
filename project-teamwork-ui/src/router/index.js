@@ -54,6 +54,7 @@ let routes = [
             {
                 path: 'projectManage',
                 name: 'projectManage',
+                component:()=>import('@/page/project/ProjectParent.vue'),
                 redirect:'/main/projectManage/projectPerson',
                 meta: {
                     title: '项目管理',

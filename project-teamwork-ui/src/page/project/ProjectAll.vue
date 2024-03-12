@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <h1>所有项目</h1>
-  </div>
+  <project-view-table/>
 </template>
 
 <script>
+import projectViewTable from "@/components/project/ProjectViewTable.vue";
 export default {
+  components: {projectViewTable},
   data() {
     return {}
   },

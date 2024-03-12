@@ -8,6 +8,7 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import "virtual:svg-icons-register";
 import svgIcon from '@/assets/svg/index.vue'
 
+const pinia = createPinia()
 const app = createApp(App)
 // 导入所有图标并进行全局注册
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -19,6 +20,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 app.component('SvgIcons',svgIcon)
 app.use(router) // 初始化路由插件
-app.use(createPinia())
+app.use(pinia)
 app.mount('#app')
 

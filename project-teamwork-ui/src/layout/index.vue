@@ -60,7 +60,10 @@ export default {
         return settingStore.$state.isCollapse
       },
       set(val) {
-        settingStore.$state.isCollapse=val
+        settingStore.$patch({
+          isCollapse : val
+        })
+        // settingStore.$state.isCollapse=val
       }
     }
   }
@@ -95,6 +98,7 @@ export default {
   width: 100%;
   height: 100%;
   margin-top: 10px;
+  padding: 10px 20px;
   background: #fff;
 }
 

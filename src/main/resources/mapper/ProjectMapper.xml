@@ -33,7 +33,7 @@
             <if test="null!=name and name!=''">
                 and instr(p.name,#{name})&gt;0
             </if>
-            <if test="null!=status and status > 0">
+            <if test="null!=status and status >= 0">
                 and p.status=#{status}
             </if>
             <if test="null!=startTime">
@@ -42,7 +42,7 @@
             <if test="null != endTime">
                 and p.end_time &lt; #{endTime}
             </if>
-            <if test="null != creatorId">
+            <if test="null != creatorId and creatorId > 0">
                 and p.creator_id = #{creatorId}
             </if>
             and p.deleted = 0
