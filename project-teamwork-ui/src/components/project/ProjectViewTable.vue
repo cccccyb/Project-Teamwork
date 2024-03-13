@@ -4,9 +4,11 @@
   <!--      @row-contextmenu="openClickMenu"-->
   <el-table
       v-loading="loading"
+      stripe
       element-loading-text="加载中..."
       ref="tableRef"
       :data="selectData"
+      table-layout="fixed"
       border
       :header-cell-style="{
             background: 'aliceblue',
@@ -15,15 +17,15 @@
         }"
       @filter-change="handleFilterChange"
   >
-<!--    <el-table-column type="selection" align="center" />-->
-<!--    <el-table-column type="index" width="80" label="序号" align="center">-->
+    <el-table-column type="selection" align="center" />
+    <el-table-column type="index" width="80" label="序号" align="center">
 <!--      <template #default="scope">-->
 <!--        <el-icon :size="SIZE_ICON_XS()" :color="COLOR_TOP()" v-if="scope.row.top === 1">-->
 <!--          <icon-pinnacle-top />-->
 <!--        </el-icon>-->
 <!--        {{ (this.currentPage - 1) * this.pageSize + scope.$index + 1 }}-->
 <!--      </template>-->
-<!--    </el-table-column>-->
+    </el-table-column>
     <el-table-column
         prop="name"
         label="项目名"
@@ -56,6 +58,7 @@
         sortable
         width="160"
         align="center"
+        show-overflow-tooltip
     />
 <!--    <el-table-column prop="priority" label="优先级" width="80" align="center">-->
 <!--      <template #default="scope"-->
@@ -185,9 +188,8 @@
 </template>
 
 <script>
-import { mapState } from 'pinia'
+import {mapState} from 'pinia'
 import {useProjectStore} from "@/store/project.js";
-import { COLOR_TOP, SIZE_ICON_MD, SIZE_ICON_SM, SIZE_ICON_XS } from '@/constants/Common.constants'
 
 const projectStore = useProjectStore()
 
@@ -246,7 +248,7 @@ export default {
       // 获取单元格数据
       const data = row[column.property]
       if (data == null) return '暂无数据'
-      return new Date(data).toLocaleString()
+      return new Date(data).toLocaleString();
     },
     // handleEdit(row) {
     //   noticeStore.$patch((state) => {
