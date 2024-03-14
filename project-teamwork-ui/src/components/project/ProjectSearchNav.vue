@@ -1,61 +1,66 @@
 <template>
-  <el-form :inline="true" :model="searchBySelf" class="demo-form-inline">
-    <el-form-item label="公告标题：" prop="title">
-      <el-input v-model="searchBySelf.title" placeholder="请输入公告标题"></el-input>
-    </el-form-item>
-    <el-form-item label="公告类型：" prop="type">
-      <el-select v-model="searchBySelf.type" placeholder="请选择公告类型">
-        <el-option
-            v-for="item in enableNoticeTypeList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.name"
-        />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="日期：" prop="timeRang">
-      <el-date-picker
-          v-model="timeRang"
-          type="datetimerange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          style="width: auto"
-      >
-      </el-date-picker>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="selectByCondition"
-      ><el-icon :size="SIZE_ICON_SM()" style="color: white; margin-right: 5px">
-        <icon-pinnacle-notice_search /> </el-icon
-      >查询</el-button
-      >
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="resetForm"
-      ><el-icon :size="SIZE_ICON_SM()" style="color: white">
-        <icon-pinnacle-reset /> </el-icon
-      >重置</el-button
-      >
-    </el-form-item>
-  </el-form>
+  <!--  <el-form :inline="true" :model="searchBySelf" class="demo-form-inline">-->
+  <!--    <el-form-item label="公告标题：" prop="title">-->
+  <!--      <el-input v-model="searchBySelf.title" placeholder="请输入公告标题"></el-input>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item label="公告类型：" prop="type">-->
+  <!--      <el-select v-model="searchBySelf.type" placeholder="请选择公告类型">-->
+  <!--        <el-option-->
+  <!--            v-for="item in enableNoticeTypeList"-->
+  <!--            :key="item.id"-->
+  <!--            :label="item.name"-->
+  <!--            :value="item.name"-->
+  <!--        />-->
+  <!--      </el-select>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item label="日期：" prop="timeRang">-->
+  <!--      <el-date-picker-->
+  <!--          v-model="timeRang"-->
+  <!--          type="datetimerange"-->
+  <!--          range-separator="至"-->
+  <!--          start-placeholder="开始日期"-->
+  <!--          end-placeholder="结束日期"-->
+  <!--          style="width: auto"-->
+  <!--      >-->
+  <!--      </el-date-picker>-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item>-->
+  <!--      <el-button type="primary" @click="selectByCondition"-->
+  <!--      ><el-icon :size="SIZE_ICON_SM()" style="color: white; margin-right: 5px">-->
+  <!--        <icon-pinnacle-notice_search /> </el-icon-->
+  <!--      >查询</el-button-->
+  <!--      >-->
+  <!--    </el-form-item>-->
+  <!--    <el-form-item>-->
+  <!--      <el-button type="primary" @click="resetForm"-->
+  <!--      ><el-icon :size="SIZE_ICON_SM()" style="color: white">-->
+  <!--        <icon-pinnacle-reset /> </el-icon-->
+  <!--      >重置</el-button-->
+  <!--      >-->
+  <!--    </el-form-item>-->
+  <!--  </el-form>-->
   <el-button type="primary" :size="'large'" @click="deleteBatchByIds"
-  ><el-icon :size="SIZE_ICON_MD()" style="color: white; margin-right: 3px">
-    <icon-pinnacle-delete /> </el-icon
-  >批量删除</el-button
+  >
+    <el-icon>
+      <DeleteFilled/>
+    </el-icon>
+    批量删除
+  </el-button
   >
 
 </template>
 
 <script>
-import { COLOR_PRODUCTION, SIZE_ICON_MD, SIZE_ICON_SM } from '@/constants/Common.constants'
+import {COLOR_PRODUCTION, SIZE_ICON_MD, SIZE_ICON_SM} from '@/constants/Common.constants'
 import _ from 'lodash'
-import { useNoticeStore, useNoticeTypeStore } from '@/store/notice'
-import { mapState } from 'pinia'
+import {mapState} from 'pinia'
+import {useProjectStore} from "@/store/project.js";
+import {DeleteFilled} from "@element-plus/icons-vue";
 
-const noticeStore = useNoticeStore()
+const projectStore = useProjectStore()
 export default {
   name: 'NoticeHead',
+  components: {DeleteFilled},
   data() {
     return {
       timeRang: []
@@ -119,12 +124,25 @@ export default {
         flag = 1
       }
       this.$emit('selectSelfByCond', flag)
+    },
+    //批量删除项目
+    deleteBatchByIds() {
+      projectStore.deleteBatchByIds()
     }
   },
   computed: {
-    ...mapState(useNoticeStore, ['currentPage', 'pageSize', 'searchBySelf', 'currentViewPage']),
-    ...mapState(useNoticeTypeStore, ['enableNoticeTypeList'])
-  }
+    ...mapState(useProjectStore, [
+      'total',
+      'selectData',
+      'loading',
+      'dialogShowVisible',
+      'dialogEditVisible',
+      'currentPage',
+      'pageSize',
+      'searchNav',
+    ])
+  },
+
 }
 </script>
 

@@ -5,7 +5,7 @@
     </div>
 
     <div class="search_nav">
-
+      <ProjectSearchNav/>
     </div>
     <router-view/>
   </div>
@@ -13,12 +13,13 @@
 
 <script>
 import ProjectViewHead from "@/components/project/ProjectViewHead.vue";
+import ProjectSearchNav from "@/components/project/ProjectSearchNav.vue";
 import {useProjectStore} from "@/store/project.js";
 import {mapState} from "pinia";
 const projectStore=useProjectStore()
 
 export default {
-  components: {ProjectViewHead},
+  components: {ProjectViewHead,ProjectSearchNav},
   data() {
     return {}
   },

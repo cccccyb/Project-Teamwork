@@ -10,6 +10,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -63,18 +64,21 @@ public class Task implements Serializable {
      * 创建日期
      */
     @TableField("create_time")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime createTime;
 
     /**
      * 上次更新日期
      */
     @TableField("modify_time")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime modifyTime;
 
     /**
      * 结束日期
      */
     @TableField("end_time")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
     private LocalDateTime endTime;
 
     /**

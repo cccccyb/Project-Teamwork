@@ -27,4 +27,6 @@ public interface IProjectService extends IService<Project> {
     Project selectByProjectId(Long pid);
 
     IPage<Project> selectPageProject(IPage<Project> page, String name, Integer status, String startTime, String endTime, Long creatorId);
+
+    Boolean updateProjectStatusById(Long pid,Integer status);
 }

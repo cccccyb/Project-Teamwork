@@ -9,6 +9,7 @@ import com.ccyb.teamwork.entity.common.ResponseResult;
 import com.ccyb.teamwork.service.IProjectService;
 import com.ccyb.teamwork.util.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +61,18 @@ public class ProjectController {
         Boolean updateById = projectService.updateProject(project);
         String msg = updateById ? "" : "数据修改失败，请重试！";
         return ResponseResult.build(updateById ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
+    }
+
+    //根据项目id修改项目状态
+    @GetMapping("/updateStatus")
+    public ResponseResult<?> updateProjectStatusById(String pid,Integer status) {
+        Long proId = null;
+        if (StringUtils.hasText(pid)) {
+            proId = Long.parseLong(pid);
+        }
+        Boolean updateStatusById = projectService.updateProjectStatusById(proId,status);
+        String msg = updateStatusById ? "" : "数据修改失败，请重试！";
+        return ResponseResult.build(updateStatusById ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
     }
 
     //根据项目id查项目信息及创建人

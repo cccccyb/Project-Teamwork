@@ -10,11 +10,9 @@
           @click="openAddProjectDialog"
       >添加项目</el-button
       >
-      <el-button type="primary" :size="'large'"
+      <el-button type="primary" :size="'large'" style="padding: 0 8px" @click="getLoading"
       >
-<!--        <el-icon :size="SIZE_ICON_MD()" style="color: white; margin-right: 3px">-->
-<!--        <icon-pinnacle-reset /> </el-icon>-->
-        刷新数据</el-button
+        <el-icon size="25"><Refresh /></el-icon>刷新数据</el-button
       >
     </div>
 <!--添加项目对话框-->
@@ -39,16 +37,18 @@ import ProjectCommitForm from "@/page/project/ProjectCommitForm.vue";
 import {useProjectStore} from "@/store/project.js";
 import {mapState} from "pinia";
 import {SIZE_ICON_MD} from "@/constants/Common.constants.js";
+import {Refresh} from "@element-plus/icons-vue";
 const projectStore=useProjectStore()
 
 export default {
-  components: {ProjectCommitForm},
+  components: {Refresh, ProjectCommitForm},
   data() {
     return {}
   },
   methods: {
-    SIZE_ICON_MD() {
-      return SIZE_ICON_MD
+    //刷新数据按钮
+    getLoading(){
+      projectStore.getLoading('')
     },
     // 打开添加项目对话框
     openAddProjectDialog() {

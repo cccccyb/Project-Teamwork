@@ -1,18 +1,19 @@
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import request from "@/util/request.js";
-import {LOGIN_SUCCESS} from "@/constants/Common.constants.js";
-import router  from "@/router/index.js";
-import {ElMessage} from "element-plus";
-export const useUserStore=defineStore('user',{
-    state:()=>({
+import {DATABASE_DELETE_ERROR, DATABASE_DELETE_OK, LOGIN_SUCCESS} from "@/constants/Common.constants.js";
+import router from "@/router/index.js";
+import {ElMessage, ElMessageBox} from "element-plus";
 
-            isLogin:true,
-            username:''
+export const useUserStore = defineStore('user', {
+    state: () => ({
+
+        isLogin: true,
+        username: ''
     }),
-    getters:{},
-    actions:{
+    getters: {},
+    actions: {
         //登录
-        login(loginForm){
+        login(loginForm) {
             request.post('/user/login', loginForm).then(async response => {
                 console.log(response)
                 if (response.data.code === LOGIN_SUCCESS) {
@@ -37,9 +38,19 @@ export const useUserStore=defineStore('user',{
             })
         },
         logout() {
-            this.isLogin=false
-            localStorage.clear()
-            router.replace("/login").then(r => {})
+            ElMessageBox.confirm('确定是否要退出登录？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+                .then(() => {
+                    this.isLogin = false
+                    localStorage.clear()
+                    router.replace("/login").then(r => {
+                    })
+                })
+                .catch(() => {
+                })
         },
     }
 })

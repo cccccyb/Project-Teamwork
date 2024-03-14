@@ -77,13 +77,22 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
     @Override
     public IPage<Project> selectPageProject(IPage<Project> page, String name, Integer status, String startTime, String endTime, Long creatorId) {
-        System.out.println("666:"+name+"7:"+status+"7:"+startTime+"7:"+endTime+"7:"+creatorId);
         LocalDateTime start = null, end = null;
         if (!Objects.equals(startTime, "") && !Objects.equals(endTime, "")) {
             start = LocalDateTime.parse(startTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             end = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
         return projectMapper.selectPageProject(page, name, status, start, end, creatorId);
+    }
+
+    @Override
+    public Boolean updateProjectStatusById(Long pid,Integer status) {
+        if ((null == pid) || (null == status)) {
+            return false;
+        }
+        LambdaUpdateWrapper<Project> luw = new LambdaUpdateWrapper<>();
+        luw.eq(Project::getId,pid).set(Project::getStatus, status);
+        return projectMapper.update(null, luw) > 0;
     }
 
 

@@ -15,8 +15,7 @@
     <el-dialog
         title="温馨提示"
         :visible.sync="dialogVisible"
-        width="30%"
-        :before-close="handleClose">
+        width="30%">
       <span>请输入账号和密码</span>
       <span slot="footer" class="dialog-footer">
       <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -48,9 +47,6 @@ export default {
     }
   },
   methods: {
-    handleClose: function () {
-      console.log("Handle Close，空函数");
-    },
     onSubmit() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
