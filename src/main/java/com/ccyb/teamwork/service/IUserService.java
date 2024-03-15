@@ -3,6 +3,8 @@ package com.ccyb.teamwork.service;
 import com.ccyb.teamwork.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 用户 服务类
@@ -17,5 +19,7 @@ public interface IUserService extends IService<User> {
     User getByName(String name);
 
     void addUser(User user);
+
+    List<User> getAllUser();
 
 }

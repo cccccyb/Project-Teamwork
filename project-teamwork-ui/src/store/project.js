@@ -14,15 +14,26 @@ export const useProjectStore = defineStore('project', {
         pageSize: 10,
         currentPage: 1,
         loading: true,
-        showLoading: true,
-        dialogShowVisible: false,
         dialogAddVisible: false,
-        dialogEditVisible: false,
-        editFlag: false,
+        currentViewPage: 'All',
         multiDeleteSelection:[],
+        projectStatus: [
+            {
+                id: 0,
+                name: '未开始'
+            },
+            {
+                id: 1,
+                name: '进行中'
+            },
+            {
+                id: 2,
+                name: '已完成'
+            },
+        ],
         searchNav: {
             name: '',
-            status: -1,
+            status: '',
             startTime: '',
             endTime: ''
         },
@@ -51,17 +62,17 @@ export const useProjectStore = defineStore('project', {
         sleep(d) {
             return new Promise((resolve) => setTimeout(resolve, d))
         },
-        async getLoading(creatorId) {
+        async getLoading() {
             this.loading = true
-            await this.sleep(400)
+            await this.sleep(300)
             this.selectAllProject(
                 this.currentPage,
                 this.pageSize,
-                this.searchNav.name,
-                this.searchNav.status,
-                this.searchNav.startTime,
-                this.searchNav.endTime,
-                creatorId
+                '',
+                '',
+                '',
+                '',
+                this.getCurrentViewPage()
             )
         },
         //分页查询项目
@@ -177,10 +188,10 @@ export const useProjectStore = defineStore('project', {
                                     this.currentPage,
                                     this.pageSize,
                                     '',
-                                    -1,
                                     '',
                                     '',
-                                    ''
+                                    '',
+                                    this.getCurrentViewPage()
                                 )
                             } else if (response.data.code === DATABASE_DELETE_ERROR) {
                                 ElMessage({
@@ -198,6 +209,18 @@ export const useProjectStore = defineStore('project', {
                 })
             }
         },
+        //判断当前位于哪一个子页面
+        getCurrentViewPage(){
+            let flag = ''
+            if (this.currentViewPage === 'All') {
+                flag = ''
+            } else if (this.currentViewPage === 'MyManage') {
+                flag = localStorage.getItem('uid')?localStorage.getItem('uid'):''
+            } else if (this.currentViewPage === 'Person') {
+                flag = localStorage.getItem('uid')?localStorage.getItem('uid'):''
+            }
+            return flag
+        }
 
     }
 })

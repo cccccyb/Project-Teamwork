@@ -8,7 +8,8 @@ export const useUserStore = defineStore('user', {
     state: () => ({
 
         isLogin: true,
-        username: ''
+        username: '',
+        allUserList:[],
     }),
     getters: {},
     actions: {
@@ -20,23 +21,25 @@ export const useUserStore = defineStore('user', {
                     //后端使用jwt生成token返回到前端，前端存储token
                     localStorage.setItem("username", loginForm.username)
                     localStorage.setItem("token", response.data.data)
+                    localStorage.setItem('uid',response.data.msg)
                     await router.push({
                         path: "/main",
                         query: {username: loginForm.username}
                     });
                     ElMessage({
-                        message: response.data.msg,
+                        message: '登录成功',
                         type: 'success'
                     });
                 } else {
                     console.log(response.data);
                     ElMessage({
-                        message: response.data.msg,
+                        message: '用户不存在，请重新登录！',
                         type: 'error'
                     });
                 }
             })
         },
+        //退出登录
         logout() {
             ElMessageBox.confirm('确定是否要退出登录？', '提示', {
                 confirmButtonText: '确定',
@@ -52,5 +55,11 @@ export const useUserStore = defineStore('user', {
                 .catch(() => {
                 })
         },
+        //获得所有用户
+        async getAllUser() {
+            await request.get('/user/getAll').then((response) => {
+                this.allUserList = response.data.data
+            })
+        }
     }
 })

@@ -37,7 +37,7 @@
                 and p.status=#{status}
             </if>
             <if test="null!=startTime">
-                and p.send_time &gt;= #{startTime}
+                and p.start_time &gt;= #{startTime}
             </if>
             <if test="null != endTime">
                 and p.end_time &lt; #{endTime}

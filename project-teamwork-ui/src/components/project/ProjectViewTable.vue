@@ -27,6 +27,12 @@
     >
       <template #default="scope"> {{ formatterTitle(scope.row.name) }}</template>
     </el-table-column>
+    <el-table-column
+        prop="description"
+        label="描述"
+        show-overflow-tooltip
+        align="center"
+    />
     <el-table-column prop="status" label="状态" align="center" width="140">
       <template #default="scope">
         <el-select placeholder="" size="large" @change="changeStatus($event,scope.row.id)">
@@ -71,7 +77,7 @@
     </el-table-column>
     <el-table-column
         prop="startTime"
-        label="生效时间"
+        label="开始日期"
         sortable
         width="160"
         :formatter="formatDate"
@@ -79,7 +85,7 @@
     />
     <el-table-column
         prop="endTime"
-        label="失效时间"
+        label="截止日期"
         sortable
         width="160"
         :formatter="formatDate"
@@ -166,6 +172,7 @@ export default {
       'total',
       'selectData',
       'loading',
+      'projectStatus',
       'dialogShowVisible',
       'dialogEditVisible',
       'currentPage',
@@ -175,20 +182,6 @@ export default {
   },
   data() {
     return {
-      projectStatus: [
-        {
-          id: 0,
-          name: '未开始'
-        },
-        {
-          id: 1,
-          name: '进行中'
-        },
-        {
-          id: 2,
-          name: '已完成'
-        },
-      ]
     }
   },
   methods: {
@@ -295,7 +288,7 @@ export default {
   //   }
   // },
   mounted() {
-    projectStore.selectAllProject(this.currentPage, this.pageSize, '', -1, '', '', '')
+
   },
   // updated() {
   //   this.$emit('getNoticeSender')

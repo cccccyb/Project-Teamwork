@@ -10,18 +10,18 @@
           @click="openAddProjectDialog"
       >添加项目</el-button
       >
-      <el-button type="primary" :size="'large'" style="padding: 0 8px" @click="getLoading"
-      >
-        <el-icon size="25"><Refresh /></el-icon>刷新数据</el-button
-      >
+<!--      <el-button type="primary" :size="'large'" style="padding: 0 8px" @click="getLoading"-->
+<!--      >-->
+<!--        <el-icon size="25"><Refresh /></el-icon>刷新数据</el-button-->
+<!--      >-->
     </div>
 <!--添加项目对话框-->
     <el-dialog
-        v-model="dialogAddVisible"
+        v-model="this.dialogAddVisible"
         center
         :close-on-click-modal="false"
         :before-close="handleDialogClose"
-        style="min-width: 450px; max-width: 900px"
+        style="min-width: 550px; max-width: 1000px"
     >
       <template #header>
         <h2 style="color: rgba(71,138,173,0.85)">添加项目</h2>
@@ -33,10 +33,9 @@
 </template>
 
 <script>
-import ProjectCommitForm from "@/page/project/ProjectCommitForm.vue";
+import ProjectCommitForm from "@/components/project/ProjectCommitForm.vue";
 import {useProjectStore} from "@/store/project.js";
 import {mapState} from "pinia";
-import {SIZE_ICON_MD} from "@/constants/Common.constants.js";
 import {Refresh} from "@element-plus/icons-vue";
 const projectStore=useProjectStore()
 
@@ -47,25 +46,16 @@ export default {
   },
   methods: {
     //刷新数据按钮
-    getLoading(){
-      projectStore.getLoading('')
-    },
+    // getLoading(){
+    //   projectStore.getLoading(projectStore.getCurrentViewPage())
+    // },
     // 打开添加项目对话框
     openAddProjectDialog() {
-      projectStore.$patch({
-        dialogAddVisible : true,
-        editFlag : false
-      })
+      projectStore.$state.dialogAddVisible=true
     },
     handleDialogClose() {
-      projectStore.$patch({
-        dialogEditVisible : false,
-        dialogAddVisible : false,
-        dialogShowVisible : false,
-        editFlag : false,
-        hackReset : false
-      })
-      this.$refs.addForm.$refs.addData.resetFields()
+      projectStore.$state.dialogAddVisible=false
+      this.$refs.addForm.resetForm()
     },
   },
   computed:{
@@ -83,6 +73,7 @@ export default {
   height: 100%;
   justify-content: flex-end;
   align-items: center;
+  padding: 0 10px;
 }
 .page_name{
   margin-right: auto;

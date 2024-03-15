@@ -11,7 +11,7 @@
     </div>
 
 
-    <el-dropdown class="setupStyle" trigger="hover" placement="bottom">
+    <el-dropdown trigger="hover" placement="bottom">
       <div style="display: flex" class="user_info">
         <div class="user">
           <SvgIcons width="100%" height="100%" color="#304156" icon-class="user" />

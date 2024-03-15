@@ -1,102 +1,109 @@
 <template>
-  <!--  <el-form :inline="true" :model="searchBySelf" class="demo-form-inline">-->
-  <!--    <el-form-item label="公告标题：" prop="title">-->
-  <!--      <el-input v-model="searchBySelf.title" placeholder="请输入公告标题"></el-input>-->
-  <!--    </el-form-item>-->
-  <!--    <el-form-item label="公告类型：" prop="type">-->
-  <!--      <el-select v-model="searchBySelf.type" placeholder="请选择公告类型">-->
-  <!--        <el-option-->
-  <!--            v-for="item in enableNoticeTypeList"-->
-  <!--            :key="item.id"-->
-  <!--            :label="item.name"-->
-  <!--            :value="item.name"-->
-  <!--        />-->
-  <!--      </el-select>-->
-  <!--    </el-form-item>-->
-  <!--    <el-form-item label="日期：" prop="timeRang">-->
-  <!--      <el-date-picker-->
-  <!--          v-model="timeRang"-->
-  <!--          type="datetimerange"-->
-  <!--          range-separator="至"-->
-  <!--          start-placeholder="开始日期"-->
-  <!--          end-placeholder="结束日期"-->
-  <!--          style="width: auto"-->
-  <!--      >-->
-  <!--      </el-date-picker>-->
-  <!--    </el-form-item>-->
-  <!--    <el-form-item>-->
-  <!--      <el-button type="primary" @click="selectByCondition"-->
-  <!--      ><el-icon :size="SIZE_ICON_SM()" style="color: white; margin-right: 5px">-->
-  <!--        <icon-pinnacle-notice_search /> </el-icon-->
-  <!--      >查询</el-button-->
-  <!--      >-->
-  <!--    </el-form-item>-->
-  <!--    <el-form-item>-->
-  <!--      <el-button type="primary" @click="resetForm"-->
-  <!--      ><el-icon :size="SIZE_ICON_SM()" style="color: white">-->
-  <!--        <icon-pinnacle-reset /> </el-icon-->
-  <!--      >重置</el-button-->
-  <!--      >-->
-  <!--    </el-form-item>-->
-  <!--  </el-form>-->
-  <el-button type="primary" :size="'large'" @click="deleteBatchByIds"
-  >
-    <el-icon>
-      <DeleteFilled/>
-    </el-icon>
-    批量删除
-  </el-button
-  >
+  <div class="search_nav">
+    <div class="search_left">
+      <el-form :inline="true" :model="searchNav" ref="search_nav">
+        <el-form-item label="项目名称：">
+          <el-input v-model="searchNav.name" placeholder="请输入项目名称"></el-input>
+        </el-form-item>
+        <el-form-item label="状态：">
+          <el-select v-model="searchNav.status" placeholder="--请选择--" size="large" style="width: 130px;"
+          >
+            <el-option
+                v-for="item in projectStatus"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+            >
+              <el-tag
+                  disable-transitions
+                  size="large"
+                  :type="
+                        item.id === 0
+                            ? 'primary'
+                            : item.id === 1
+                            ? 'warning'
+                            : 'success'
+                    "
+              >
+                {{ item.name }}
+              </el-tag>
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="日期：">
+          <el-date-picker
+              v-model="timeRang"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="截止日期"
+              style="width: auto;height: 38px"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" :size="'default'" @click="selectByCondition" style="padding: 0 8px;font-size: 16px"
+          >
+            <el-icon size="19">
+              <Search/>
+            </el-icon>
+            查询
+          </el-button
+          >
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" :size="'large'" style="padding: 0 8px" @click="resetForm">
+            <el-icon size="25">
+              <RefreshLeft/>
+            </el-icon>
+            重置
+          </el-button
+          >
+        </el-form-item>
+      </el-form>
+    </div>
+    <el-button type="primary" :size="'large'" @click="deleteBatchByIds" style="padding: 0 8px;font-size: 16px"
+    >
+      <el-icon size="19">
+        <DeleteFilled/>
+      </el-icon>
+      批量删除
+    </el-button
+    >
+  </div>
 
 </template>
 
 <script>
-import {COLOR_PRODUCTION, SIZE_ICON_MD, SIZE_ICON_SM} from '@/constants/Common.constants'
 import _ from 'lodash'
 import {mapState} from 'pinia'
 import {useProjectStore} from "@/store/project.js";
-import {DeleteFilled} from "@element-plus/icons-vue";
+import {DeleteFilled, RefreshLeft} from "@element-plus/icons-vue";
 
 const projectStore = useProjectStore()
 export default {
-  name: 'NoticeHead',
-  components: {DeleteFilled},
+  name: 'ProjectSearchNav',
+  components: {RefreshLeft, DeleteFilled},
   data() {
     return {
-      timeRang: []
+      timeRang: [],
+      selectStatus: ''
     }
   },
   methods: {
-    SIZE_ICON_SM() {
-      return SIZE_ICON_SM
-    },
-    COLOR_PRODUCTION() {
-      return COLOR_PRODUCTION
-    },
-    SIZE_ICON_MD() {
-      return SIZE_ICON_MD
-    },
     selectByCondition() {
       if (!_.isEmpty(this.timeRang)) {
-        noticeStore.$patch((state) => {
-          state.searchBySelf.startTime = this.handleDateFormatUTC(this.timeRang[0])
-          this.searchBySelf.endTime = this.handleDateFormatUTC(this.timeRang[1])
-        })
+        projectStore.$state.searchNav.startTime = this.handleDateFormatUTC(this.timeRang[0])
+        projectStore.$state.searchNav.endTime = this.handleDateFormatUTC(this.timeRang[1])
       }
-      let flag = 0
-      if (this.currentViewPage === 'All') {
-        flag = -1
-      } else if (this.currentViewPage === 'ToRead') {
-        flag = 0
-      } else if (this.currentViewPage === 'AlRead') {
-        flag = 1
-      }
-      this.$emit('selectSelfByCond', flag)
+      projectStore.$state.loading = true
+      projectStore.selectAllProject(this.currentPage, this.pageSize, this.searchNav.name, this.searchNav.status, this.searchNav.startTime, this.searchNav.endTime, projectStore.getCurrentViewPage())
     },
     handleDateFormatUTC(date) {
       let newFormat = ''
       const dateParse = new Date(Date.parse(date))
       const yy = dateParse.getUTCFullYear()
+      //padStart方法：用chars参数从开头填充字符串到length长度
       const mm = _.padStart((dateParse.getUTCMonth() + 1).toString(), 2, '0')
       const dd = _.padStart(dateParse.getUTCDate().toString(), 2, '0')
       const hh = _.padStart(dateParse.getUTCHours().toString(), 2, '0')
@@ -105,25 +112,16 @@ export default {
       newFormat = yy + '-' + mm + '-' + dd + ' ' + hh + ':' + mf + ':' + ss
       return newFormat
     },
+    //重置按钮操作
     resetForm() {
       this.timeRang = []
-      noticeStore.$patch((state) => {
-        state.searchBySelf = {
-          title: '',
-          type: '',
-          startTime: '',
-          endTime: ''
-        }
-      })
-      let flag = 0
-      if (this.currentViewPage === 'All') {
-        flag = -1
-      } else if (this.currentViewPage === 'ToRead') {
-        flag = 0
-      } else if (this.currentViewPage === 'AlRead') {
-        flag = 1
+      projectStore.$state.searchNav={
+        name: '',
+        status: '',
+        startTime: '',
+        endTime: ''
       }
-      this.$emit('selectSelfByCond', flag)
+      projectStore.getLoading()
     },
     //批量删除项目
     deleteBatchByIds() {
@@ -135,11 +133,11 @@ export default {
       'total',
       'selectData',
       'loading',
-      'dialogShowVisible',
-      'dialogEditVisible',
+      'projectStatus',
       'currentPage',
       'pageSize',
       'searchNav',
+      'currentViewPage'
     ])
   },
 
@@ -147,7 +145,27 @@ export default {
 </script>
 
 <style scoped>
-.el-form {
-  margin-top: 15px;
+.search_nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+.search_left {
+  margin-right: auto;
+}
+
+/deep/ .el-form-item__label {
+  font-size: 20px;
+  padding: 0;
+  height: 38px;
+  line-height: 38px;;
+}
+
+/deep/ .el-input__wrapper {
+  height: 38px;
 }
 </style>

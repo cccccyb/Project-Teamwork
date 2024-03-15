@@ -5,14 +5,27 @@
 </template>
 
 <script>
+import projectViewTable from "@/components/project/ProjectViewTable.vue";
+import {useProjectStore} from "@/store/project.js";
+import {mapState} from "pinia";
+
+const projectStore = useProjectStore()
 export default {
-  data() {
-    return {}
-  },
-  methods: {},
-  created() {
+    components: {projectViewTable},
+    data() {
+      return {}
+    },
+    methods: {},
+    created() {
+
+    },
+    mounted() {
+      projectStore.$state.currentViewPage = 'MyManage'
+    },
+    computed: {
+      ...mapState(useProjectStore, ['currentViewPage'])
+    }
   }
-}
 </script>
 
 <style scoped>

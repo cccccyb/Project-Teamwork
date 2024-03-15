@@ -92,6 +92,7 @@ export default {
   background: #dfe2e5;
   padding: 15px;
   box-sizing: border-box;
+  min-width: 0;  /*右边内容超出会影响布局*/
 }
 /* 业务页面容器 */
 .layout-content {

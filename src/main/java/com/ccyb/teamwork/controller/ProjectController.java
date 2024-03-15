@@ -86,7 +86,11 @@ public class ProjectController {
 
     //分页查询所有项目或分页模糊查询
     @GetMapping("/page")
-    public ResponseResult<List<Project>> selectPageNotice(Integer currentPage, Integer pageSize, String name, Integer status, String startTime, String endTime, Long creatorId) {
+    public ResponseResult<List<Project>> selectPageNotice(Integer currentPage, Integer pageSize, String name, Integer status, String startTime, String endTime, String creatorId) {
+        Long uid = null;
+        if (StringUtils.hasText(creatorId)) {
+            uid = Long.parseLong(creatorId);
+        }
         Page<Project> projectPage;
         if (null != currentPage && null != pageSize) {
             projectPage = PageDTO.of(currentPage, pageSize);
@@ -94,7 +98,7 @@ public class ProjectController {
             // 不进行分页
             projectPage = PageDTO.of(1, -1);
         }
-        IPage<Project> projectIPage = projectService.selectPageProject(projectPage, name.trim(), status, startTime.trim(), endTime.trim(), creatorId);
+        IPage<Project> projectIPage = projectService.selectPageProject(projectPage, name.trim(), status, startTime.trim(), endTime.trim(), uid);
         int code = projectIPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = projectIPage.getRecords() != null ? String.valueOf(projectIPage.getTotal()) : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, projectIPage.getRecords());
