@@ -3,7 +3,7 @@
     <div class="main">
       <!-- 左侧 -->
       <div id="LayoutLeft" class="layout-left">
-        <sidebar class="sidebar" :isCollapse="isCollapse"/>
+        <DetSidebar class="sidebar" :isCollapse="isCollapse"/>
         <!-- 控制菜单的收缩 -->
         <div @click="shrinkMenu" class="shrink">
           <el-icon :size="25"><Expand v-if="isCollapse"/><Fold v-else/></el-icon>
@@ -13,11 +13,11 @@
       <div id="LayoutRight" class="layout-right">
         <div id="top" style="height: 60px">
           <!-- 顶部导航栏 -->
-          <navbar/>
+          <DetNavbar/>
         </div>
         <div class="layout-content">
           <!-- 主页面 -->
-          <app-main/>
+          <DetAppMain/>
         </div>
       </div>
     </div>
@@ -25,20 +25,22 @@
 </template>
 
 <script>
-import Sidebar from "@/layout/components/sidebar.vue";
-import Navbar from "@/layout/components/navbar.vue";
-import AppMain from "@/layout/components/app-main.vue";
+import DetSidebar from "@/page/project/details/components/det-sidebar.vue";
+import DetNavbar from "@/page/project/details/components/det-navbar.vue";
+import DetAppMain from "@/page/project/details/components/det-main.vue";
 import {useUserStore} from "@/store/user.js";
 import {useSettingStore} from "@/store/setting.js"
+import {useDetailProjectStore} from "@/store/detailProject.js";
 import {mapState} from 'pinia'
 import router from "@/router/index.js";
 import {Expand, Fold} from "@element-plus/icons-vue";
 
 const userStore = useUserStore()
 const settingStore=useSettingStore()
+const detailProjectStore=useDetailProjectStore()
 
 export default {
-  components: {AppMain, Expand, Fold,Navbar, Sidebar},
+  components: {DetAppMain, Expand, Fold,DetNavbar, DetSidebar},
   data() {
     return {
     }
@@ -49,6 +51,9 @@ export default {
     }
   },
   watch: {
+  },
+  created() {
+    detailProjectStore.getCurrentProject(this.$route.query.pid)
   },
   mounted() {
   },
@@ -62,10 +67,10 @@ export default {
         return settingStore.$state.isCollapse
       },
       set(val) {
-        settingStore.$patch({
-          isCollapse : val
-        })
-        // settingStore.$state.isCollapse=val
+        // settingStore.$patch({
+        //   isCollapse : val
+        // })
+        settingStore.$state.isCollapse=val
       }
     }
   }

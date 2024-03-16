@@ -7,6 +7,7 @@ import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.common.ResponseCode;
 import com.ccyb.teamwork.entity.common.ResponseResult;
 import com.ccyb.teamwork.service.IProjectService;
+import com.ccyb.teamwork.service.IProjectUserService;
 import com.ccyb.teamwork.util.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -28,6 +29,8 @@ import java.util.stream.Collectors;
 public class ProjectController {
     @Autowired
     IProjectService projectService;
+    @Autowired
+    IProjectUserService projectUserService;
 
     //添加项目
     @PostMapping("/addProject")
@@ -84,12 +87,15 @@ public class ProjectController {
         return ResponseResult.build(code, msg, projectById);
     }
 
-    //分页查询所有项目或分页模糊查询
+    //分页查询所有项目或分页模糊查询、根据userId分页查询所参与的项目
     @GetMapping("/page")
-    public ResponseResult<List<Project>> selectPageNotice(Integer currentPage, Integer pageSize, String name, Integer status, String startTime, String endTime, String creatorId) {
-        Long uid = null;
+    public ResponseResult<List<Project>> selectPageNotice(Integer currentPage, Integer pageSize,String userId, String name, Integer status, String startTime, String endTime, String creatorId) {
+        Long uId = null, crId = null;
+        if (StringUtils.hasText(userId)) {
+            uId = Long.parseLong(userId);
+        }
         if (StringUtils.hasText(creatorId)) {
-            uid = Long.parseLong(creatorId);
+            crId = Long.parseLong(creatorId);
         }
         Page<Project> projectPage;
         if (null != currentPage && null != pageSize) {
@@ -98,10 +104,33 @@ public class ProjectController {
             // 不进行分页
             projectPage = PageDTO.of(1, -1);
         }
-        IPage<Project> projectIPage = projectService.selectPageProject(projectPage, name.trim(), status, startTime.trim(), endTime.trim(), uid);
+        IPage<Project> projectIPage = projectService.selectPageProject(projectPage, uId,name.trim(), status, startTime.trim(), endTime.trim(), crId);
         int code = projectIPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = projectIPage.getRecords() != null ? String.valueOf(projectIPage.getTotal()) : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, projectIPage.getRecords());
     }
+
+    //根据userId分页查询所参与的项目
+//    @GetMapping("/selectPageMyAttend")
+//    public ResponseResult<List<Project>> selectPageMyAttend(Integer currentPage, Integer pageSize, String userId,String name, Integer status, String startTime, String endTime, String creatorId) {
+//        Long uId = null, crId = null;
+//        if (StringUtils.hasText(userId)) {
+//            uId = Long.parseLong(userId);
+//        }
+//        if (StringUtils.hasText(creatorId)) {
+//            crId = Long.parseLong(creatorId);
+//        }
+//        Page<Project> projectPage;
+//        if (null != currentPage && null != pageSize) {
+//            projectPage = PageDTO.of(currentPage, pageSize);
+//        } else {
+//            // 不进行分页
+//            projectPage = PageDTO.of(1, -1);
+//        }
+//        IPage<Project> projectsMyAttend = projectUserService.selectPageMyAttend(projectPage, uId,name.trim(), status, startTime.trim(), endTime.trim(), crId);
+//        int code = projectsMyAttend.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+//        String msg = projectsMyAttend.getRecords() != null ? String.valueOf(projectsMyAttend.getTotal()) : "数据查询失败，请重试！";
+//        return ResponseResult.build(code, msg, projectsMyAttend.getRecords());
+//    }
 
 }

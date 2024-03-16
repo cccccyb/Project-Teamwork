@@ -1,5 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ccyb.teamwork.mapper.ProjectUserMapper">
+    <!--   根据userId查询所参与的项目-->
+    <select id="selectPageMyAttend"  resultMap="ProjectPersonResultMap" resultType="project">
+        select u.id uid,
+               u.username,
+               p.id pid,
+               p.name,
+               p.description,
+               p.status,
+               p.start_time,
+               p.end_time,
+               p.creator_id
+        from t_project_user tpu
+        left join t_project p on tpu.project_id=p.id
+        left join t_user u on p.creator_id = u.id
+        <where>
+             tpu.user_id=#{userId}
+            <if test="null!=name and name!=''">
+                and instr(p.name,#{name})&gt;0
+            </if>
+            <if test="null!=status and status >= 0">
+                and p.status=#{status}
+            </if>
+            <if test="null!=startTime">
+                and p.start_time &gt;= #{startTime}
+            </if>
+            <if test="null != endTime">
+                and p.end_time &lt; #{endTime}
+            </if>
+            <if test="null != creatorId">
+                and p.creator_id = #{creatorId}
+            </if>
+            and p.deleted = 0
+        </where>
+        order by p.start_time desc
+    </select>
 
+    <resultMap id="ProjectPersonResultMap" type="project" autoMapping="true">
+        <id property="id" column="pid"/>
+        <association property="creator" javaType="user" autoMapping="true">
+            <id property="id" column="uid"/>
+        </association>
+    </resultMap>
 </mapper>

@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <h1>我参与的</h1>
-  </div>
+  <project-view-table/>
 </template>
 
 <script>
@@ -23,9 +21,12 @@ export default {
     },
     mounted() {
       projectStore.$state.currentViewPage='Person'
+      projectStore.$state.currentPage=1
+      projectStore.$state.pageSize=10
+      projectStore.selectAllProject(this.currentPage, this.pageSize, projectStore.getCurrentViewPage(),'', '', '', '', projectStore.getCurrentViewPage())
     },
     computed:{
-      ...mapState(useProjectStore,['currentViewPage'])
+      ...mapState(useProjectStore,['currentViewPage','currentPage','pageSize'])
     }
   }
 </script>

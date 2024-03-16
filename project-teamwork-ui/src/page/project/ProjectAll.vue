@@ -21,10 +21,12 @@ export default {
   },
   mounted() {
     projectStore.$state.currentViewPage='All'
-    projectStore.selectAllProject(this.currentPage, this.pageSize, '', -1, '', '', '')
+    projectStore.$state.currentPage=1
+    projectStore.$state.pageSize=10
+    projectStore.selectAllProject(this.currentPage, this.pageSize, projectStore.getCurrentViewPage(),'', '', '', '', projectStore.getCurrentViewPage())
   },
   computed:{
-    ...mapState(useProjectStore,['currentViewPage'])
+    ...mapState(useProjectStore,['currentViewPage','currentPage','pageSize'])
   }
 }
 </script>

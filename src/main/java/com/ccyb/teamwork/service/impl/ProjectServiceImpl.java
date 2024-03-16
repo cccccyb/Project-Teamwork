@@ -40,6 +40,18 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     public Boolean addProject(Project project) {
         boolean addFlag;
         addFlag = projectMapper.insert(project) > 0;
+        Long projectId = project.getId();
+        if (!project.getMembers().isEmpty()) {
+            for (Long membersId :
+                    project.getMembers()) {
+                ProjectUser projectUser = new ProjectUser();
+                projectUser.setProjectId(projectId);
+                projectUser.setUserId(membersId);
+                projectUserMapper.insert(projectUser);
+            }
+        } else {
+            addFlag = false;
+        }
         return addFlag;
     }
 
@@ -76,22 +88,28 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     @Override
-    public IPage<Project> selectPageProject(IPage<Project> page, String name, Integer status, String startTime, String endTime, Long creatorId) {
+    public IPage<Project> selectPageProject(IPage<Project> page, Long userId, String name, Integer status, String startTime, String endTime, Long creatorId) {
         LocalDateTime start = null, end = null;
         if (!Objects.equals(startTime, "") && !Objects.equals(endTime, "")) {
             start = LocalDateTime.parse(startTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             end = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
-        return projectMapper.selectPageProject(page, name, status, start, end, creatorId);
+        if (null==userId){
+            //分页查询所有项目或分页模糊查询
+            return projectMapper.selectPageProject(page, name, status, start, end, creatorId);
+        }else {
+            //根据userId分页查询所参与的项目
+            return projectUserMapper.selectPageMyAttend(page, userId, name, status, start, end, creatorId);
+        }
     }
 
     @Override
-    public Boolean updateProjectStatusById(Long pid,Integer status) {
+    public Boolean updateProjectStatusById(Long pid, Integer status) {
         if ((null == pid) || (null == status)) {
             return false;
         }
         LambdaUpdateWrapper<Project> luw = new LambdaUpdateWrapper<>();
-        luw.eq(Project::getId,pid).set(Project::getStatus, status);
+        luw.eq(Project::getId, pid).set(Project::getStatus, status);
         return projectMapper.update(null, luw) > 0;
     }
 

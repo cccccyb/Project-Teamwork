@@ -3,7 +3,7 @@ import request from "@/util/request.js";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {
     DATABASE_DELETE_ERROR,
-    DATABASE_DELETE_OK,
+    DATABASE_DELETE_OK, DATABASE_SAVE_ERROR, DATABASE_SAVE_OK,
     DATABASE_SELECT_OK,
     DATABASE_UPDATE_OK
 } from "@/constants/Common.constants.js";
@@ -16,7 +16,7 @@ export const useProjectStore = defineStore('project', {
         loading: true,
         dialogAddVisible: false,
         currentViewPage: 'All',
-        multiDeleteSelection:[],
+        multiDeleteSelection: [],
         projectStatus: [
             {
                 id: 0,
@@ -39,35 +39,38 @@ export const useProjectStore = defineStore('project', {
         },
         selectData: [
             {
-                creator:{
-                    id:'',
-                    username:''
+                creator: {
+                    id: '',
+                    username: ''
                 },
-                creatorId:'',
-                deleted:0,
-                description:'',
-                endTime:'',
-                id:'',
-                members:[],
-                name:'',
-                startTime:'',
-                status:0,
-                version:0
+                creatorId: '',
+                deleted: 0,
+                description: '',
+                endTime: '',
+                id: '',
+                members: [],
+                name: '',
+                startTime: '',
+                status: 0,
+                version: 0
 
             }
         ]
     }),
     getters: {},
     actions: {
+        //添加睡眠时间
         sleep(d) {
             return new Promise((resolve) => setTimeout(resolve, d))
         },
+        //重置刷新数据
         async getLoading() {
             this.loading = true
             await this.sleep(300)
-            this.selectAllProject(
+            await this.selectAllProject(
                 this.currentPage,
                 this.pageSize,
+                this.getCurrentViewPage(),
                 '',
                 '',
                 '',
@@ -76,12 +79,13 @@ export const useProjectStore = defineStore('project', {
             )
         },
         //分页查询项目
-        selectAllProject(currentPage, pageSize, name, status, startTime, endTime, creatorId) {
+        selectAllProject(currentPage, pageSize,userId, name, status, startTime, endTime, creatorId) {
             void request
                 .get('/project/page', {
                     params: {
                         currentPage,
                         pageSize,
+                        userId,
                         name,
                         status,
                         startTime,
@@ -92,10 +96,9 @@ export const useProjectStore = defineStore('project', {
                 .then((response) => {
                     if (response.data.code === DATABASE_SELECT_OK) {
                         this.selectData = response.data.data
-                        for (let i=0;i<this.selectData.length;i++) {
-                            let data=this.selectData[i];
-                            data.status=parseInt(data.status) === 0 ? '未开始' : parseInt(data.status) === 1 ? '进行中' : '已完成'
-                            // console.log(this.selectData[i].status);
+                        for (let i = 0; i < this.selectData.length; i++) {
+                            let data = this.selectData[i];
+                            data.status = parseInt(data.status) === 0 ? '未开始' : parseInt(data.status) === 1 ? '进行中' : '已完成'
                         }
                         this.total = parseInt(response.data.msg)
                         this.loading = false
@@ -109,7 +112,7 @@ export const useProjectStore = defineStore('project', {
                 })
         },
         // 根据项目id修改状态
-        async updateStatusById(pid,status){
+        async updateStatusById(pid, status) {
             await request
                 .get('/project/updateStatus', {
                     params: {
@@ -130,7 +133,7 @@ export const useProjectStore = defineStore('project', {
                         })
                     }
                 })
-            this.selectAllProject(this.currentPage, this.pageSize, '', -1, '', '', '')
+            this.selectAllProject(this.currentPage, this.pageSize, this.getCurrentViewPage(),'', '', '', '',  this.getCurrentViewPage())
         },
         //根据项目id删除项目
         handleDeleteById(pid) {
@@ -149,11 +152,12 @@ export const useProjectStore = defineStore('project', {
                             this.selectAllProject(
                                 this.currentPage,
                                 this.pageSize,
+                                this.getCurrentViewPage(),
                                 '',
-                                -1,
                                 '',
                                 '',
-                                ''
+                                '',
+                                this.getCurrentViewPage()
                             )
                         } else if (response.data.code === DATABASE_DELETE_ERROR) {
                             ElMessage({
@@ -163,7 +167,8 @@ export const useProjectStore = defineStore('project', {
                         }
                     })
                 })
-                .catch(() => {})
+                .catch(() => {
+                })
         },
         //批量删除项目
         deleteBatchByIds() {
@@ -184,15 +189,7 @@ export const useProjectStore = defineStore('project', {
                                     message: '删除成功.',
                                     type: 'success'
                                 })
-                                this.selectAllProject(
-                                    this.currentPage,
-                                    this.pageSize,
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    this.getCurrentViewPage()
-                                )
+                                this.getLoading()
                             } else if (response.data.code === DATABASE_DELETE_ERROR) {
                                 ElMessage({
                                     message: response.data.msg,
@@ -201,7 +198,8 @@ export const useProjectStore = defineStore('project', {
                             }
                         })
                     })
-                    .catch(() => {})
+                    .catch(() => {
+                    })
             } else {
                 ElMessage({
                     message: '请至少选择一项进行删除',
@@ -210,18 +208,35 @@ export const useProjectStore = defineStore('project', {
             }
         },
         //判断当前位于哪一个子页面
-        getCurrentViewPage(){
-            let flag = ''
+        getCurrentViewPage() {
+            let currentUser = ''
             if (this.currentViewPage === 'All') {
-                flag = ''
+                currentUser = ''
             } else if (this.currentViewPage === 'MyManage') {
-                flag = localStorage.getItem('uid')?localStorage.getItem('uid'):''
+                currentUser = localStorage.getItem('uid') ? localStorage.getItem('uid') : ''
             } else if (this.currentViewPage === 'Person') {
-                flag = localStorage.getItem('uid')?localStorage.getItem('uid'):''
+                currentUser = localStorage.getItem('uid') ? localStorage.getItem('uid') : ''
             }
-            return flag
-        }
-
+            return currentUser
+        },
+        //添加项目
+        handleAddProject(addFormData) {
+            request.post('/project/addProject', addFormData).then((response) => {
+                if (response.data.code === DATABASE_SAVE_OK) {
+                    this.dialogAddVisible = false
+                    ElMessage({
+                        message: '添加成功.',
+                        type: 'success'
+                    })
+                } else if (response.data.code === DATABASE_SAVE_ERROR) {
+                    ElMessage({
+                        message: response.data.msg,
+                        type: 'error'
+                    })
+                }
+            })
+            this.getLoading().then(r => {})
+        },
     }
 })
 

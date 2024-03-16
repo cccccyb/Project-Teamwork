@@ -97,7 +97,7 @@ export default {
         projectStore.$state.searchNav.endTime = this.handleDateFormatUTC(this.timeRang[1])
       }
       projectStore.$state.loading = true
-      projectStore.selectAllProject(this.currentPage, this.pageSize, this.searchNav.name, this.searchNav.status, this.searchNav.startTime, this.searchNav.endTime, projectStore.getCurrentViewPage())
+      projectStore.selectAllProject(this.currentPage, this.pageSize,projectStore.getCurrentViewPage(), this.searchNav.name, this.searchNav.status, this.searchNav.startTime, this.searchNav.endTime, projectStore.getCurrentViewPage())
     },
     handleDateFormatUTC(date) {
       let newFormat = ''

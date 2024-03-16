@@ -21,7 +21,7 @@
         center
         :close-on-click-modal="false"
         :before-close="handleDialogClose"
-        style="min-width: 550px; max-width: 1000px"
+        style="min-width: 550px; max-width: 1000px;z-index: 10"
     >
       <template #header>
         <h2 style="color: rgba(71,138,173,0.85)">添加项目</h2>
@@ -52,6 +52,7 @@ export default {
     // 打开添加项目对话框
     openAddProjectDialog() {
       projectStore.$state.dialogAddVisible=true
+      this.$refs.addForm.resetForm()
     },
     handleDialogClose() {
       projectStore.$state.dialogAddVisible=false

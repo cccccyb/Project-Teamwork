@@ -1,14 +1,14 @@
 <template>
   <el-scrollbar max-height="60vh">
-    <el-form :model="addData" :rules="this.myRule" ref="addData" label-width="150px">
+    <el-form :model="this.addData" :rules="this.myRule" ref="addForm" label-width="150px">
       <el-form-item label="项目名称:" prop="name" required>
         <el-input v-model="addData.name"></el-input>
       </el-form-item>
       <el-form-item label="项目描述:" prop="description">
         <el-input type="textarea" v-model="addData.description"></el-input>
       </el-form-item>
-      <el-form-item label="状态:" prop="status" required>
-        <el-select v-model="addData.status" filterable placeholder="--请选择--">
+      <el-form-item label="状态:" prop="status">
+        <el-select v-model="addData.status" placeholder="--请选择--">
           <el-option
               v-for="item in projectStatus"
               :key="item.id"
@@ -40,9 +40,10 @@
             size="large"
         ></el-date-picker>
       </el-form-item>
-      <el-form-item label="添加项目成员:" prop="members" required>
+      <el-form-item label="添加项目成员:" prop="members" style="align-items: center">
         <div style="margin-left: 10px;cursor: pointer" @click="innerVisible=true">
-          <SvgIcons width="32px" height="32px" color="#304156" icon-class="addMembers"/>
+          <SvgIcons width="32px" height="32px" color="#304156" icon-class="addMembers" style="margin-right: 8px"/>
+          <span v-for="item in selectedMembersName" class="member_name">{{item}}；</span>
         </div>
       </el-form-item>
 
@@ -59,7 +60,7 @@
             :data="allUserList"
             :titles="['可选员工', '已选成员']"
             :button-texts="['取消', '选择']"
-            :right-default-checked="[addData.creatorId]"
+            @right-check-change="getSelectedName"
             :props="{
             key: 'id',
             label: 'username',
@@ -92,79 +93,65 @@ export default {
   components: {SvgIcons},
   computed: {
     ...mapState(useProjectStore, ['projectStatus']),
-    ...mapState(useUserStore, ['allUserList'])
+    ...mapState(useUserStore, ['allUserList']),
   },
   data() {
     return {
       innerVisible: false,
+      selectedMembersName:[],
       addData: {
         name: '',
         description: '',
-        status: 0,
+        status: '',
         endTime: '',
         creatorId: localStorage.getItem('uid'),
         members: []
       },
       myRule: {
-        title: [
-          {required: true, message: '请输入公告标题', trigger: 'blur'},
-          {min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur'}
+        name: [
+          {required: true, message: '请输入项目名', trigger: 'blur'},
+          {min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur'}
         ],
-        typeId: [{required: true, message: '请选择公告类型', trigger: 'change'}],
-        sendTime: [
-          {type: 'date', required: true, message: '请选择生效时间', trigger: 'change'}
-        ],
+        status: [{ required: true, message: '请选择项目状态', trigger: 'change' }],
         endTime: [
-          {type: 'date', required: true, message: '请选择失效时间', trigger: 'change'}
-        ],
-        content: [{required: true, message: '请填写公告内容', trigger: 'blur'}],
-        receivers: [
-          {
-            required: true,
-            message: '请选择公告接收者',
-            trigger: 'change'
-          }
+          { type: 'date', required: true, message: '请选择截止日期', trigger: 'change' }
         ]
       }
     }
   },
   methods: {
-    async submitForm() {
-      const receiveId = []
-      if (this.addData.receivers.length > 0) {
-        for (let i = 0; i < this.addData.receivers.length; i++) {
-          receiveId.push(this.addData.receivers[i][1])
-        }
-      }
-      this.addData.receivers = receiveId
-      await this.$refs.addData.validate((valid) => {
+    submitForm() {
+      this.$refs.addForm.validate((valid) => {
         if (valid) {
-          if (noticeStore.editFlag === true) {
-            // 编辑操作
-            noticeStore.handleUpdateNotice(this.addData)
-          } else {
-            // 添加操作
-            noticeStore.handleAddNotice(this.addData)
-          }
+          projectStore.handleAddProject(this.addData)
         } else {
           return false
         }
       })
-      await this.resetForm()
     },
     closeForm() {
       projectStore.$state.dialogAddVisible = false
       this.resetForm()
     },
     resetForm() {
-      this.$refs.addData.resetFields()
+      this.selectedMembersName=[]
+      this.$refs.addForm.resetFields()
     },
+    //获取选择的团队成员名字
+    getSelectedName(newKeys){
+        this.selectedMembersName = newKeys.map(key => {
+          const item = this.allUserList.find(item =>
+              item.id === key);
+          return item ? item.username : '';
+        });
+
+    }
   },
   created() {
   },
   mounted() {
     userStore.getAllUser()
-  }
+  },
 }
 </script>
 <style scoped>
@@ -196,5 +183,11 @@ export default {
 .transfer-footer {
   margin-left: 75px;
   padding: 6px 5px;
+}
+.member_name{
+  display: inline-block;
+  font-weight: bold;
+  font-size: 22px;
+  color: rgb(51, 118, 253);
 }
 </style>

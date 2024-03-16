@@ -214,19 +214,18 @@ let routes = [
         ]
     },
     {
+        path: '/projectDetail',
+        name: 'projectDetail',
+        component: () => import('@/page/project/details/det-index.vue'),
+    },
+    {
         path: '/404',
         name: '404',
         component: () => import('@/page/404.vue'),
-        meta: {
-            hasChildren: false
-        }
     },
     {
         path: "/:catchAll(.*)",
         redirect: '/404',
-        meta: {
-            hasChildren: false
-        }
     }
 ]
 

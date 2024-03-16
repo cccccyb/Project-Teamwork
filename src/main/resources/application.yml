@@ -13,7 +13,7 @@ mybatis-plus:
     db-config:
       logic-delete-field: deleted
       logic-not-delete-value: 0
-      logic-delete-value: id
+      logic-delete-value: 1
       id-type: assign_id
   type-aliases-package: com.ccyb.teamwork.entity
   configuration:
