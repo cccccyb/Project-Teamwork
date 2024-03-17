@@ -1,10 +1,6 @@
 package com.ccyb.teamwork.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.Version;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -34,7 +30,7 @@ public class Iteration implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @TableId("id")
+    @TableId(value = "id",type = IdType.AUTO)
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 

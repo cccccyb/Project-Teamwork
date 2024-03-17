@@ -21,36 +21,17 @@
         <span class="menu-project-name">{{this.currentProject.name}}</span>
       </template>
     </el-menu-item>
-<!--    <template v-for="route in this.routers">-->
-<!--      &lt;!&ndash;一级菜单&ndash;&gt;-->
-<!--      <el-menu-item-->
-<!--          v-if=" (!route.meta.hasChildren && route.meta.isMenu)|| (!route.meta.requireChildMenu)"-->
-<!--          :key="route.path"-->
-<!--          :index="route.path? '/main/'+route.path: ''"-->
-<!--      >-->
-<!--        <SvgIcons width="28px" height="28px" color="#ffaa00" :icon-class="route.meta.icon" />-->
-<!--        <template #title><span style="margin-left: 10px">{{ route.meta.title }}</span></template>-->
-<!--      </el-menu-item>-->
-<!--      &lt;!&ndash;二级菜单&ndash;&gt;-->
-<!--      <el-sub-menu-->
-<!--          v-if="route.meta.isMenu && route.meta.hasChildren && route.meta.requireChildMenu"-->
-<!--          :key="route.path"-->
-<!--          :index="route.path? '/main/'+route.path: ''">-->
-<!--        <template #title>-->
-<!--          <SvgIcons width="28px" height="28px" color="#ffaa00" :icon-class="route.meta.icon" />-->
-<!--          <span style="margin-left: 10px;font-size: 16px;height: 75px;line-height: 75px;">{{ route.meta.title }}</span>-->
-<!--        </template>-->
-<!--        <el-menu-item-->
-<!--            v-for="sub in route.children"-->
-<!--            :key="sub.path"-->
-<!--            :index="sub.path? route.path ? '/main/'+route.path + '/' + sub.path: '': ''"-->
-<!--        >-->
-
-<!--          <SvgIcons width="28px" height="28px" color="#ffaa00" :icon-class="sub.meta.icon" />-->
-<!--          <template #title><span style="margin-left: 10px">{{ sub.meta.title }}</span></template>-->
-<!--        </el-menu-item>-->
-<!--      </el-sub-menu>-->
-<!--    </template>-->
+    <template v-for="route in this.routers">
+      <!--一级菜单-->
+      <el-menu-item
+          v-if=" !route.meta.hasChildren && route.meta.isMenu"
+          :key="route.path"
+          :index="route.path? '/projectDetail/'+route.path: ''"
+      >
+        <SvgIcons width="28px" height="28px" color="#ffaa00" :icon-class="route.meta.icon" />
+        <template #title><span style="margin-left: 10px">{{ route.meta.title }}</span></template>
+      </el-menu-item>
+    </template>
   </el-menu>
 <!--    </el-scrollbar>-->
 </template>
@@ -87,19 +68,21 @@ export default {
       return COLOR_FONT_MAIN
     },
     goBack(){
-      router.back()
+      // detailProjectStore.$state.currentPid=''
+      localStorage.removeItem('pid')
+      router.push('/main/projectManage/projectPerson')
     }
   },
   computed: {
     routers(){
-      return router.options.routes[2].children
+      return router.options.routes[3].children
     },
-    ...mapState(useDetailProjectStore,['currentProject'])
+    ...mapState(useDetailProjectStore,['currentProject','currentPid'])
   },
   created() {
   },
   mounted() {
-    // this.routers = router.options.routes[2].children
+    // this.routers = router.options.routes[3].children
   }
 }
 </script>

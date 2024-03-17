@@ -5,7 +5,8 @@ export const useDetailProjectStore=defineStore('detailProject',{
         return{
             isShowMenu:true,
             isCollapse:false,
-            currentProject:{}
+            currentProject:{},
+            currentPid:''
         }
     },
     getters:{},

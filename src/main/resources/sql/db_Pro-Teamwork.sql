@@ -149,7 +149,7 @@ create table `t_project_user`
 
 create table `t_iteration`
 (
-    `id`           bigint       not null primary key,
+    `id`           bigint       not null primary key auto_increment,
     `name`         varchar(30)  not null comment '迭代名称',
     `description`  text         not null comment '描述',
     `status`       int          not null default 0 comment '迭代状态',
@@ -166,7 +166,7 @@ create table `t_iteration`
 
 create table `t_task`
 (
-    `id`           bigint      not null primary key,
+    `id`           bigint      not null primary key auto_increment,
     `title`        varchar(30) not null comment '标题',
     `description`  text        not null comment '描述',
     `status`       int         not null default 0 comment '任务状态',
@@ -176,7 +176,7 @@ create table `t_task`
     `end_time`     datetime    not null comment '结束日期',
     `creator_id`   bigint      not null comment '创建人',
     `processer_id` bigint      not null comment '处理人',
-    `iteration_id` bigint      not null comment '所属迭代',
+    `iteration_id` bigint      default 0 comment '所属迭代',
     `project_id`   bigint      not null comment '所属项目',
     `deleted`      int         not null default 0,
     `version`      int         not null default 0,
@@ -189,7 +189,7 @@ create table `t_task`
 
 create table `t_requirement`
 (
-    `id`           bigint      not null primary key,
+    `id`           bigint      not null primary key auto_increment,
     `title`        varchar(30) not null comment '标题',
     `description`  text        not null comment '描述',
     `status`       int         not null default 0 comment '需求状态',
@@ -198,7 +198,7 @@ create table `t_requirement`
     `modify_time`  datetime    not null default (utc_timestamp()) comment '上次更新日期',
     `creator_id`   bigint      not null comment '创建人',
     `processer_id` bigint      not null comment '处理人',
-    `iteration_id` bigint      not null comment '所属迭代',
+    `iteration_id` bigint      default 0 comment '所属迭代',
     `project_id`   bigint      not null comment '所属项目',
     `origin`       varchar(30) not null comment '需求来源',
     `deleted`      int         not null default 0,
@@ -219,7 +219,7 @@ create table `t_bug_type`
 
 create table `t_bug`
 (
-    `id`             bigint      not null primary key,
+    `id`             bigint      not null primary key auto_increment,
     `title`          varchar(30) not null comment '标题',
     `description`    text        not null comment '描述',
     `status`         int         not null default 0 comment '缺陷状态',
@@ -232,8 +232,8 @@ create table `t_bug`
     `processer_id`   bigint      not null comment '处理人',
     `bug_type_id`    bigint      not null comment '缺陷类型',
     `project_id`     bigint      not null comment '所属项目',
-    `discovery_iterate_id`   bigint      not null comment '缺陷发现迭代',
-    `plan_iterate_id`   bigint      not null comment '规划迭代',
+    `discovery_iterate_id`   bigint  not null comment '缺陷发现迭代',
+    `plan_iterate_id`   bigint   default 0 comment '规划迭代',
     `requirement_id` bigint      not null comment '关联需求',
     `origin`         varchar(30) not null comment '缺陷来源',
     `deleted`        int         not null default 0,

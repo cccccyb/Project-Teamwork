@@ -1,14 +1,10 @@
 <template>
   <div class="app p-x-10">
-    <!--面包屑-->
-<!--    <div style="margin-right: auto;min-width: 600px">-->
-<!--      <el-breadcrumb :separator-icon="ArrowRight">-->
-<!--        <el-breadcrumb-item v-for="breadcrumb in breadcrumbList" :key="breadcrumb.path">-->
-<!--          <a v-if="!(breadcrumb.redirect && breadcrumb.meta.isMenu)" :href="breadcrumb.path">{{ breadcrumb.meta.title }}</a>-->
-<!--          <span v-else>{{ breadcrumb.meta.title }}</span>-->
-<!--        </el-breadcrumb-item>-->
-<!--      </el-breadcrumb>-->
-<!--    </div>-->
+    <div style="margin-right: auto;min-width: 600px">
+      <h1 style="margin-left: 15px;color: black;font-size: 28px;display: flex;align-items: center">项目详情
+        <el-icon size="30" style="margin-left: 10px;cursor: pointer"><RefreshLeft /></el-icon>
+      </h1>
+    </div>
 
 
     <el-dropdown trigger="hover" placement="bottom">
@@ -22,10 +18,7 @@
       </div>
       <template #dropdown>
         <el-dropdown-menu>
-          <router-link to="/main">
-            <el-dropdown-item>首页</el-dropdown-item>
-          </router-link>
-          <el-dropdown-item divided @click="logout">退出</el-dropdown-item>
+          <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -35,7 +28,7 @@
   </div>
 </template>
 <script>
-import {ArrowRight} from "@element-plus/icons-vue";
+import {ArrowRight, RefreshLeft} from "@element-plus/icons-vue";
 import {useSettingStore} from "@/store/setting.js";
 import {useUserStore} from "@/store/user.js";
 import {mapState} from 'pinia'
@@ -43,7 +36,7 @@ import {mapState} from 'pinia'
 const settingStore = useSettingStore()
 const userStore = useUserStore()
 export default {
-  components: {ArrowRight},
+  components: {RefreshLeft, ArrowRight},
   data() {
     return {}
   },

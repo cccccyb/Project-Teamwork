@@ -53,15 +53,27 @@ export default {
   watch: {
   },
   created() {
-    detailProjectStore.getCurrentProject(this.$route.query.pid)
+    let pid=localStorage.getItem('pid')===null?this.$route.query.pid:localStorage.getItem('pid')
+    localStorage.setItem('pid',pid)
+    // if (this.currentPid===undefined||this.currentPid===''){
+    //   detailProjectStore.$state.currentPid=this.$route.query.pid
+    // }
+    detailProjectStore.getCurrentProject(pid)
   },
   mounted() {
   },
   updated() {
   },
+  // 实现在离开当前路由之前执行一些操作
+  beforeRouteLeave(to,from,next) {
+    // detailProjectStore.$state.currentPid=''
+    localStorage.removeItem('pid')
+    next()
+  },
   computed: {
     ...mapState(useUserStore, ['isLogin']),
     ...mapState(useSettingStore, ["isShowMenu", 'isCollapse']),
+    ...mapState(useDetailProjectStore,['currentPid']),
     isCollapse: {
       get() {
         return settingStore.$state.isCollapse
@@ -107,7 +119,7 @@ export default {
   width: 100%;
   height: 100%;
   margin-top: 10px;
-  padding: 10px 20px;
+  padding: 10px 30px;
   background: #fff;
   min-height: 900px;
 }

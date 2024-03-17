@@ -217,6 +217,51 @@ let routes = [
         path: '/projectDetail',
         name: 'projectDetail',
         component: () => import('@/page/project/details/det-index.vue'),
+        redirect: '/projectDetail/projectTeamwork',
+        meta: {
+            title: '项目详情',
+            requireChildMenu: false,
+            hasChildren: true,
+            isShow: true,
+            isMenu: false
+        },
+        children: [
+            {
+                path: 'projectTeamwork',
+                name: 'projectTeamwork',
+                component: () => import('@/page/project/details/ProjectTeamwork.vue'),
+                meta: {
+                    title: '项目协同',
+                    icon: 'projectTeamwork',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'projectSetting',
+                name: 'projectSetting',
+                component: () => import('@/page/project/details/ProjectSetting.vue'),
+                meta: {
+                    title: '项目设置',
+                    icon: 'projectSetting',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'projectIteration',
+                name: 'projectIteration',
+                component: () => import('@/page/project/details/Proj-IterateDetails.vue'),
+                meta: {
+                    title: '项目具体迭代详情',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: false
+                }
+            },
+        ]
     },
     {
         path: '/404',
