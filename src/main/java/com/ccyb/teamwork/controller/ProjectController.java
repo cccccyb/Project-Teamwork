@@ -52,7 +52,7 @@ public class ProjectController {
     @PostMapping("/batch")
     public ResponseResult<?> deleteBatchByIds(@RequestBody List<String> projectIds) {
         //	List<String>转List<Long>
-        List<Long> pIds = projectIds.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        List<Long> pIds = WebUtil.convertStringToLong(projectIds);
         Boolean deleteBatchByIds = projectService.deleteBatchByIds(pIds);
         String msg = deleteBatchByIds ? "" : "数据删除失败，请重试！";
         return ResponseResult.build(deleteBatchByIds ? ResponseCode.DATABASE_DELETE_OK : ResponseCode.DATABASE_DELETE_ERROR, msg, null);
@@ -80,7 +80,7 @@ public class ProjectController {
 
     //根据项目id查项目信息及创建人
     @GetMapping("/{pid}")
-    public ResponseResult<Project> selectByNoticeId(@PathVariable Long pid) {
+    public ResponseResult<Project> selectByProjectId(@PathVariable Long pid) {
         Project projectById = projectService.selectByProjectId(pid);
         int code = projectById != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = projectById != null ? "" : "数据查询失败，请重试！";
@@ -89,7 +89,7 @@ public class ProjectController {
 
     //分页查询所有项目或分页模糊查询、根据userId分页查询所参与的项目
     @GetMapping("/page")
-    public ResponseResult<List<Project>> selectPageNotice(Integer currentPage, Integer pageSize,String userId, String name, Integer status, String startTime, String endTime, String creatorId) {
+    public ResponseResult<List<Project>> selectPageProject(Integer currentPage, Integer pageSize,String userId, String name, Integer status, String startTime, String endTime, String creatorId) {
         Long uId = null, crId = null;
         if (StringUtils.hasText(userId)) {
             uId = Long.parseLong(userId);
@@ -110,27 +110,6 @@ public class ProjectController {
         return ResponseResult.build(code, msg, projectIPage.getRecords());
     }
 
-    //根据userId分页查询所参与的项目
-//    @GetMapping("/selectPageMyAttend")
-//    public ResponseResult<List<Project>> selectPageMyAttend(Integer currentPage, Integer pageSize, String userId,String name, Integer status, String startTime, String endTime, String creatorId) {
-//        Long uId = null, crId = null;
-//        if (StringUtils.hasText(userId)) {
-//            uId = Long.parseLong(userId);
-//        }
-//        if (StringUtils.hasText(creatorId)) {
-//            crId = Long.parseLong(creatorId);
-//        }
-//        Page<Project> projectPage;
-//        if (null != currentPage && null != pageSize) {
-//            projectPage = PageDTO.of(currentPage, pageSize);
-//        } else {
-//            // 不进行分页
-//            projectPage = PageDTO.of(1, -1);
-//        }
-//        IPage<Project> projectsMyAttend = projectUserService.selectPageMyAttend(projectPage, uId,name.trim(), status, startTime.trim(), endTime.trim(), crId);
-//        int code = projectsMyAttend.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
-//        String msg = projectsMyAttend.getRecords() != null ? String.valueOf(projectsMyAttend.getTotal()) : "数据查询失败，请重试！";
-//        return ResponseResult.build(code, msg, projectsMyAttend.getRecords());
-//    }
+
 
 }

@@ -6,6 +6,7 @@ import com.ccyb.teamwork.exception.DataValidationFailedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WebUtil {
 
@@ -28,5 +29,10 @@ public class WebUtil {
             throw new DataValidationFailedException();
         }
         return tList;
+    }
+
+//    List<String>转List<Long>
+    public static List<Long> convertStringToLong(List<String> stringList){
+        return stringList.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
     }
 }

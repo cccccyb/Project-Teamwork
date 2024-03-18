@@ -21,6 +21,12 @@ export default {
       projectStore.$state.currentViewPage = 'MyManage'
       projectStore.$state.currentPage=1
       projectStore.$state.pageSize=10
+      projectStore.$state.searchNav={
+          name: '',
+          status: '',
+          startTime: '',
+          endTime: ''
+      }
       projectStore.selectAllProject(this.currentPage, this.pageSize, '','', '', '', '', projectStore.getCurrentViewPage())
     },
     computed: {

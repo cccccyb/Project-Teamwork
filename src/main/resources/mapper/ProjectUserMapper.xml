@@ -18,7 +18,7 @@
         <where>
              tpu.user_id=#{userId}
             <if test="null!=name and name!=''">
-                and instr(p.name,#{name})&gt;0
+                and p.name like concat(concat("%",#{name}),"%")
             </if>
             <if test="null!=status and status >= 0">
                 and p.status=#{status}

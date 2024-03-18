@@ -1,8 +1,10 @@
 package com.ccyb.teamwork.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Iteration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+
 
 /**
  * <p>
@@ -14,5 +16,8 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface IterationMapper extends BaseMapper<Iteration> {
+    Iteration selectIterationById(Long iteId);
+
+    IPage<Iteration> selectPageIteration(IPage<?> page, String name, Integer status, Long directorId, Long projectId);
 
 }

@@ -2,4 +2,55 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ccyb.teamwork.mapper.IterationMapper">
 
+    <!--     根据迭代id查迭代信息及负责人   -->
+    <select id="selectIterationById" resultMap="IterationByIdResultMap" parameterType="long">
+        select *
+        from t_iteration ite
+                 left join t_project p on ite.project_id = p.id
+                 left join t_user u on ite.director_id = u.id
+        where ite.id = #{iteId}
+          and ite.deleted = 0
+    </select>
+    <resultMap id="IterationByIdResultMap" type="iteration" autoMapping="true">
+        <association property="project" javaType="project" autoMapping="true"/>
+        <association property="director" javaType="user" autoMapping="true"/>
+    </resultMap>
+
+
+    <!--   分页根据项目id查询所有迭代及模糊查询-->
+    <select id="selectPageIteration" resultMap="IterationAllResultMap" resultType="iteration">
+        select u.id uid,
+        u.username,
+        p.id pid,
+        p.name,
+        ite.*
+        from t_iteration ite
+        left join t_user u on ite.director_id = u.id
+        left join t_project p on ite.project_id=p.id
+        <where>
+            <if test="null!=name and name!=''">
+                and ite.name like concat(concat("%",#{name}),"%")
+            </if>
+            <if test="null!=status and status >= 0">
+                and ite.status=#{status}
+            </if>
+            <if test="null != directorId">
+                and ite.director_id = #{directorId}
+            </if>
+            <if test="null != projectId">
+                and ite.project_id = #{projectId}
+            </if>
+            and ite.deleted = 0
+        </where>
+        order by ite.start_time desc
+    </select>
+    <resultMap id="IterationAllResultMap" type="iteration" autoMapping="true">
+        <id property="id" column="id"/>
+        <association property="director" javaType="user" autoMapping="true">
+            <id property="id" column="uid"/>
+        </association>
+        <association property="project" javaType="project" autoMapping="true">
+            <id property="id" column="pid"/>
+        </association>
+    </resultMap>
 </mapper>

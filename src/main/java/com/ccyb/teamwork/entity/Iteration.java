@@ -67,18 +67,30 @@ public class Iteration implements Serializable {
     private LocalDateTime endTime;
 
     /**
-     * 负责人
+     * 负责人id
      */
     @TableField("director_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long directorId;
 
     /**
-     * 所属项目
+     * 负责人
+     */
+    @TableField(exist = false)
+    private User director;
+
+    /**
+     * 所属项目id
      */
     @TableField("project_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long projectId;
+
+    /**
+     * 所属项目
+     */
+    @TableField(exist = false)
+    private Project project;
 
     @TableField("deleted")
     @TableLogic

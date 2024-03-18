@@ -52,7 +52,7 @@
           >
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :size="'large'" style="padding: 0 8px" @click="resetForm">
+          <el-button type="primary" :size="'default'" style="padding: 0 8px" @click="resetForm">
             <el-icon size="25">
               <RefreshLeft/>
             </el-icon>
