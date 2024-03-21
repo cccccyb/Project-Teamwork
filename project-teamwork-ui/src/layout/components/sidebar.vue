@@ -62,9 +62,6 @@ import {
   COLOR_MENU_BACKGROUND,
   COLOR_PRODUCTION
 } from "@/constants/Common.constants.js";
-import {useUserStore} from "@/store/user.js";
-import {useSettingStore} from "@/store/setting.js"
-import {mapState} from 'pinia'
 
 export default {
   name: "sidebar",

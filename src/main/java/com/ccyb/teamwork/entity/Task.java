@@ -71,7 +71,7 @@ public class Task implements Serializable {
     private LocalDateTime modifyTime;
 
     /**
-     * 结束日期
+     * 截止日期
      */
     @TableField("end_time")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", timezone = "UTC")
@@ -104,6 +104,12 @@ public class Task implements Serializable {
     @TableField("iteration_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long iteration_id;
+
+    /**
+     * 事项类型
+     */
+    @TableField("item_type")
+    private Integer item_type;
 
     @TableField("deleted")
     @TableLogic

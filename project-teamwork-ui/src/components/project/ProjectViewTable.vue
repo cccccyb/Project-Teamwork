@@ -157,7 +157,7 @@ export default {
     }
   },
   methods: {
-    //表格多选时间，批量删除
+    //表格多选，批量删除
     handleSelectionChange(val) {
       // val的值为所勾选行的数组对象
       projectStore.$state.multiDeleteSelection=val
@@ -305,7 +305,11 @@ export default {
 .contextmenu li:hover {
   background: #eee;
 }
-
+.jump{
+  color: #0052cb;
+  font-size: 16px;
+  font-weight: bold;
+}
 .jump:hover{
   color: rgba(243, 150, 110, 0.85);
   font-weight: bolder;

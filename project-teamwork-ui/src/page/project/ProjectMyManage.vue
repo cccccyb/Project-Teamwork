@@ -27,7 +27,7 @@ export default {
           startTime: '',
           endTime: ''
       }
-      projectStore.selectAllProject(this.currentPage, this.pageSize, '','', '', '', '', projectStore.getCurrentViewPage())
+      projectStore.selectAllProject(this.currentPage, this.pageSize, projectStore.getCurrentViewPage(),'', '', '', '', projectStore.getCurrentViewPage())
     },
     computed: {
       ...mapState(useProjectStore, ['currentViewPage','currentPage','pageSize'])

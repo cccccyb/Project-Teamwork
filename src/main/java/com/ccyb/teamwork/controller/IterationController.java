@@ -24,14 +24,14 @@ import java.util.List;
  * @since 2024-03-01
  */
 @RestController
-@RequestMapping("/teamwork/iteration")
+@RequestMapping("/iteration")
 public class IterationController {
     @Autowired
     IIterationService iIterationService;
 
     //添加迭代
     @PostMapping("/addIteration")
-    public ResponseResult<?> addProject(@RequestBody Iteration iteration) {
+    public ResponseResult<?> addIteration(@RequestBody Iteration iteration) {
         Boolean addIteration = iIterationService.addIteration(iteration);
         String msg = addIteration ? "" : "数据添加失败，请重试！";
         return ResponseResult.build(addIteration ? ResponseCode.DATABASE_SAVE_OK : ResponseCode.DATABASE_SAVE_ERROR, msg, null);
@@ -62,7 +62,7 @@ public class IterationController {
         return ResponseResult.build(updateById ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
     }
 
-    //根据项目id修改迭代状态
+    //根据迭代id修改迭代状态
     @GetMapping("/updateStatus")
     public ResponseResult<?> updateIterationStatusById(String iteId,Integer status) {
         Long iId = null;
@@ -86,13 +86,9 @@ public class IterationController {
     //分页查询所有迭代或分页模糊查询
     @GetMapping("/page")
     public ResponseResult<List<Iteration>> selectPageIteration(Integer currentPage, Integer pageSize, String name, Integer status, String directorId, String projectId) {
-        Long dirId = null, pId = null;
-        if (StringUtils.hasText(directorId)) {
-            dirId = Long.parseLong(directorId);
-        }
-        if (StringUtils.hasText(projectId)) {
-            pId = Long.parseLong(projectId);
-        }
+        Long dirId = StringUtils.hasText(directorId)?Long.parseLong(directorId):null;
+        Long pId = StringUtils.hasText(projectId)?Long.parseLong(projectId):null;
+
         Page<Project> projectPage;
         if (null != currentPage && null != pageSize) {
             projectPage = PageDTO.of(currentPage, pageSize);

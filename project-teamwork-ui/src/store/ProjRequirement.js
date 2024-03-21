@@ -1,44 +1,66 @@
 import {defineStore} from 'pinia';
 import request from "@/util/request.js";
-import {ElMessage, ElMessageBox} from "element-plus";
 import {
     DATABASE_DELETE_ERROR,
-    DATABASE_DELETE_OK, DATABASE_SAVE_ERROR, DATABASE_SAVE_OK,
+    DATABASE_DELETE_OK,
     DATABASE_SELECT_OK,
     DATABASE_UPDATE_OK
 } from "@/constants/Common.constants.js";
+import {ElMessage, ElMessageBox} from "element-plus";
 
-export const useProjectStore = defineStore('project', {
-    state: () => ({
-        total: 0,
-        pageSize: 10,
-        currentPage: 1,
-        loading: true,
-        dialogAddVisible: false,
-        currentViewPage: 'All',
-        multiDeleteSelection: [],
-        projectStatus: [
-            {
-                id: 0,
-                name: '未开始'
-            },
-            {
-                id: 1,
-                name: '进行中'
-            },
-            {
-                id: 2,
-                name: '已完成'
-            },
-        ],
-        searchNav: {
-            name: '',
-            status: '',
-            startTime: '',
-            endTime: ''
-        },
-        selectData: []
-    }),
+export const useProjRequirementStore = defineStore('projRequirement', {
+    state: () => {
+        return {
+            total: 0,
+            pageSize: 10,
+            currentPage: 1,
+            loading: false,
+            dialogAddVisible: false,
+            multiDeleteSelection: [],
+            requireStatus: [
+                {
+                    id: 0,
+                    name: '未开始'
+                },
+                {
+                    id: 1,
+                    name: '进行中'
+                },
+                {
+                    id: 2,
+                    name: '已完成'
+                },
+            ],
+            requirePriority: [
+                {
+                    id: 5,
+                    name: '紧急',
+                    color: '#E63415'
+                },
+                {
+                    id: 4,
+                    name: '高',
+                    color: '#FF6600'
+                },
+                {
+                    id: 3,
+                    name: '中',
+                    color: '#FFDE0A'
+                },
+                {
+                    id: 2,
+                    name: '低',
+                    color: '#1EC79D'
+                },
+                {
+                    id: 1,
+                    name: '无',
+                    color: '#394049'
+                }
+            ],
+            selectData: []
+        }
+    },
     getters: {},
     actions: {
         //添加睡眠时间
@@ -49,30 +71,29 @@ export const useProjectStore = defineStore('project', {
         async getLoading() {
             this.loading = true
             await this.sleep(300)
-            await this.selectAllProject(
+            await this.selectAllRequirement(
                 this.currentPage,
                 this.pageSize,
-                this.getCurrentViewPage(),
                 '',
                 '',
                 '',
-                '',
-                this.getCurrentViewPage()
+                this.getCurrentPage()
             )
         },
-        //分页查询项目
-        selectAllProject(currentPage, pageSize,userId, name, status, startTime, endTime, creatorId) {
+        //根据当前项目id分页查询需求
+        selectAllRequirement(currentPage, pageSize, title, status, priority,iterationId) {
             void request
-                .get('/project/page', {
+                .get('/requirement/page', {
                     params: {
                         currentPage,
                         pageSize,
-                        userId,
-                        name,
+                        title,
                         status,
-                        startTime,
-                        endTime,
-                        creatorId
+                        priority,
+                        creatorId: '',
+                        processerId: '',
+                        projectId: localStorage.getItem('pid'),
+                        iterationId
                     }
                 })
                 .then((response) => {
@@ -81,6 +102,23 @@ export const useProjectStore = defineStore('project', {
                         for (let i = 0; i < this.selectData.length; i++) {
                             let data = this.selectData[i];
                             data.status = parseInt(data.status) === 0 ? '未开始' : parseInt(data.status) === 1 ? '进行中' : '已完成'
+                            switch (data.priority) {
+                                case 2:
+                                    data.priority = '低';
+                                    break;
+                                case 3:
+                                    data.priority = '中';
+                                    break;
+                                case 4:
+                                    data.priority = '高';
+                                    break;
+                                case 5:
+                                    data.priority = '紧急';
+                                    break;
+                                default:
+                                    data.priority = '无';
+                                    break;
+                            }
                         }
                         this.total = parseInt(response.data.msg)
                         this.loading = false
@@ -93,12 +131,12 @@ export const useProjectStore = defineStore('project', {
                     }
                 })
         },
-        // 根据项目id修改状态
-        async updateStatusById(pid, status) {
+        // 根据需求id修改状态
+        async updateStatusById(reqId, status) {
             await request
-                .get('/project/updateStatus', {
+                .get('/requirement/updateStatus', {
                     params: {
-                        pid,
+                        reqId,
                         status
                     }
                 })
@@ -115,32 +153,48 @@ export const useProjectStore = defineStore('project', {
                         })
                     }
                 })
-            this.selectAllProject(this.currentPage, this.pageSize, this.getCurrentViewPage(),'', '', '', '',  this.getCurrentViewPage())
+            this.selectAllRequirement(this.currentPage, this.pageSize, '', '', '',this.getCurrentPage())
         },
-        //根据项目id删除项目
-        handleDeleteById(pid) {
+        // 根据需求id修改优先级
+        async updatePriorityById(reqId, priority) {
+            await request
+                .get('/requirement/updatePriority', {
+                    params: {
+                        reqId,
+                        priority
+                    }
+                })
+                .then((response) => {
+                    if (response.data.code === DATABASE_UPDATE_OK) {
+                        ElMessage({
+                            message: '设置成功',
+                            type: 'success'
+                        })
+                    } else {
+                        ElMessage({
+                            message: response.data.msg,
+                            type: 'error'
+                        })
+                    }
+                })
+            this.selectAllRequirement(this.currentPage, this.pageSize, '', '', '',this.getCurrentPage())
+        },
+        //根据需求id删除需求
+        handleDeleteById(reqId) {
             ElMessageBox.confirm('确定是否要删除？该操作将无法回退', '警告', {
                 confirmButtonText: '确定',
                 cancelButtonText: '我再想想',
                 type: 'warning'
             })
                 .then(() => {
-                    request.delete('/project/' + pid).then((response) => {
+                    request.delete('/requirement/' + reqId).then((response) => {
                         if (response.data.code === DATABASE_DELETE_OK) {
                             ElMessage({
                                 message: '删除成功.',
                                 type: 'success'
                             })
-                            this.selectAllProject(
-                                this.currentPage,
-                                this.pageSize,
-                                this.getCurrentViewPage(),
-                                '',
-                                '',
-                                '',
-                                '',
-                                this.getCurrentViewPage()
-                            )
+                            this.getLoading().then(r => {
+                            })
                         } else if (response.data.code === DATABASE_DELETE_ERROR) {
                             ElMessage({
                                 message: response.data.msg,
@@ -152,7 +206,7 @@ export const useProjectStore = defineStore('project', {
                 .catch(() => {
                 })
         },
-        //批量删除项目
+        //批量删除需求
         deleteBatchByIds() {
             const multiDeleteIds = []
             if (this.multiDeleteSelection.length > 0) {
@@ -165,7 +219,7 @@ export const useProjectStore = defineStore('project', {
                     type: 'warning'
                 })
                     .then(async () => {
-                        await request.post('/project/batch', multiDeleteIds).then((response) => {
+                        await request.post('/requirement/batch', multiDeleteIds).then((response) => {
                             if (response.data.code === DATABASE_DELETE_OK) {
                                 ElMessage({
                                     message: '删除成功.',
@@ -189,37 +243,10 @@ export const useProjectStore = defineStore('project', {
                 })
             }
         },
-        //判断当前位于哪一个子页面
-        getCurrentViewPage() {
-            let currentUser = ''
-            if (this.currentViewPage === 'All') {
-                currentUser = ''
-            } else if (this.currentViewPage === 'MyManage') {
-                currentUser = ''
-            } else if (this.currentViewPage === 'Person') {
-                currentUser = localStorage.getItem('uid') ? localStorage.getItem('uid') : ''
-            }
-            return currentUser
-        },
-        //添加项目
-        handleAddProject(addFormData) {
-            request.post('/project/addProject', addFormData).then((response) => {
-                if (response.data.code === DATABASE_SAVE_OK) {
-                    this.dialogAddVisible = false
-                    ElMessage({
-                        message: '添加成功.',
-                        type: 'success'
-                    })
-                } else if (response.data.code === DATABASE_SAVE_ERROR) {
-                    ElMessage({
-                        message: response.data.msg,
-                        type: 'error'
-                    })
-                }
-            })
-            this.getLoading().then(r => {})
+        //判断当前是否位于具体的迭代中
+        getCurrentPage() {
+            return localStorage.getItem('iterateId')===null?'':localStorage.getItem('iterateId')
         },
     }
 })
-
 

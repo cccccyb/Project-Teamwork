@@ -90,13 +90,9 @@ public class ProjectController {
     //分页查询所有项目或分页模糊查询、根据userId分页查询所参与的项目
     @GetMapping("/page")
     public ResponseResult<List<Project>> selectPageProject(Integer currentPage, Integer pageSize,String userId, String name, Integer status, String startTime, String endTime, String creatorId) {
-        Long uId = null, crId = null;
-        if (StringUtils.hasText(userId)) {
-            uId = Long.parseLong(userId);
-        }
-        if (StringUtils.hasText(creatorId)) {
-            crId = Long.parseLong(creatorId);
-        }
+        Long crId = StringUtils.hasText(creatorId)?Long.parseLong(creatorId):null;
+        Long uId = StringUtils.hasText(userId)?Long.parseLong(userId):null;
+
         Page<Project> projectPage;
         if (null != currentPage && null != pageSize) {
             projectPage = PageDTO.of(currentPage, pageSize);

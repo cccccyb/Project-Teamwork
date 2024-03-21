@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="main">
     <div class="iterate_head">
         <SvgIcons width="40px" height="48px" color="rgb(52, 69, 99)" icon-class="goBack" style="cursor: pointer" @click="goBack"/>
-        <h2 style="font-size: 23px;margin-left: 10px">{{this.$route.query.itId}}&nbsp&nbsp&nbsp|</h2>
+        <h2 style="font-size: 23px;margin-left: 10px">{{this.currentIteration.name}}&nbsp&nbsp&nbsp|</h2>
     </div>
     <div class="search_tab">
 <!--      <el-input-->
@@ -21,7 +21,7 @@
 <!--      </el-input>-->
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane label="全部" name="all">Config</el-tab-pane>
-        <el-tab-pane label="需求" name="requirement">Role</el-tab-pane>
+        <el-tab-pane label="需求" name="requirement"><ProjectRequireTab/></el-tab-pane>
         <el-tab-pane label="任务" name="task">Task</el-tab-pane>
         <el-tab-pane label="缺陷" name="bug">Task</el-tab-pane>
       </el-tabs>
@@ -30,12 +30,14 @@
 </template>
 
 <script>
-
-
 import router from "@/router/index.js";
+import {useProjIterationStore} from "@/store/ProjIteration.js";
+import ProjectRequireTab from "@/components/require/ProjectRequireTab.vue";
+import {mapState} from "pinia";
+const projectIterationStore=useProjIterationStore()
 
 export default {
-  components: {},
+  components: {ProjectRequireTab},
   data() {
     return {
       activeName: 'all',
@@ -51,11 +53,14 @@ export default {
   created() {
     let iterateId=localStorage.getItem('iterateId')===null?this.$route.query.itId:localStorage.getItem('iterateId')
     localStorage.setItem('iterateId',iterateId)
-    // detailProjectStore.getCurrentProject(pid)
+    projectIterationStore.getCurrentIteration(iterateId)
   },
   beforeRouteLeave(to,from,next) {
     localStorage.removeItem('iterateId')
     next()
+  },
+  computed:{
+    ...mapState(useProjIterationStore,['currentIteration'])
   }
 }
 </script>
@@ -85,6 +90,11 @@ export default {
 /deep/.el-tabs--card > .el-tabs__header{
   border: none !important;
 }
+.main{
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 .iterate_head {
   width: 100%;
   height: 50px;
@@ -97,9 +107,6 @@ export default {
 }
 
 .search_tab {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
   width: 100%;
   height: 100%;
   margin-top: 20px;

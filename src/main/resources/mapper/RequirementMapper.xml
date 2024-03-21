@@ -1,5 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ccyb.teamwork.mapper.RequirementMapper">
+    <!--     根据需求id查需求信息及负责人   -->
+    <select id="selectRequirementById" resultMap="RequirementByIdResultMap" parameterType="long">
+        select *
+        from t_requirement req
+                 left join t_project p on req.project_id = p.id
+                 left join t_user u1 on req.creator_id = u1.id
+                 left join t_user u2 on req.processer_id = u2.id
+                 left join t_iteration ite on req.iteration_id = ite.id
+        where req.id = #{reqId}
+          and req.deleted = 0
+    </select>
+    <resultMap id="RequirementByIdResultMap" type="requirement" autoMapping="true">
+        <association property="project" javaType="project" autoMapping="true"/>
+        <association property="creator" javaType="user" autoMapping="true"/>
+        <association property="processer" javaType="user" autoMapping="true"/>
+        <association property="iteration" javaType="iteration" autoMapping="true"/>
+    </resultMap>
 
+
+    <!--   分页根据项目id查询所有需求、每个迭代所涉及需求及模糊查询-->
+    <select id="selectPageRequirement" resultMap="RequirementAllResultMap" resultType="requirement">
+        select u1.id   ucId,
+        u1.username ucName,
+        u2.id upId,
+        u2.username upName,
+        p.id   pid,
+        p.name pName,
+        ite.id iteId,
+        ite.name iteName,
+        req.*
+        from t_requirement req
+        left join t_user u1 on req.creator_id = u1.id
+        left join t_user u2 on req.processer_id = u2.id
+        left join t_project p on req.project_id = p.id
+        left join t_iteration ite on req.iteration_id = ite.id
+        <where>
+            <if test="null!=title and title!=''">
+                and req.title like concat(concat("%",#{title}),"%")
+            </if>
+            <if test="null!=status and status >= 0">
+                and req.status=#{status}
+            </if>
+            <if test="null!=priority and priority >= 1">
+                and req.priority=#{priority}
+            </if>
+            <if test="null != creatorId">
+                and req.creator_id = #{creatorId}
+            </if>
+            <if test="null != processerId">
+                and req.processer_id = #{processerId}
+            </if>
+            <if test="null != projectId">
+                and req.project_id = #{projectId}
+            </if>
+            <if test="null != iterationId">
+                and req.iteration_id = #{iterationId}
+            </if>
+            and req.deleted = 0
+        </where>
+        order by req.create_time desc
+    </select>
+    <resultMap id="RequirementAllResultMap" type="requirement" autoMapping="true">
+        <id property="id" column="id"/>
+        <association property="creator" javaType="user" autoMapping="true">
+            <id property="id" column="ucId"/>
+            <result property="username" column="ucName"/>
+        </association>
+        <association property="processer" javaType="user" autoMapping="true">
+            <id property="id" column="upId"/>
+            <result property="username" column="upName"/>
+        </association>
+        <association property="project" javaType="project" autoMapping="true">
+            <id property="id" column="pid"/>
+            <result property="name" column="pName"/>
+        </association>
+        <association property="iteration" javaType="iteration" autoMapping="true">
+            <id property="id" column="iteId"/>
+            <result property="name" column="iteName"/>
+        </association>
+    </resultMap>
 </mapper>

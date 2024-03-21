@@ -137,6 +137,12 @@ public class Bug implements Serializable {
     @TableField("origin")
     private String origin;
 
+    /**
+     * 事项类型
+     */
+    @TableField("item_type")
+    private Integer item_type;
+
     @TableField("deleted")
     @TableLogic
     private Integer deleted;

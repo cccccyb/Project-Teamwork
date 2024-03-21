@@ -22,7 +22,7 @@
         select u.id uid,
         u.username,
         p.id pid,
-        p.name,
+        p.name pName,
         ite.*
         from t_iteration ite
         left join t_user u on ite.director_id = u.id
@@ -51,6 +51,7 @@
         </association>
         <association property="project" javaType="project" autoMapping="true">
             <id property="id" column="pid"/>
+            <result property="name" column="pName"/>
         </association>
     </resultMap>
 </mapper>

@@ -103,90 +103,90 @@ let routes = [
                     }
                 ]
             },
-            {
-                path: 'requireManage',
-                name: 'requireManage',
-                component: () => import('@/page/require/RequireManage.vue'),
-                meta: {
-                    title: '需求管理',
-                    icon: 'require_menu',
-                    hasChildren: false,
-                    isShow: true,
-                    isMenu: true
-                }
-            },
-            {
-                path: 'iterationManage',
-                name: 'iterationManage',
-                component: () => import('@/page/iteration/IterationManage.vue'),
-                meta: {
-                    title: '迭代管理',
-                    icon: 'iteration_menu',
-                    hasChildren: true,
-                    requireChildMenu: false,
-                    isShow: true,
-                    isMenu: true
-                },
-                children: [
-                    {
-                        path: 'iterationTask',
-                        name: 'iterationTask',
-                        component: () => import('@/page/iteration/IterationTask.vue'),
-                        meta: {
-                            title: '迭代所属任务',
-                            hasChildren: false,
-                            isShow: true,
-                            isMenu: false
-                        }
-                    },
-                    {
-                        path: 'iterationRequire',
-                        name: 'iterationRequire',
-                        component: () => import('@/page/iteration/IterationRequire.vue'),
-                        meta: {
-                            title: '迭代所属需求',
-                            hasChildren: false,
-                            isShow: true,
-                            isMenu: false
-                        }
-                    },
-                    {
-                        path: 'iterationBug',
-                        name: 'iterationBug',
-                        component: () => import('@/page/iteration/IterationBug.vue'),
-                        meta: {
-                            title: '迭代所属缺陷',
-                            hasChildren: false,
-                            isShow: true,
-                            isMenu: false
-                        }
-                    }
-                ]
-            },
-            {
-                path: 'bugManage',
-                name: 'bugManage',
-                component: () => import('@/page/bug/BugManage.vue'),
-                meta: {
-                    title: '缺陷管理',
-                    icon: 'bug_menu',
-                    hasChildren: false,
-                    isShow: true,
-                    isMenu: true
-                }
-            },
-            {
-                path: 'taskManage',
-                name: 'taskManage',
-                component: () => import('@/page/task/TaskManage.vue'),
-                meta: {
-                    title: '任务管理',
-                    icon: 'task_menu',
-                    hasChildren: false,
-                    isShow: true,
-                    isMenu: true
-                }
-            },
+            // {
+            //     path: 'requireManage',
+            //     name: 'requireManage',
+            //     component: () => import('@/page/require/RequireManage.vue'),
+            //     meta: {
+            //         title: '需求管理',
+            //         icon: 'require_menu',
+            //         hasChildren: false,
+            //         isShow: true,
+            //         isMenu: true
+            //     }
+            // },
+            // {
+            //     path: 'iterationManage',
+            //     name: 'iterationManage',
+            //     component: () => import('@/page/iteration/IterationManage.vue'),
+            //     meta: {
+            //         title: '迭代管理',
+            //         icon: 'iteration_menu',
+            //         hasChildren: true,
+            //         requireChildMenu: false,
+            //         isShow: true,
+            //         isMenu: true
+            //     },
+            //     children: [
+            //         {
+            //             path: 'iterationTask',
+            //             name: 'iterationTask',
+            //             component: () => import('@/page/iteration/IterationTask.vue'),
+            //             meta: {
+            //                 title: '迭代所属任务',
+            //                 hasChildren: false,
+            //                 isShow: true,
+            //                 isMenu: false
+            //             }
+            //         },
+            //         {
+            //             path: 'iterationRequire',
+            //             name: 'iterationRequire',
+            //             component: () => import('@/page/iteration/IterationRequire.vue'),
+            //             meta: {
+            //                 title: '迭代所属需求',
+            //                 hasChildren: false,
+            //                 isShow: true,
+            //                 isMenu: false
+            //             }
+            //         },
+            //         {
+            //             path: 'iterationBug',
+            //             name: 'iterationBug',
+            //             component: () => import('@/page/iteration/IterationBug.vue'),
+            //             meta: {
+            //                 title: '迭代所属缺陷',
+            //                 hasChildren: false,
+            //                 isShow: true,
+            //                 isMenu: false
+            //             }
+            //         }
+            //     ]
+            // },
+            // {
+            //     path: 'bugManage',
+            //     name: 'bugManage',
+            //     component: () => import('@/page/bug/BugManage.vue'),
+            //     meta: {
+            //         title: '缺陷管理',
+            //         icon: 'bug_menu',
+            //         hasChildren: false,
+            //         isShow: true,
+            //         isMenu: true
+            //     }
+            // },
+            // {
+            //     path: 'taskManage',
+            //     name: 'taskManage',
+            //     component: () => import('@/page/task/TaskManage.vue'),
+            //     meta: {
+            //         title: '任务管理',
+            //         icon: 'task_menu',
+            //         hasChildren: false,
+            //         isShow: true,
+            //         isMenu: true
+            //     }
+            // },
             {
                 path: 'dashboard',
                 name: 'dashboard',
@@ -253,7 +253,7 @@ let routes = [
             {
                 path: 'projectIteration',
                 name: 'projectIteration',
-                component: () => import('@/page/project/details/Proj-IterateDetails.vue'),
+                component: () => import('@/page/iteration/Proj-IterateDetails.vue'),
                 meta: {
                     title: '项目具体迭代详情',
                     hasChildren: false,

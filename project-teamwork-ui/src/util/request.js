@@ -155,6 +155,7 @@ request.interceptors.response.use(
             message: '<strong>服务器出错</strong>，请稍后重试',
             type:'error'
         })
+        // router.replace("/login").then(r => {});
         return await Promise.reject(error?.response?.data)
     }
 )

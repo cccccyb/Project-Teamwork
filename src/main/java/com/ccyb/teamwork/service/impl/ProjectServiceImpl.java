@@ -95,7 +95,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
             end = LocalDateTime.parse(endTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
         if (null==userId){
-            //分页查询所有项目或分页模糊查询
+            //分页查询所有项目、我管理的项目或分页模糊查询
             return projectMapper.selectPageProject(page, name, status, start, end, creatorId);
         }else {
             //根据userId分页查询所参与的项目

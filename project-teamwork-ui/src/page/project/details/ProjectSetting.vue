@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import ProjIteration from "@/components/project/details/Proj-Iteration.vue";
+import ProjIteration from "@/components/iteration/Proj-Iteration.vue";
 import ProjectInfo from "@/components/project/details/ProjectInfo.vue";
 
 export default {

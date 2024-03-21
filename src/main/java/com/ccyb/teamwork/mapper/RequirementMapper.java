@@ -1,5 +1,6 @@
 package com.ccyb.teamwork.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Requirement;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,5 +15,8 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface RequirementMapper extends BaseMapper<Requirement> {
+    Requirement selectRequirementById(Long reqId);
+
+    IPage<Requirement> selectPageRequirement(IPage<?> page, String title, Integer status,Integer priority, Long creatorId, Long processerId,Long projectId,Long iterationId);
 
 }
