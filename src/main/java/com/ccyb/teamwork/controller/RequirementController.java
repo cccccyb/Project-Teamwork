@@ -3,7 +3,6 @@ package com.ccyb.teamwork.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.Requirement;
 import com.ccyb.teamwork.entity.common.ResponseCode;
 import com.ccyb.teamwork.entity.common.ResponseResult;
@@ -103,14 +102,14 @@ public class RequirementController {
         Long pId = StringUtils.hasText(projectId)?Long.parseLong(projectId):null;
         Long iteId = StringUtils.hasText(iterationId)?Long.parseLong(iterationId):null;
 
-        Page<Project> projectPage;
+        Page<Requirement> requirementPage;
         if (null != currentPage && null != pageSize) {
-            projectPage = PageDTO.of(currentPage, pageSize);
+            requirementPage = PageDTO.of(currentPage, pageSize);
         } else {
             // 不进行分页
-            projectPage = PageDTO.of(1, -1);
+            requirementPage = PageDTO.of(1, -1);
         }
-        IPage<Requirement> requirementIPage = requirementService.selectPageRequirement(projectPage, title.trim(), status,priority,creId,proId,pId,iteId);
+        IPage<Requirement> requirementIPage = requirementService.selectPageRequirement(requirementPage, title.trim(), status,priority,creId,proId,pId,iteId);
         int code = requirementIPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = requirementIPage.getRecords() != null ? String.valueOf(requirementIPage.getTotal()) : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, requirementIPage.getRecords());

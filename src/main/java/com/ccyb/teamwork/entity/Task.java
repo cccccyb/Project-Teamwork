@@ -45,7 +45,7 @@ public class Task implements Serializable {
     private String description;
 
     /**
-     * 事项状态
+     * 任务状态
      */
     @TableField("status")
     private Integer status;
@@ -78,32 +78,57 @@ public class Task implements Serializable {
     private LocalDateTime endTime;
 
     /**
-     * 创建人
+     * 创建人id
      */
     @TableField("creator_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long creatorId;
 
     /**
-     * 处理人
+     * 创建人
+     */
+    @TableField(exist = false)
+    private User creator;
+
+    /**
+     * 处理人id
      */
     @TableField("processer_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long processerId;
 
     /**
-     * 所属项目
+     * 处理人
+     */
+    @TableField(exist = false)
+    private User processer;
+
+    /**
+     * 所属项目id
      */
     @TableField("project_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long projectId;
 
     /**
-     * 所属迭代
+     * 所属项目
+     */
+    @TableField(exist = false)
+    private Project project;
+
+    /**
+     * 所属迭代id
      */
     @TableField("iteration_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long iteration_id;
+
+    /**
+     * 所属迭代
+     */
+    @TableField(exist = false)
+    private Iteration iteration;
+
 
     /**
      * 事项类型

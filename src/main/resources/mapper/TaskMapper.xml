@@ -2,4 +2,84 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ccyb.teamwork.mapper.TaskMapper">
 
+    <!--     根据任务id查需求信息及负责人   -->
+    <select id="selectTaskById" resultMap="TaskByIdResultMap" parameterType="long">
+        select *
+        from t_task t
+                 left join t_project p on t.project_id = p.id
+                 left join t_user u1 on t.creator_id = u1.id
+                 left join t_user u2 on t.processer_id = u2.id
+                 left join t_iteration ite on t.iteration_id = ite.id
+        where t.id = #{tId}
+          and t.deleted = 0
+    </select>
+    <resultMap id="TaskByIdResultMap" type="task" autoMapping="true">
+        <association property="project" javaType="project" autoMapping="true"/>
+        <association property="creator" javaType="user" autoMapping="true"/>
+        <association property="processer" javaType="user" autoMapping="true"/>
+        <association property="iteration" javaType="iteration" autoMapping="true"/>
+    </resultMap>
+
+
+    <!--   分页根据项目id查询所有任务、每个迭代所涉及任务及模糊查询-->
+    <select id="selectPageTask" resultMap="TaskAllResultMap" resultType="task">
+        select u1.id   ucId,
+        u1.username ucName,
+        u2.id upId,
+        u2.username upName,
+        p.id   pid,
+        p.name pName,
+        ite.id iteId,
+        ite.name iteName,
+        t.*
+        from t_task t
+        left join t_user u1 on t.creator_id = u1.id
+        left join t_user u2 on t.processer_id = u2.id
+        left join t_project p on t.project_id = p.id
+        left join t_iteration ite on t.iteration_id = ite.id
+        <where>
+            <if test="null!=title and title!=''">
+                and t.title like concat(concat("%",#{title}),"%")
+            </if>
+            <if test="null!=status and status >= 0">
+                and t.status=#{status}
+            </if>
+            <if test="null!=priority and priority >= 1">
+                and t.priority=#{priority}
+            </if>
+            <if test="null != creatorId">
+                and t.creator_id = #{creatorId}
+            </if>
+            <if test="null != processerId">
+                and t.processer_id = #{processerId}
+            </if>
+            <if test="null != projectId">
+                and t.project_id = #{projectId}
+            </if>
+            <if test="null != iterationId">
+                and t.iteration_id = #{iterationId}
+            </if>
+            and t.deleted = 0
+        </where>
+        order by t.create_time desc
+    </select>
+    <resultMap id="TaskAllResultMap" type="task" autoMapping="true">
+        <id property="id" column="id"/>
+        <association property="creator" javaType="user" autoMapping="true">
+            <id property="id" column="ucId"/>
+            <result property="username" column="ucName"/>
+        </association>
+        <association property="processer" javaType="user" autoMapping="true">
+            <id property="id" column="upId"/>
+            <result property="username" column="upName"/>
+        </association>
+        <association property="project" javaType="project" autoMapping="true">
+            <id property="id" column="pid"/>
+            <result property="name" column="pName"/>
+        </association>
+        <association property="iteration" javaType="iteration" autoMapping="true">
+            <id property="id" column="iteId"/>
+            <result property="name" column="iteName"/>
+        </association>
+    </resultMap>
 </mapper>

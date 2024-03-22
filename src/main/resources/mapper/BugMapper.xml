@@ -2,4 +2,101 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ccyb.teamwork.mapper.BugMapper">
 
+    <!--     根据缺陷id查需求信息及负责人   -->
+    <select id="selectBugById" resultMap="BugByIdResultMap" parameterType="long">
+        select *
+        from t_bug bug
+                 left join t_user u1 on bug.creator_id = u1.id
+                 left join t_user u2 on bug.processer_id = u2.id
+                 left join t_bug_type bt on bug.bug_type_id = bt.id
+                 left join t_project p on bug.project_id = p.id
+                 left join t_iteration ite on bug.discovery_iterate_id = ite.id
+                 left join t_requirement req on bug.requirement_id = req.id
+        where bug.id = #{bugId}
+          and bug.deleted = 0
+    </select>
+    <resultMap id="BugByIdResultMap" type="bug" autoMapping="true">
+        <association property="project" javaType="project" autoMapping="true"/>
+        <association property="creator" javaType="user" autoMapping="true"/>
+        <association property="processer" javaType="user" autoMapping="true"/>
+        <association property="discoveryIterate" javaType="iteration" autoMapping="true"/>
+        <association property="bugType" javaType="bugType" autoMapping="true"/>
+    </resultMap>
+
+
+    <!--   分页根据项目id查询所有缺陷、每个迭代所涉及缺陷及模糊查询-->
+    <select id="selectPageBug" resultMap="BugAllResultMap" resultType="bug">
+        select u1.id   ucId,
+        u1.username ucName,
+        u2.id upId,
+        u2.username upName,
+        p.id   pid,
+        p.name pName,
+        ite.id disIteId,
+        ite.name disIteName,
+        bt.id btId,
+        bt.name btName,
+        req.id reqId,
+        req.title reqName,
+        bug.*
+        from t_bug bug
+        left join t_user u1 on bug.creator_id = u1.id
+        left join t_user u2 on bug.processer_id = u2.id
+        left join t_bug_type bt on bug.bug_type_id = bt.id
+        left join t_project p on bug.project_id = p.id
+        left join t_iteration ite on bug.discovery_iterate_id = ite.id
+        left join t_requirement req on bug.requirement_id = req.id
+        <where>
+            <if test="null!=title and title!=''">
+                and bug.title like concat(concat("%",#{title}),"%")
+            </if>
+            <if test="null!=status and status >= 0">
+                and bug.status=#{status}
+            </if>
+            <if test="null!=priority and priority >= 1">
+                and bug.priority=#{priority}
+            </if>
+            <if test="null != creatorId">
+                and bug.creator_id = #{creatorId}
+            </if>
+            <if test="null != processerId">
+                and bug.processer_id = #{processerId}
+            </if>
+            <if test="null != projectId">
+                and bug.project_id = #{projectId}
+            </if>
+            <if test="null != discoveryIteId">
+                and bug.discovery_iterate_id = #{discoveryIteId}
+            </if>
+            and bug.deleted = 0
+        </where>
+        order by bug.create_time desc
+    </select>
+    <resultMap id="BugAllResultMap" type="bug" autoMapping="true">
+        <id property="id" column="id"/>
+        <association property="creator" javaType="user" autoMapping="true">
+            <id property="id" column="ucId"/>
+            <result property="username" column="ucName"/>
+        </association>
+        <association property="processer" javaType="user" autoMapping="true">
+            <id property="id" column="upId"/>
+            <result property="username" column="upName"/>
+        </association>
+        <association property="project" javaType="project" autoMapping="true">
+            <id property="id" column="pid"/>
+            <result property="name" column="pName"/>
+        </association>
+        <association property="discoveryIterate" javaType="iteration" autoMapping="true">
+            <id property="id" column="disIteId"/>
+            <result property="name" column="disIteName"/>
+        </association>
+        <association property="bugType" javaType="bugType" autoMapping="true">
+            <id property="id" column="btId"/>
+            <result property="name" column="btName"/>
+        </association>
+        <association property="requirement" javaType="requirement" autoMapping="true">
+            <id property="id" column="reqId"/>
+            <result property="title" column="reqName"/>
+        </association>
+    </resultMap>
 </mapper>

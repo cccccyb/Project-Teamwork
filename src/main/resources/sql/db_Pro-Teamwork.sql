@@ -234,7 +234,6 @@ create table `t_bug`
     `bug_type_id`    bigint      not null comment '缺陷类型',
     `project_id`     bigint      not null comment '所属项目',
     `discovery_iterate_id`   bigint  not null comment '缺陷发现迭代',
-    `plan_iterate_id`   bigint   default 0 comment '规划迭代',
     `requirement_id` bigint      not null comment '关联需求',
     `origin`         varchar(30) not null comment '缺陷来源',
     `deleted`        int         not null default 0,
@@ -244,6 +243,5 @@ create table `t_bug`
     constraint t_bug_type_id_fk foreign key (bug_type_id) references t_bug_type (id),
     constraint t_bug_project_id_fk foreign key (project_id) references t_project (id),
     constraint t_bug_discovery_iterate_id_fk foreign key (discovery_iterate_id) references t_iteration (id),
-    constraint t_bug_plan_iterate_id_fk foreign key (plan_iterate_id) references t_iteration (id),
     constraint t_bug_requirement_id_fk foreign key (requirement_id) references t_requirement (id)
 ) comment '缺陷';

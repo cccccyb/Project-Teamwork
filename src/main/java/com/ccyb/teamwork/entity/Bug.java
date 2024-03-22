@@ -83,53 +83,82 @@ public class Bug implements Serializable {
     private LocalDateTime modifyTime;
 
     /**
-     * 创建人
+     * 创建人id
      */
     @TableField("creator_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long creatorId;
 
     /**
-     * 处理人
+     * 创建人
+     */
+    @TableField(exist = false)
+    private User creator;
+
+    /**
+     * 处理人id
      */
     @TableField("processer_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long processerId;
 
     /**
-     * 所属项目
+     * 处理人
+     */
+    @TableField(exist = false)
+    private User processer;
+
+    /**
+     * 所属项目id
      */
     @TableField("project_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long projectId;
 
     /**
-     * 缺陷发现迭代
+     * 所属项目
+     */
+    @TableField(exist = false)
+    private Project project;
+
+    /**
+     * 缺陷发现迭代id
      */
     @TableField("discovery_iterate_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long discoveryIterateId;
 
     /**
-     * 规划迭代
+     * 缺陷发现迭代
      */
-    @TableField("plan_iterate_id")
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long planIterateId;
+    @TableField(exist = false)
+    private Iteration discoveryIterate;
 
     /**
-     * 关联需求
+     * 关联需求id
      */
     @TableField("requirement_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long requirementId;
 
     /**
-     * 缺陷类型
+     * 关联需求
+     */
+    @TableField(exist = false)
+    private Requirement requirement;
+
+    /**
+     * 缺陷类型id
      */
     @TableField("bug_type_id")
     @JsonSerialize(using = ToStringSerializer.class)
     private Long bug_type_id;
+
+    /**
+     * 缺陷类型
+     */
+    @TableField(exist = false)
+    private BugType bugType;
 
     /**
      * 缺陷来源

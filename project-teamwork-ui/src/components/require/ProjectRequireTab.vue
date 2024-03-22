@@ -82,7 +82,7 @@
 
     <div class="table_show">
       <el-table
-          style="width: 100%"
+          style="width: 100%;font-size: 17px"
           v-loading="loading"
           stripe
           element-loading-text="加载中..."
@@ -113,7 +113,7 @@
         </el-table-column>
         <el-table-column
             prop="title"
-            label="需求名称"
+            label="需求标题"
             show-overflow-tooltip
             fixed="left"
             width="320"
@@ -129,10 +129,10 @@
             prop="priority"
             label="优先级"
             align="center"
-            width="120"
+            width="125"
         >
           <template #default="scope">
-            <el-select placeholder="" size="large" @change="changePriority($event,scope.row.id)">
+            <el-select placeholder="" style="width: 110px" @change="changePriority($event,scope.row.id)">
               <el-option
                   v-for="item in requirePriority"
                   :key="item.id"
@@ -250,7 +250,7 @@
             width="200"
         >
           <template #default="scope">
-            <el-tag disable-transitions>{{ scope.row.creator.username }}</el-tag>
+            <el-tag disable-transitions type="success">{{ scope.row.creator.username }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column

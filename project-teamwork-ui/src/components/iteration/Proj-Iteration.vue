@@ -66,6 +66,7 @@
 
     <div class="table_show">
       <el-table
+          style="width:100%;font-size: 17px"
           v-loading="loading"
           stripe
           element-loading-text="加载中..."

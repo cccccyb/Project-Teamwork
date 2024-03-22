@@ -6,7 +6,6 @@ import com.ccyb.teamwork.entity.Requirement;
 import com.ccyb.teamwork.mapper.RequirementMapper;
 import com.ccyb.teamwork.service.IRequirementService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.ccyb.teamwork.entity.Iteration;
-import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.common.ResponseCode;
 import com.ccyb.teamwork.entity.common.ResponseResult;
 import com.ccyb.teamwork.service.IIterationService;
@@ -89,14 +88,14 @@ public class IterationController {
         Long dirId = StringUtils.hasText(directorId)?Long.parseLong(directorId):null;
         Long pId = StringUtils.hasText(projectId)?Long.parseLong(projectId):null;
 
-        Page<Project> projectPage;
+        Page<Iteration> iterationPage;
         if (null != currentPage && null != pageSize) {
-            projectPage = PageDTO.of(currentPage, pageSize);
+            iterationPage = PageDTO.of(currentPage, pageSize);
         } else {
             // 不进行分页
-            projectPage = PageDTO.of(1, -1);
+            iterationPage = PageDTO.of(1, -1);
         }
-        IPage<Iteration> iterationIPage = iIterationService.selectPageIteration(projectPage, name.trim(), status, dirId, pId);
+        IPage<Iteration> iterationIPage = iIterationService.selectPageIteration(iterationPage, name.trim(), status, dirId, pId);
         int code = iterationIPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = iterationIPage.getRecords() != null ? String.valueOf(iterationIPage.getTotal()) : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, iterationIPage.getRecords());

@@ -22,8 +22,8 @@
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane label="全部" name="all">Config</el-tab-pane>
         <el-tab-pane label="需求" name="requirement"><ProjectRequireTab/></el-tab-pane>
-        <el-tab-pane label="任务" name="task">Task</el-tab-pane>
-        <el-tab-pane label="缺陷" name="bug">Task</el-tab-pane>
+        <el-tab-pane label="任务" name="task"><ProjectTaskTab/></el-tab-pane>
+        <el-tab-pane label="缺陷" name="bug"><ProjectBugTab/></el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -33,11 +33,13 @@
 import router from "@/router/index.js";
 import {useProjIterationStore} from "@/store/ProjIteration.js";
 import ProjectRequireTab from "@/components/require/ProjectRequireTab.vue";
+import ProjectTaskTab from "@/components/task/ProjectTaskTab.vue";
+import ProjectBugTab from "@/components/bug/ProjectBugTab.vue";
 import {mapState} from "pinia";
 const projectIterationStore=useProjIterationStore()
 
 export default {
-  components: {ProjectRequireTab},
+  components: {ProjectRequireTab,ProjectTaskTab,ProjectBugTab},
   data() {
     return {
       activeName: 'all',
