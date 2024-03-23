@@ -73,7 +73,7 @@ public class IterationController {
         return ResponseResult.build(updateStatusById ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
     }
 
-    //根据项目id查迭代信息及负责人
+    //根据迭代id查迭代信息及负责人
     @GetMapping("/{iteId}")
     public ResponseResult<Iteration> selectByIterationId(@PathVariable Long iteId) {
         Iteration iteration = iIterationService.selectByIterationId(iteId);
@@ -99,6 +99,15 @@ public class IterationController {
         int code = iterationIPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = iterationIPage.getRecords() != null ? String.valueOf(iterationIPage.getTotal()) : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, iterationIPage.getRecords());
+    }
+
+    //根据项目id查所有迭代
+    @GetMapping("/getAllIteration")
+    public ResponseResult<List<Iteration>> getAllIteration(Long projectId) {
+        List<Iteration> allIteration = iIterationService.getAllIteration(projectId);
+        int code = allIteration != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = allIteration != null ? "" : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, allIteration);
     }
 
 }

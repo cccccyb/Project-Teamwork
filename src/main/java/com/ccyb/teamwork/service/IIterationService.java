@@ -29,4 +29,6 @@ public interface IIterationService extends IService<Iteration> {
 
     Boolean updateIterationStatusById(Long iteId,Integer status);
 
+    List<Iteration> getAllIteration(Long projectId);
+
 }

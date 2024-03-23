@@ -57,7 +57,7 @@ export default {
     handleDialogClose() {
       projectStore.$state.dialogAddVisible=false
       this.$refs.addForm.resetForm()
-    },
+    }
   },
   computed:{
     ...mapState(useProjectStore,['dialogAddVisible'])

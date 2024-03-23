@@ -2,24 +2,19 @@ import {defineStore} from 'pinia';
 import request from "@/util/request.js";
 import {
     DATABASE_DELETE_ERROR,
-    DATABASE_DELETE_OK, DATABASE_SAVE_ERROR, DATABASE_SAVE_OK,
-    DATABASE_SELECT_OK, DATABASE_UPDATE_ERROR,
+    DATABASE_DELETE_OK,
+    DATABASE_SELECT_OK,
     DATABASE_UPDATE_OK
 } from "@/constants/Common.constants.js";
 import {ElMessage, ElMessageBox} from "element-plus";
 
-export const useProjRequirementStore = defineStore('projRequirement', {
+export const useProjItemStore = defineStore('projItem', {
     state: () => {
         return {
-            total: 0,
-            pageSize: 10,
-            currentPage: 1,
             loading: false,
             dialogAddVisible: false,
-            drawerVisible:false,
-            clickRequirement:{},
             multiDeleteSelection: [],
-            requireStatus: [
+            itemStatus: [
                 {
                     id: 0,
                     name: '未开始'
@@ -33,7 +28,7 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                     name: '已完成'
                 },
             ],
-            requirePriority: [
+            itemPriority: [
                 {
                     id: 5,
                     name: '紧急',
@@ -60,34 +55,30 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                     color: '#394049'
                 }
             ],
-            requireOrigins: [
+            bugStatus: [
+                {
+                    id: 0,
+                    name: '未开始'
+                },
                 {
                     id: 1,
-                    name: 'PM'
+                    name: '处理中'
                 },
                 {
                     id: 2,
-                    name: 'NPI新产品导入'
+                    name: '已解决'
                 },
                 {
                     id: 3,
-                    name: 'RD需求开发'
+                    name: '被拒绝'
                 },
                 {
                     id: 4,
-                    name: 'QA'
+                    name: '重新打开'
                 },
                 {
                     id: 5,
-                    name: 'CED'
-                },
-                {
-                    id: 6,
-                    name: '用户反馈'
-                },
-                {
-                    id: 7,
-                    name: '缺陷转需求'
+                    name: '已关闭'
                 }
             ],
             selectData: []
@@ -103,63 +94,17 @@ export const useProjRequirementStore = defineStore('projRequirement', {
         async getLoading() {
             this.loading = true
             await this.sleep(300)
-            await this.selectAllRequirement(
-                this.currentPage,
-                this.pageSize,
-                '',
-                '',
+            await this.selectAllItem(
                 '',
                 this.getCurrentPage()
             )
         },
-        //添加需求
-        handleAddRequire(addFormData) {
-            request.post('/requirement/addRequirement', addFormData).then((response) => {
-                if (response.data.code === DATABASE_SAVE_OK) {
-                    this.dialogAddVisible = false
-                    ElMessage({
-                        message: '添加成功.',
-                        type: 'success'
-                    })
-                } else if (response.data.code === DATABASE_SAVE_ERROR) {
-                    ElMessage({
-                        message: response.data.msg,
-                        type: 'error'
-                    })
-                }
-            })
-            this.getLoading().then(r => {})
-        },
-        //修改需求
-        handleUpdateRequire(updateRequire) {
-            request.put('/requirement/updateRequirement', updateRequire).then((response) => {
-                if (response.data.code === DATABASE_UPDATE_OK) {
-                    this.drawerVisible = false
-                    ElMessage({
-                        message: '修改成功.',
-                        type: 'success'
-                    })
-                } else if (response.data.code === DATABASE_UPDATE_ERROR) {
-                    ElMessage({
-                        message: response.data.msg,
-                        type: 'error'
-                    })
-                }
-            })
-            this.getLoading().then(r => {})
-        },
-        //根据当前项目id分页查询需求
-        selectAllRequirement(currentPage, pageSize, title, status, priority,iterationId) {
+        //根据当前项目id分页查询事项
+        selectAllItem(title, iterationId) {
             void request
-                .get('/requirement/page', {
+                .get('/project/getAllItem', {
                     params: {
-                        currentPage,
-                        pageSize,
                         title,
-                        status,
-                        priority,
-                        creatorId: '',
-                        processerId: '',
                         projectId: localStorage.getItem('pid'),
                         iterationId
                     }
@@ -167,6 +112,53 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                 .then((response) => {
                     if (response.data.code === DATABASE_SELECT_OK) {
                         this.selectData = response.data.data
+                        for (let i = 0; i < this.selectData.length; i++) {
+                            let data = this.selectData[i];
+                            if (data.item_type === 3) {
+                                switch (data.status) {
+                                    case 0:
+                                        data.status = '未开始';
+                                        break;
+                                    case 1:
+                                        data.status = '处理中';
+                                        break;
+                                    case 2:
+                                        data.status = '已解决';
+                                        break;
+                                    case 3:
+                                        data.status = '被拒绝';
+                                        break;
+                                    case 4:
+                                        data.status = '重新打开';
+                                        break;
+                                    case 5:
+                                        data.status = '已关闭';
+                                        break;
+                                    default:
+                                        data.status = '';
+                                        break;
+                                }
+                            } else {
+                                data.status = parseInt(data.status) === 0 ? '未开始' : parseInt(data.status) === 1 ? '进行中' : '已完成'
+                            }
+                            switch (data.priority) {
+                                case 2:
+                                    data.priority = '低';
+                                    break;
+                                case 3:
+                                    data.priority = '中';
+                                    break;
+                                case 4:
+                                    data.priority = '高';
+                                    break;
+                                case 5:
+                                    data.priority = '紧急';
+                                    break;
+                                default:
+                                    data.priority = '无';
+                                    break;
+                            }
+                        }
                         this.total = parseInt(response.data.msg)
                         this.loading = false
                     } else {
@@ -178,12 +170,13 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                     }
                 })
         },
-        // 根据需求id修改状态
-        async updateStatusById(reqId, status) {
+        // 根据事项类型修改状态
+        async updateStatusById(itemType, itemId, status) {
             await request
-                .get('/requirement/updateStatus', {
+                .get('/project/updateItemStatus', {
                     params: {
-                        reqId,
+                        itemType,
+                        itemId,
                         status
                     }
                 })
@@ -200,14 +193,15 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                         })
                     }
                 })
-            this.selectAllRequirement(this.currentPage, this.pageSize, '', '', '',this.getCurrentPage())
+            this.selectAllItem('', this.getCurrentPage())
         },
-        // 根据需求id修改优先级
-        async updatePriorityById(reqId, priority) {
+        // 根据事项类型修改优先级
+        async updatePriorityById(itemType, itemId, priority) {
             await request
-                .get('/requirement/updatePriority', {
+                .get('/project/updateItemPriority', {
                     params: {
-                        reqId,
+                        itemType,
+                        itemId,
                         priority
                     }
                 })
@@ -224,17 +218,22 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                         })
                     }
                 })
-            this.selectAllRequirement(this.currentPage, this.pageSize, '', '', '',this.getCurrentPage())
+            this.selectAllItem('', this.getCurrentPage())
         },
-        //根据需求id删除需求
-        handleDeleteById(reqId) {
+        //根据事项类型删除事项
+        handleDeleteById(itemType, itemId) {
             ElMessageBox.confirm('确定是否要删除？该操作将无法回退', '警告', {
                 confirmButtonText: '确定',
                 cancelButtonText: '我再想想',
                 type: 'warning'
             })
                 .then(() => {
-                    request.delete('/requirement/' + reqId).then((response) => {
+                    request.get('/project/deleteItem', {
+                        params: {
+                            itemType,
+                            itemId
+                        }
+                    }).then((response) => {
                         if (response.data.code === DATABASE_DELETE_OK) {
                             ElMessage({
                                 message: '删除成功.',
@@ -253,46 +252,9 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                 .catch(() => {
                 })
         },
-        //批量删除需求
-        deleteBatchByIds() {
-            const multiDeleteIds = []
-            if (this.multiDeleteSelection.length > 0) {
-                for (let i = 0; i < this.multiDeleteSelection.length; i++) {
-                    multiDeleteIds.push(this.multiDeleteSelection[i].id)
-                }
-                ElMessageBox.confirm('确定是否要批量删除？该操作将无法回退', '警告', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '我再想想',
-                    type: 'warning'
-                })
-                    .then(async () => {
-                        await request.post('/requirement/batch', multiDeleteIds).then((response) => {
-                            if (response.data.code === DATABASE_DELETE_OK) {
-                                ElMessage({
-                                    message: '删除成功.',
-                                    type: 'success'
-                                })
-                                this.getLoading()
-                            } else if (response.data.code === DATABASE_DELETE_ERROR) {
-                                ElMessage({
-                                    message: response.data.msg,
-                                    type: 'error'
-                                })
-                            }
-                        })
-                    })
-                    .catch(() => {
-                    })
-            } else {
-                ElMessage({
-                    message: '请至少选择一项进行删除',
-                    type: 'warning'
-                })
-            }
-        },
         //判断当前是否位于具体的迭代中
         getCurrentPage() {
-            return localStorage.getItem('iterateId')===null?'':localStorage.getItem('iterateId')
+            return localStorage.getItem('iterateId') === null ? '' : localStorage.getItem('iterateId')
         },
     }
 })

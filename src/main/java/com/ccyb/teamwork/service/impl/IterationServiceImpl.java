@@ -1,5 +1,6 @@
 package com.ccyb.teamwork.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Iteration;
@@ -65,5 +66,15 @@ public class IterationServiceImpl extends ServiceImpl<IterationMapper, Iteration
         LambdaUpdateWrapper<Iteration> luw = new LambdaUpdateWrapper<>();
         luw.eq(Iteration::getId, iteId).set(Iteration::getStatus, status);
         return iterationMapper.update(null, luw) > 0;
+    }
+
+    @Override
+    public List<Iteration> getAllIteration(Long projectId) {
+        if (null==projectId){
+            return null;
+        }
+        LambdaQueryWrapper<Iteration> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Iteration::getProjectId, projectId);
+        return iterationMapper.selectList(lqw);
     }
 }

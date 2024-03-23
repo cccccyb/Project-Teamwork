@@ -56,6 +56,7 @@ public class RequirementController {
     //修改需求
     @PutMapping("/updateRequirement")
     public ResponseResult<?> updateRequirement(@RequestBody Requirement requirement) {
+        System.out.println("666:"+requirement.toString());
         Boolean updateById = requirementService.updateRequirement(requirement);
         String msg = updateById ? "" : "数据修改失败，请重试！";
         return ResponseResult.build(updateById ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);

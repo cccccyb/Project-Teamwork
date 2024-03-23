@@ -466,6 +466,7 @@ export default {
   font-weight: bolder;
   font-size: 16px;
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .el-tag {

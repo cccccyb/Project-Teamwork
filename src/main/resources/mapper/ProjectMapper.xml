@@ -56,4 +56,139 @@
         </association>
     </resultMap>
 
+
+    <!--   分页查询所有需求、任务、缺陷及模糊查询-->
+    <select id="selectAllItem" resultMap="ItemAllResultMap" resultType="requirement">
+        select *
+        from (select u1.username creName,
+        u2.username proName,
+        p.id pId,
+        p.name pName,
+        ite.id iteId,
+        ite.name iteName,
+        req.id,
+        req.title,
+        req.status,
+        req.priority,
+        req.create_time,
+        req.modify_time,
+        req.item_type itemType,
+        req.iteration_id
+        from t_requirement req,
+        t_user u1,
+        t_user u2,
+        t_project p,
+        t_iteration ite
+        <where>req.creator_id = u1.id
+            and req.processer_id = u2.id
+            and req.project_id = p.id
+            and req.iteration_id = ite.id
+            and req.deleted = 0
+            <if test="null!=title and title!=''">
+                and req.title like concat(concat("%",#{title}),"%")
+            </if>
+            <if test="null!=projectId">
+                and p.id = #{projectId}
+            </if>
+            <if test="null!=iterationId">
+                and ite.id= #{iterationId}
+            </if>
+        </where>
+        ) as t1
+        union all
+        select *
+        from (select u1.username creName,
+        u2.username proName,
+        p.id pId,
+        p.name pName,
+        ite.id iteId,
+        ite.name iteName,
+        t.id,
+        t.title,
+        t.status,
+        t.priority,
+        t.create_time,
+        t.modify_time,
+        t.item_type itemType,
+        t.iteration_id
+        from t_task t,
+        t_user u1,
+        t_user u2,
+        t_project p,
+        t_iteration ite
+        <where>t.creator_id = u1.id
+            and t.processer_id = u2.id
+            and t.project_id = p.id
+            and t.iteration_id = ite.id
+            and t.deleted = 0
+            <if test="null!=title and title!=''">
+                and t.title like concat(concat("%",#{title}),"%")
+            </if>
+            <if test="null!=projectId">
+                and p.id = #{projectId}
+            </if>
+            <if test="null!=iterationId">
+                and ite.id= #{iterationId}
+            </if>
+        </where>
+        ) as t2
+        union all
+        select *
+        from (select u1.username creName,
+        u2.username proName,
+        p.id pId,
+        p.name pName,
+        ite.id iteId,
+        ite.name iteName,
+        b.id,
+        b.title,
+        b.status,
+        b.priority,
+        b.create_time,
+        b.modify_time,
+        b.item_type itemType,
+        b.discovery_iterate_id
+        from t_bug b,
+        t_user u1,
+        t_user u2,
+        t_project p,
+        t_iteration ite
+        <where>b.creator_id = u1.id
+            and b.processer_id = u2.id
+            and b.project_id = p.id
+            and b.discovery_iterate_id = ite.id
+            and b.deleted = 0
+            <if test="null!=title and title!=''">
+                and b.title like concat(concat("%",#{title}),"%")
+            </if>
+            <if test="null!=projectId">
+                and p.id = #{projectId}
+            </if>
+            <if test="null!=iterationId">
+                and ite.id= #{iterationId}
+            </if>
+        </where>
+        ) as t3
+
+        order by create_time desc;
+    </select>
+    <resultMap id="ItemAllResultMap" type="requirement" autoMapping="true">
+        <id property="id" column="id"/>
+        <result property="item_type" column="itemType"/>
+        <association property="creator" javaType="user">
+            <result property="username" column="creName"/>
+        </association>
+        <association property="processer" javaType="user">
+            <result property="username" column="proName"/>
+        </association>
+        <association property="project" javaType="project">
+            <id property="id" column="pId"/>
+            <result property="name" column="pName"/>
+        </association>
+        <association property="iteration" javaType="iteration">
+            <id property="id" column="iteId"/>
+            <result property="name" column="iteName"/>
+        </association>
+    </resultMap>
+
 </mapper>

@@ -218,7 +218,7 @@ export const useProjectStore = defineStore('project', {
                 }
             })
             this.getLoading().then(r => {})
-        },
+        }
     }
 })
 

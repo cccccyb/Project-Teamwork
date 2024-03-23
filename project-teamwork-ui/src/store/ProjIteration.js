@@ -17,6 +17,7 @@ export const useProjIterationStore=defineStore('projIteration',{
             dialogAddVisible: false,
             multiDeleteSelection: [],
             currentIteration:{},
+            allIterationList:[],
             iterationStatus: [
                 {
                     id: 0,
@@ -173,6 +174,14 @@ export const useProjIterationStore=defineStore('projIteration',{
         getCurrentIteration(iteId) {
             request.get('/iteration/'+iteId).then((response) => {
                 this.currentIteration = response.data.data
+            })
+        },
+        //获得所有迭代
+        async getAllIteration(projectId) {
+            await request.get('/iteration/getAllIteration',{params:{
+                projectId
+                }}).then((response) => {
+                this.allIterationList = response.data.data
             })
         }
     }

@@ -30,7 +30,7 @@
         p.name pName,
         ite.id iteId,
         ite.name iteName,
-        req.*
+        req.id, req.title, req.description, req.status, req.priority, req.create_time, req.modify_time, req.end_time, req.creator_id, req.processer_id, req.iteration_id iId, req.project_id, req.origin, req.item_type, req.deleted, req.version
         from t_requirement req
         left join t_user u1 on req.creator_id = u1.id
         left join t_user u2 on req.processer_id = u2.id
@@ -64,6 +64,7 @@
     </select>
     <resultMap id="RequirementAllResultMap" type="requirement" autoMapping="true">
         <id property="id" column="id"/>
+        <result property="iteration_id" column="iId"/>
         <association property="creator" javaType="user" autoMapping="true">
             <id property="id" column="ucId"/>
             <result property="username" column="ucName"/>

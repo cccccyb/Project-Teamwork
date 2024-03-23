@@ -73,9 +73,9 @@
       </el-dialog>
 
       <el-form-item class="formFooter">
+        <el-button type="info" @click="resetForm()">重置</el-button>
         <el-button type="primary" @click="submitForm">确定</el-button>
         <el-button type="primary" @click="closeForm">取消</el-button>
-        <el-button @click="resetForm()">重置</el-button>
       </el-form-item>
     </el-form>
   </el-scrollbar>

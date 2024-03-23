@@ -2,12 +2,11 @@ package com.ccyb.teamwork.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.ProjectUser;
-import com.ccyb.teamwork.mapper.ProjectMapper;
-import com.ccyb.teamwork.mapper.ProjectUserMapper;
+import com.ccyb.teamwork.entity.Requirement;
+import com.ccyb.teamwork.mapper.*;
 import com.ccyb.teamwork.service.IProjectService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +34,15 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
     @Autowired
     ProjectUserMapper projectUserMapper;
+
+    @Autowired
+    RequirementMapper requirementMapper;
+
+    @Autowired
+    TaskMapper taskMapper;
+
+    @Autowired
+    BugMapper bugMapper;
 
     @Override
     public Boolean addProject(Project project) {
@@ -104,6 +112,11 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     @Override
+    public List<Requirement> selectAllItem(String title, Long projectId, Long iterationId) {
+        return projectMapper.selectAllItem(title, projectId, iterationId);
+    }
+
+    @Override
     public Boolean updateProjectStatusById(Long pid, Integer status) {
         if ((null == pid) || (null == status)) {
             return false;
@@ -112,6 +125,5 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         luw.eq(Project::getId, pid).set(Project::getStatus, status);
         return projectMapper.update(null, luw) > 0;
     }
-
 
 }

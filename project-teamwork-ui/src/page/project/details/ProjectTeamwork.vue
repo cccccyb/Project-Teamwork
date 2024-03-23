@@ -2,7 +2,7 @@
   <div>
     <el-tabs v-model="activeName">
       <el-tab-pane label="迭代&nbsp;&nbsp;&nbsp;|" name="iteration"><ProjIteration/></el-tab-pane>
-      <el-tab-pane label="全部事项" name="all">Config</el-tab-pane>
+      <el-tab-pane label="全部事项" name="all"><ProjectItemTab/></el-tab-pane>
       <el-tab-pane label="需求" name="requirement"><ProjectRequireTab/></el-tab-pane>
       <el-tab-pane label="任务" name="task"><ProjectTaskTab/></el-tab-pane>
       <el-tab-pane label="缺陷" name="bug"><ProjectBugTab/></el-tab-pane>
@@ -15,8 +15,9 @@ import ProjIteration from "@/components/iteration/Proj-Iteration.vue";
 import ProjectRequireTab from "@/components/require/ProjectRequireTab.vue";
 import ProjectTaskTab from "@/components/task/ProjectTaskTab.vue";
 import ProjectBugTab from "@/components/bug/ProjectBugTab.vue";
+import ProjectItemTab from "@/components/item/ProjectItemTab.vue";
 export default {
-  components: {ProjIteration,ProjectRequireTab,ProjectTaskTab,ProjectBugTab},
+  components: {ProjIteration,ProjectItemTab,ProjectRequireTab,ProjectTaskTab,ProjectBugTab},
   data() {
     return {
       activeName:'iteration'

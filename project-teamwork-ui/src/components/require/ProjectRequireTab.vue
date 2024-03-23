@@ -65,7 +65,8 @@
         </el-button
         >
       </div>
-      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="" style="font-size: 16px"
+      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="openAddRequireDialog"
+                 style="font-size: 16px"
       >
         创建需求
       </el-button
@@ -119,7 +120,7 @@
             width="320"
         >
           <template #default="scope">
-            <div style="display: flex;align-items: center">
+            <div style="display: flex;align-items: center" @click="openRequireDrawer(scope.row)">
               <SvgIcons width="22px" height="22px" color="#ffffff" icon-class="require_menu"/>
               <a class="jump">{{ formatterName(scope.row.title) }} </a>
             </div>
@@ -149,7 +150,7 @@
                     :color="getPriorityColor(scope.row.priority)"
                 >
                 </el-tag>
-                <span style="color: #181818;font-size: 17px">{{ scope.row.priority }}</span>
+                <span style="color: #181818;font-size: 17px">{{ formatPriority(scope.row.priority) }}</span>
               </template>
             </el-select>
           </template>
@@ -184,14 +185,14 @@
                     style="font-size: 15px"
                     size="small"
                     :type="
-                        scope.row.status === '未开始'
+                        scope.row.status === 0
                             ? 'primary'
-                            : scope.row.status === '进行中'
+                            : scope.row.status === 1
                             ? 'warning'
                             : 'success'
                     "
                 >
-                  {{ scope.row.status }}
+                  {{ formatStatus(scope.row.status) }}
                 </el-tag>
               </template>
             </el-select>
@@ -265,12 +266,6 @@
         </el-table-column>
         <el-table-column label="操作" align="center" fixed="right">
           <template #default="scope">
-            <!--        <el-button size="small" color="#626aef" @click="handleShow(scope.row)"-->
-            <!--        >查看-->
-            <!--        </el-button>-->
-            <!--        <el-button size="small" type="primary" @click="handleEdit(scope.row)"-->
-            <!--        >编辑-->
-            <!--        </el-button>-->
             <el-button size="small" type="danger" @click="handleDeleteById(scope.row.id)"
             >删除
             </el-button>
@@ -292,8 +287,34 @@
         >
         </el-pagination>
       </div>
+
     </div>
 
+    <!--添加需求对话框-->
+    <el-dialog
+        v-model="this.dialogAddVisible"
+        center
+        :close-on-click-modal="false"
+        :before-close="handleDialogClose"
+        style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
+    >
+      <template #header>
+        <h2 style="color: rgba(71,138,173,0.85);font-size: 22px;font-weight: bolder">添加需求</h2>
+      </template>
+      <RequireAddForm ref="addRequireForm"/>
+    </el-dialog>
+
+    <!-- 展示and编辑需求抽屉   -->
+    <div v-if="drawerVisible">
+      <el-drawer
+          ref="drawerRef"
+          v-model="drawerVisible"
+          @close="handleDrawerClose"
+          size="45%"
+      >
+        <RequireDrawerForm ref="drawerRequireForm"/>
+      </el-drawer>
+    </div>
 
   </div>
 </template>
@@ -302,14 +323,16 @@
 import {useProjRequirementStore} from "@/store/ProjRequirement.js";
 import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
+import RequireAddForm from "@/components/require/RequireAddForm.vue";
+import RequireDrawerForm from "@/components/require/RequireDrawerForm.vue";
 
 const projRequirementStore = useProjRequirementStore()
 
 export default {
   computed: {
-    ...mapState(useProjRequirementStore, ['requireStatus', 'requirePriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData'])
+    ...mapState(useProjRequirementStore, ['requireStatus', 'requirePriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData', 'dialogAddVisible', 'drawerVisible'])
   },
-  components: {DeleteFilled, RefreshLeft},
+  components: {DeleteFilled, RefreshLeft, RequireAddForm, RequireDrawerForm},
   data() {
     return {
       input_search: '',
@@ -319,6 +342,24 @@ export default {
     }
   },
   methods: {
+    // 打开添加需求对话框
+    openAddRequireDialog() {
+      projRequirementStore.$state.dialogAddVisible = true
+      this.$refs.addRequireForm.resetForm()
+    },
+    handleDialogClose() {
+      projRequirementStore.$state.dialogAddVisible = false
+      this.$refs.addRequireForm.resetForm()
+    },
+    // 打开需求抽屉
+    openRequireDrawer(row) {
+      //若直接赋值是浅拷贝，编辑修改时原表格数据也跟着改变
+      projRequirementStore.$state.clickRequirement = JSON.parse(JSON.stringify(row))
+      projRequirementStore.$state.drawerVisible = true
+    },
+    handleDrawerClose() {
+      projRequirementStore.$state.drawerVisible = false
+    },
     //表格多选，批量删除
     handleSelectionChange(val) {
       // val的值为所勾选行的数组对象
@@ -381,7 +422,7 @@ export default {
       this.require_priority = ''
       projRequirementStore.getLoading()
     },
-    //批量删除项目
+    //批量删除需求
     deleteBatchByIds() {
       projRequirementStore.deleteBatchByIds()
     },
@@ -394,16 +435,33 @@ export default {
     //获得优先级颜色
     getPriorityColor(priority) {
       switch (priority) {
-        case '低':
+        case 2:
           return '#1EC79D';
-        case '中':
+        case 3:
           return '#FFDE0A';
-        case '高':
+        case 4:
           return '#FF6600';
-        case '紧急':
+        case 5:
           return '#E63415';
         default:
           return '#394049';
+      }
+    },
+    formatStatus(status) {
+      return status === 0 ? '未开始' : status === 1 ? '进行中' : '已完成'
+    },
+    formatPriority(priority){
+      switch (priority) {
+        case 2:
+          return '低'
+        case 3:
+          return '中'
+        case 4:
+          return '高'
+        case 5:
+          return '紧急'
+        default:
+          return '无'
       }
     }
   },
@@ -413,7 +471,7 @@ export default {
     this.require_priority = ''
     projRequirementStore.$state.currentPage = 1
     projRequirementStore.$state.pageSize = 10
-    this.isShowAdd_bt=this.$route.name!=='projectIteration'
+    this.isShowAdd_bt = this.$route.name !== 'projectIteration'
     projRequirementStore.selectAllRequirement(this.currentPage, this.pageSize, '', '', '', projRequirementStore.getCurrentPage())
   }
 }
@@ -465,6 +523,7 @@ export default {
   font-weight: bolder;
   font-size: 16px;
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .el-tag {

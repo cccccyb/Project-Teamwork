@@ -3,6 +3,7 @@ package com.ccyb.teamwork.mapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Project;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ccyb.teamwork.entity.Requirement;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.time.LocalDateTime;
@@ -21,5 +22,9 @@ public interface ProjectMapper extends BaseMapper<Project> {
     Project selectProjectById(Long pid);
 
     IPage<Project> selectPageProject(IPage<?> page, String name, Integer status, LocalDateTime startTime, LocalDateTime endTime, Long creatorId);
+
+    List<Requirement> selectAllItem(String title, Long projectId, Long iterationId);
+
+
 
 }

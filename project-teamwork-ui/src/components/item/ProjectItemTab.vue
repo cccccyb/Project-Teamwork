@@ -5,7 +5,7 @@
         <el-input
             v-model="input_search"
             style="width: 300px;height: 40px"
-            placeholder="搜索任务"
+            placeholder="搜索事项"
             class="input_search"
         >
           <template #append>
@@ -16,46 +16,6 @@
             </el-button>
           </template>
         </el-input>
-        <span style="margin-left: 30px;line-height: 38px;font-size: 18px">状态：</span>
-        <el-select v-model="task_status" placeholder="--请选择--" size="large" style="width: 150px;"
-                   @change="selectByCondition"
-        >
-          <el-option
-              v-for="item in taskStatus"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-          >
-            <el-tag
-                disable-transitions
-                style="font-size: 15px"
-                size="small"
-                :type="
-                        item.id === 0
-                            ? 'primary'
-                            : item.id === 1
-                            ? 'warning'
-                            : 'success'
-                    "
-            >
-              {{ item.name }}
-            </el-tag>
-          </el-option>
-        </el-select>
-        <span style="margin-left: 30px;line-height: 38px;font-size: 18px">优先级：</span>
-        <el-select v-model="task_priority" placeholder="--请选择--" size="large" style="width: 150px;"
-                   @change="selectByCondition"
-        >
-          <el-option
-              v-for="item in taskPriority"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-          >
-            <el-tag :color="item.color" style="margin-right: 8px" size="small"/>
-            {{ item.name }}
-          </el-option>
-        </el-select>
         <el-button type="primary" :size="'default'" style="padding: 0 8px;margin-left: 30px;line-height: 38px"
                    @click="resetForm">
           <el-icon size="25">
@@ -65,19 +25,6 @@
         </el-button
         >
       </div>
-      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="" style="font-size: 16px"
-      >
-        创建任务
-      </el-button
-      >
-      <el-button type="primary" :size="'large'" @click="deleteBatchByIds" style="padding: 0 8px;font-size: 16px"
-      >
-        <el-icon size="19">
-          <DeleteFilled/>
-        </el-icon>
-        批量删除
-      </el-button
-      >
     </div>
 
     <div class="table_show">
@@ -96,9 +43,7 @@
             'text-align': 'center',
             'font-size': '18px'
         }"
-          @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" align="center"/>
         <el-table-column
             prop="id"
             label="引用ID"
@@ -113,14 +58,14 @@
         </el-table-column>
         <el-table-column
             prop="title"
-            label="任务标题"
+            label="事项标题"
             show-overflow-tooltip
             fixed="left"
             width="320"
         >
           <template #default="scope">
             <div style="display: flex;align-items: center">
-              <SvgIcons width="22px" height="22px" color="#ffffff" icon-class="task_menu"/>
+              <SvgIcons width="22px" height="22px" color="#ffffff" :icon-class="getItemIcon(scope.row.item_type)"/>
               <a class="jump">{{ formatterName(scope.row.title) }} </a>
             </div>
           </template>
@@ -132,9 +77,10 @@
             width="125"
         >
           <template #default="scope">
-            <el-select placeholder="" style="width: 110px" @change="changePriority($event,scope.row.id)">
+            <el-select placeholder="" style="width: 110px"
+                       @change="changePriority($event,scope.row.item_type,scope.row.id)">
               <el-option
-                  v-for="item in taskPriority"
+                  v-for="item in itemPriority"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -154,19 +100,50 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" align="center" width="140">
+        <el-table-column prop="status" label="状态" align="center" width="150">
           <template #default="scope">
-            <el-select placeholder="" size="large" @change="changeStatus($event,scope.row.id)">
+            <!--   缺陷状态         -->
+            <el-select v-if='scope.row.item_type===3' placeholder="" size="large"
+                       @change="changeStatus($event,scope.row.item_type,scope.row.id)">
               <el-option
-                  v-for="item in taskStatus"
+                  v-for="item in bugStatus"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
               >
                 <el-tag
                     disable-transitions
+                    style="font-size: 16px"
+                    size="large"
+                    :color="getStatusColor(item.name)"
+                >
+                  <span style="color: white;font-weight: bolder">{{ item.name }}</span>
+                </el-tag>
+              </el-option>
+              <template #prefix>
+                <el-tag
+                    disable-transitions
                     style="font-size: 15px"
-                    size="small"
+                    size="default"
+                    :color="getStatusColor(scope.row.status)"
+                >
+                  <span style="color: white;font-weight: bolder">{{ scope.row.status }}</span>
+                </el-tag>
+              </template>
+            </el-select>
+            <!--  需求or任务状态  -->
+            <el-select v-else placeholder="" size="large"
+                       @change="changeStatus($event,scope.row.item_type,scope.row.id)">
+              <el-option
+                  v-for="item in itemStatus"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+              >
+                <el-tag
+                    disable-transitions
+                    style="font-size: 16px"
+                    size="default"
                     :type="
                         item.id === 0
                             ? 'primary'
@@ -182,7 +159,7 @@
                 <el-tag
                     disable-transitions
                     style="font-size: 15px"
-                    size="small"
+                    size="default"
                     :type="
                         scope.row.status === '未开始'
                             ? 'primary'
@@ -226,18 +203,6 @@
           </template>
         </el-table-column>
         <el-table-column
-            prop="endTime"
-            label="截止日期"
-            sortable
-            :formatter="formatDate"
-            align="center"
-            width="200"
-        >
-          <template #default="scope">
-            <el-tag disable-transitions type="info" size="large">{{ formatDate(scope.row, scope.column) }}截止</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
             prop="creator.username"
             label="创建人"
             align="center"
@@ -259,33 +224,12 @@
         </el-table-column>
         <el-table-column label="操作" align="center" fixed="right">
           <template #default="scope">
-            <!--        <el-button size="small" color="#626aef" @click="handleShow(scope.row)"-->
-            <!--        >查看-->
-            <!--        </el-button>-->
-            <!--        <el-button size="small" type="primary" @click="handleEdit(scope.row)"-->
-            <!--        >编辑-->
-            <!--        </el-button>-->
-            <el-button size="small" type="danger" @click="handleDeleteById(scope.row.id)"
+            <el-button size="small" type="danger" @click="handleDeleteById(scope.row.item_type,scope.row.id)"
             >删除
             </el-button>
           </template>
         </el-table-column>
       </el-table>
-      <!--      分页条-->
-      <div class="pagination">
-        <el-pagination
-            style="text-align: center"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            layout="total, sizes, prev, pager, next, jumper"
-            background
-            :page-sizes="[10, 20, 50, 100]"
-            :total="total"
-            v-model:current-page="this.currentPage"
-            v-model:page-size="this.pageSize"
-        >
-        </el-pagination>
-      </div>
     </div>
 
 
@@ -293,40 +237,32 @@
 </template>
 
 <script>
-import {useProjTaskStore} from "@/store/ProjTask.js";
+import {useProjItemStore} from "@/store/ProjItem.js";
 import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
 
-const projTaskStore = useProjTaskStore()
+const projItemStore = useProjItemStore()
 
 export default {
   computed: {
-    ...mapState(useProjTaskStore, ['taskStatus', 'taskPriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData'])
+    ...mapState(useProjItemStore, ['itemStatus', 'itemPriority', 'loading', 'multiDeleteSelection', 'selectData', 'bugStatus'])
   },
   components: {DeleteFilled, RefreshLeft},
   data() {
     return {
-      input_search: '',
-      task_status: '',
-      task_priority: '',
-      isShowAdd_bt: false
+      input_search: ''
     }
   },
   methods: {
-    //表格多选，批量删除
-    handleSelectionChange(val) {
-      // val的值为所勾选行的数组对象
-      projTaskStore.$state.multiDeleteSelection = val
+    //修改事项状态
+    changeStatus(value, item_type, id) {
+      projItemStore.$state.loading = true;
+      projItemStore.updateStatusById(item_type, id, value)
     },
-    //修改任务状态
-    changeStatus(value, id) {
-      projTaskStore.$state.loading = true;
-      projTaskStore.updateStatusById(id, value)
-    },
-    //修改任务优先级
-    changePriority(value, id) {
-      projTaskStore.$state.loading = true;
-      projTaskStore.updatePriorityById(id, value)
+    //修改事项优先级
+    changePriority(value, item_type, id) {
+      projItemStore.$state.loading = true;
+      projItemStore.updatePriorityById(item_type, id, value)
     },
     formatterName(name) {
       if (name.length > 20) {
@@ -341,49 +277,19 @@ export default {
       if (data == null) return '暂无数据'
       return new Date(data).toLocaleString();
     },
-    handleDeleteById(deleteId) {
-      projTaskStore.handleDeleteById(deleteId)
-    },
-    handleSizeChange(size) {
-      // pageSize：每页多少条数据
-      projTaskStore.$state.pageSize = size
-      projTaskStore.selectAllTask(
-          this.currentPage,
-          parseInt(size),
-          this.input_search,
-          this.task_status,
-          this.task_priority,
-          projTaskStore.getCurrentPage()
-      )
-    },
-    handleCurrentChange(current) {
-      // currentPage：当前第几页
-      projTaskStore.$state.currentPage = current
-      projTaskStore.selectAllTask(
-          parseInt(current),
-          this.pageSize,
-          this.input_search,
-          this.task_status,
-          this.task_priority,
-          projTaskStore.getCurrentPage()
-      )
+    handleDeleteById(item_type, deleteId) {
+      projItemStore.handleDeleteById(item_type, deleteId)
     },
     //重置按钮操作
     resetForm() {
       this.input_search = ''
-      this.task_status = ''
-      this.task_priority = ''
-      projTaskStore.getLoading()
-    },
-    //批量删除项目
-    deleteBatchByIds() {
-      projTaskStore.deleteBatchByIds()
+      projItemStore.getLoading()
     },
     //模糊查询
     async selectByCondition() {
-      projTaskStore.$state.loading = true
-      await projTaskStore.sleep(300)
-      projTaskStore.selectAllTask(this.currentPage, this.pageSize, this.input_search, this.task_status, this.task_priority, projTaskStore.getCurrentPage())
+      projItemStore.$state.loading = true
+      await projItemStore.sleep(300)
+      projItemStore.selectAllItem(this.input_search, projItemStore.getCurrentPage())
     },
     //获得优先级颜色
     getPriorityColor(priority) {
@@ -399,16 +305,41 @@ export default {
         default:
           return '#394049';
       }
+    },
+    //获得事项类型图标
+    getItemIcon(item_type) {
+      switch (item_type) {
+        case 1:
+          return 'require_menu'
+        case 2:
+          return 'task_menu'
+        case 3:
+          return 'bug_menu'
+      }
+    },
+    //获得bug状态颜色
+    getStatusColor(status) {
+      switch (status) {
+        case '未开始':
+          return '#409dfd';
+        case '处理中':
+          return 'rgba(110,215,206,0.85)';
+        case '已解决':
+          return '#7ac555';
+        case '被拒绝':
+          return '#e7a94b';
+        case '重新打开':
+          return '#bd6a5c';
+        case '已关闭':
+          return '#a1a6ad';
+        default:
+          return '#645151';
+      }
     }
   },
   created() {
     this.input_search = ''
-    this.task_status = ''
-    this.task_priority = ''
-    projTaskStore.$state.currentPage = 1
-    projTaskStore.$state.pageSize = 10
-    this.isShowAdd_bt=this.$route.name!=='projectIteration'
-    projTaskStore.selectAllTask(this.currentPage, this.pageSize, '', '', '', projTaskStore.getCurrentPage())
+    projItemStore.selectAllItem('', projItemStore.getCurrentPage())
   }
 }
 </script>
@@ -439,12 +370,6 @@ export default {
 
 .el-table {
   margin-top: 20px;
-}
-
-.pagination {
-  display: flex;
-  margin: 20px 0;
-  justify-content: center;
 }
 
 .jump {

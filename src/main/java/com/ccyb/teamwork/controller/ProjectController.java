@@ -4,17 +4,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.ccyb.teamwork.entity.Project;
+import com.ccyb.teamwork.entity.Requirement;
 import com.ccyb.teamwork.entity.common.ResponseCode;
 import com.ccyb.teamwork.entity.common.ResponseResult;
-import com.ccyb.teamwork.service.IProjectService;
-import com.ccyb.teamwork.service.IProjectUserService;
+import com.ccyb.teamwork.service.*;
 import com.ccyb.teamwork.util.WebUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -31,6 +30,12 @@ public class ProjectController {
     IProjectService projectService;
     @Autowired
     IProjectUserService projectUserService;
+    @Autowired
+    IRequirementService requirementService;
+    @Autowired
+    ITaskService taskService;
+    @Autowired
+    IBugService bugService;
 
     //添加项目
     @PostMapping("/addProject")
@@ -106,6 +111,55 @@ public class ProjectController {
         return ResponseResult.build(code, msg, projectIPage.getRecords());
     }
 
+    //分页查询所有需求、任务、缺陷及模糊查询
+    @GetMapping("/getAllItem")
+    public ResponseResult<List<?>> selectAllItem(String title, String projectId,String iterationId) {
+        Long pId = StringUtils.hasText(projectId)?Long.parseLong(projectId):null;
+        Long iteId = StringUtils.hasText(iterationId)?Long.parseLong(iterationId):null;
+        List<Requirement> selectAllItem = projectService.selectAllItem(title.trim(), pId, iteId);
+        int code = selectAllItem != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = selectAllItem != null ? "" : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, selectAllItem);
+    }
+
+    //根据事项类型删除事项
+    @GetMapping("/deleteItem")
+    public ResponseResult<?> deleteItemById(Integer itemType,Long itemId){
+        Boolean removeItem = switch (itemType) {
+            case 1 -> requirementService.deleteById(itemId);
+            case 2 -> taskService.deleteById(itemId);
+            case 3 -> bugService.deleteById(itemId);
+            default -> false;
+        };
+        String msg = removeItem ? "" : "数据删除失败，请重试！";
+        return ResponseResult.build(removeItem ? ResponseCode.DATABASE_DELETE_OK : ResponseCode.DATABASE_DELETE_ERROR, msg, null);
+    }
+
+    //根据事项类型更改事项状态
+    @GetMapping("/updateItemStatus")
+    public ResponseResult<?> updateItemStatus(Integer itemType,Long itemId,Integer status){
+        Boolean updateItemPriority = switch (itemType) {
+            case 1 -> requirementService.updateRequirementStatusById(itemId,status);
+            case 2 -> taskService.updateTaskStatusById(itemId,status);
+            case 3 -> bugService.updateBugStatusById(itemId,status);
+            default -> false;
+        };
+        String msg = updateItemPriority ? "" : "数据修改失败，请重试！";
+        return ResponseResult.build(updateItemPriority ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
+    }
+
+    //根据事项类型更改事项优先级
+    @GetMapping("/updateItemPriority")
+    public ResponseResult<?> updateItemPriority(Integer itemType,Long itemId,Integer priority){
+        Boolean updateItemPriority = switch (itemType) {
+            case 1 -> requirementService.updateRequirementPriorityById(itemId,priority);
+            case 2 -> taskService.updateTaskPriorityById(itemId,priority);
+            case 3 -> bugService.updateBugPriorityById(itemId,priority);
+            default -> false;
+        };
+        String msg = updateItemPriority ? "" : "数据修改失败，请重试！";
+        return ResponseResult.build(updateItemPriority ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
+    }
 
 
 }
