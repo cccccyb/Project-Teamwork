@@ -15,21 +15,43 @@ export const useProjRequirementStore = defineStore('projRequirement', {
             pageSize: 10,
             currentPage: 1,
             loading: false,
-            dialogAddVisible: false,
+            dialogAddRequire: false,
             drawerVisible:false,
             clickRequirement:{},
+            allRequirementList:[],
+            relationBugsList:[],
             multiDeleteSelection: [],
             requireStatus: [
                 {
                     id: 0,
-                    name: '未开始'
+                    name: '待处理'
                 },
                 {
                     id: 1,
-                    name: '进行中'
+                    name: '待评审'
                 },
                 {
                     id: 2,
+                    name: '开发中'
+                },
+                {
+                    id: 3,
+                    name: '待验收'
+                },
+                {
+                    id: 4,
+                    name: '验收中'
+                },
+                {
+                    id: 5,
+                    name: '待测试'
+                },
+                {
+                    id: 6,
+                    name: '变更'
+                },
+                {
+                    id: 7,
                     name: '已完成'
                 },
             ],
@@ -116,7 +138,7 @@ export const useProjRequirementStore = defineStore('projRequirement', {
         handleAddRequire(addFormData) {
             request.post('/requirement/addRequirement', addFormData).then((response) => {
                 if (response.data.code === DATABASE_SAVE_OK) {
-                    this.dialogAddVisible = false
+                    this.dialogAddRequire = false
                     ElMessage({
                         message: '添加成功.',
                         type: 'success'
@@ -128,7 +150,6 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                     })
                 }
             })
-            this.getLoading().then(r => {})
         },
         //修改需求
         handleUpdateRequire(updateRequire) {
@@ -290,10 +311,45 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                 })
             }
         },
+        //根据需求id查所关联的缺陷
+        selectRelationBugById(){
+           request.get('/bug/getRelationBugs',{params:{
+                   requireId:this.clickRequirement.id
+                }}).then((response) => {
+                this.relationBugsList = response.data.data
+            })
+        },
         //判断当前是否位于具体的迭代中
         getCurrentPage() {
             return localStorage.getItem('iterateId')===null?'':localStorage.getItem('iterateId')
         },
+        //获得所有需求
+        async getAllRequirement(projectId) {
+            await request.get('/requirement/getAllRequirement',{params:{
+                    projectId
+                }}).then((response) => {
+                this.allRequirementList = response.data.data
+            })
+        },
+        //根据需求id添加关联缺陷
+        addRelationBugById(bugsIdList) {
+            request.post('/bug/addRelationBugs/'+this.clickRequirement.id, bugsIdList
+                ).then((response) => {
+                if (response.data.code === DATABASE_SAVE_OK) {
+                    this.dialogAddRequire = false
+                    ElMessage({
+                        message: response.data.msg,
+                        type: 'success'
+                    })
+                    this.selectRelationBugById()
+                } else if (response.data.code === DATABASE_SAVE_ERROR) {
+                    ElMessage({
+                        message: response.data.msg,
+                        type: 'error'
+                    })
+                }
+            })
+        }
     }
 })
 

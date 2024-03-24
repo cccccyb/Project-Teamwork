@@ -25,6 +25,20 @@
         </el-button
         >
       </div>
+      <el-dropdown trigger="click" placement="bottom">
+        <el-button v-if="isShowAdd_bt" type="primary" :size="'default'"
+                   style="font-size: 16px;margin-right: 20px">
+          新建
+        </el-button>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item divided @click="openItem(1)"><SvgIcons width="22px" height="22px" color="#ffffff" icon-class="require_menu"/><span style="font-size: 16px;margin-left: 5px;font-weight: bold">需求</span></el-dropdown-item>
+            <el-dropdown-item divided @click="openItem(2)"><SvgIcons width="22px" height="22px" color="#ffffff" icon-class="task_menu"/><span style="font-size: 16px;margin-left: 5px;font-weight: bold">任务</span></el-dropdown-item>
+            <el-dropdown-item divided @click="openItem(3)"><SvgIcons width="22px" height="22px" color="#ffffff" icon-class="bug_menu"/><span style="font-size: 16px;margin-left: 5px;font-weight: bold">缺陷</span></el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+
     </div>
 
     <div class="table_show">
@@ -177,7 +191,7 @@
         </el-table-column>
         <el-table-column
             prop="processer.username"
-            label="负责人"
+            label="处理人"
             align="center"
             width="140"
         >
@@ -232,6 +246,35 @@
       </el-table>
     </div>
 
+    <!--添加需求对话框-->
+    <el-dialog
+        v-model="this.dialogAddRequire"
+        center
+        :close-on-click-modal="false"
+        :show-close="false"
+        :before-close="handleRequireDialogClose"
+        style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
+    >
+      <template #header>
+        <h2 style="color: rgba(71,138,173,0.85);font-size: 22px;font-weight: bolder">添加需求</h2>
+      </template>
+      <RequireAddForm ref="addRequireForm"/>
+    </el-dialog>
+
+    <!--创建缺陷对话框-->
+    <el-dialog
+        v-model="this.dialogAddBug"
+        center
+        :close-on-click-modal="false"
+        :show-close="false"
+        :before-close="handleBugDialogClose"
+        style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
+    >
+      <template #header>
+        <h2 style="color: rgba(71,138,173,0.85);font-size: 22px;font-weight: bolder">创建缺陷</h2>
+      </template>
+      <BugAddForm ref="addForm"/>
+    </el-dialog>
 
   </div>
 </template>
@@ -239,21 +282,49 @@
 <script>
 import {useProjItemStore} from "@/store/ProjItem.js";
 import {mapState} from "pinia";
+import {useProjBugStore} from "@/store/ProjBug.js";
+import {useProjRequirementStore} from "@/store/ProjRequirement.js";
+import {useProjTaskStore} from "@/store/ProjTask.js";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
+import RequireAddForm from "@/components/require/RequireAddForm.vue";
+import BugAddForm from "@/components/bug/BugAddForm.vue";
+import SvgIcons from "@/assets/svg/index.vue";
 
 const projItemStore = useProjItemStore()
+const projBugStore = useProjBugStore()
+const projRequirementStore = useProjRequirementStore()
+const projTaskStore = useProjTaskStore()
 
 export default {
   computed: {
-    ...mapState(useProjItemStore, ['itemStatus', 'itemPriority', 'loading', 'multiDeleteSelection', 'selectData', 'bugStatus'])
+    ...mapState(useProjItemStore, ['itemStatus', 'itemPriority', 'loading', 'multiDeleteSelection', 'selectData', 'bugStatus']),
+    ...mapState(useProjRequirementStore, ['dialogAddRequire']),
+    ...mapState(useProjBugStore, ['dialogAddBug']),
+    ...mapState(useProjTaskStore, ['dialogAddTask'])
   },
-  components: {DeleteFilled, RefreshLeft},
+  components: {SvgIcons, BugAddForm, RequireAddForm, DeleteFilled, RefreshLeft},
   data() {
     return {
-      input_search: ''
+      input_search: '',
+      isShowAdd_bt: false
     }
   },
   methods: {
+    handleRequireDialogClose() {
+      projRequirementStore.$state.dialogAddRequire = false
+      this.$refs.addRequireForm.resetForm()
+      projItemStore.$state.itemPageOpenFlag = true
+    },
+    handleTaskDialogClose() {
+      projTaskStore.$state.dialogAddTask = false
+      this.$refs.addTaskForm.resetForm()
+      projItemStore.$state.itemPageOpenFlag = true
+    },
+    handleBugDialogClose() {
+      projBugStore.$state.dialogAddBug = false
+      this.$refs.addForm.resetForm()
+      projItemStore.$state.itemPageOpenFlag = true
+    },
     //修改事项状态
     changeStatus(value, item_type, id) {
       projItemStore.$state.loading = true;
@@ -335,10 +406,25 @@ export default {
         default:
           return '#645151';
       }
+    },
+    openItem(item) {
+      projItemStore.$state.itemPageOpenFlag = true
+      switch (item) {
+        case 1:
+          projRequirementStore.$state.dialogAddRequire = true
+          break;
+        case 2:
+          projTaskStore.$state.dialogAddTask = true
+          break;
+        case 3:
+          projBugStore.$state.dialogAddBug = true
+          break;
+      }
     }
   },
   created() {
     this.input_search = ''
+    this.isShowAdd_bt = this.$route.name !== 'projectIteration'
     projItemStore.selectAllItem('', projItemStore.getCurrentPage())
   }
 }

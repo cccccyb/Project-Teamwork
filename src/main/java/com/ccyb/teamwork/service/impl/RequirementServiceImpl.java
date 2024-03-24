@@ -1,7 +1,9 @@
 package com.ccyb.teamwork.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.ccyb.teamwork.entity.Iteration;
 import com.ccyb.teamwork.entity.Requirement;
 import com.ccyb.teamwork.mapper.RequirementMapper;
 import com.ccyb.teamwork.service.IRequirementService;
@@ -45,7 +47,6 @@ public class RequirementServiceImpl extends ServiceImpl<RequirementMapper, Requi
     public Boolean updateRequirement(Requirement requirement) {
         Requirement selectById = requirementMapper.selectById(requirement.getId());
         requirement.setVersion(selectById.getVersion());
-        requirement.setModifyTime(LocalDateTime.now());
         return requirementMapper.updateById(requirement) > 0;
     }
 
@@ -77,5 +78,15 @@ public class RequirementServiceImpl extends ServiceImpl<RequirementMapper, Requi
         LambdaUpdateWrapper<Requirement> luw = new LambdaUpdateWrapper<>();
         luw.eq(Requirement::getId, reqId).set(Requirement::getPriority, priority).set(Requirement::getModifyTime, LocalDateTime.now());
         return requirementMapper.update(null, luw) > 0;
+    }
+
+    @Override
+    public List<Requirement> getAllRequirement(Long projectId) {
+        if (null==projectId){
+            return null;
+        }
+        LambdaQueryWrapper<Requirement> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Requirement::getProjectId, projectId);
+        return requirementMapper.selectList(lqw);
     }
 }

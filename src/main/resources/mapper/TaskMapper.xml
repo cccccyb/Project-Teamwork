@@ -31,7 +31,7 @@
         p.name pName,
         ite.id iteId,
         ite.name iteName,
-        t.*
+        t.id, t.title, t.description, t.status, t.priority, t.create_time, t.modify_time, t.end_time, t.creator_id, t.processer_id, t.iteration_id iId, t.project_id, t.item_type, t.deleted, t.version
         from t_task t
         left join t_user u1 on t.creator_id = u1.id
         left join t_user u2 on t.processer_id = u2.id
@@ -65,6 +65,7 @@
     </select>
     <resultMap id="TaskAllResultMap" type="task" autoMapping="true">
         <id property="id" column="id"/>
+        <result property="iteration_id" column="iId"/>
         <association property="creator" javaType="user" autoMapping="true">
             <id property="id" column="ucId"/>
             <result property="username" column="ucName"/>

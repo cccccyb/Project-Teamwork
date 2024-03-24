@@ -46,7 +46,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task> implements IT
     public Boolean updateTask(Task task) {
         Task selectById = taskMapper.selectById(task.getId());
         task.setVersion(selectById.getVersion());
-        task.setModifyTime(LocalDateTime.now());
         return taskMapper.updateById(task) > 0;
     }
 

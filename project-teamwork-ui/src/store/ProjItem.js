@@ -14,6 +14,7 @@ export const useProjItemStore = defineStore('projItem', {
             loading: false,
             dialogAddVisible: false,
             multiDeleteSelection: [],
+            itemPageOpenFlag:false,
             itemStatus: [
                 {
                     id: 0,

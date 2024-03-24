@@ -2,10 +2,10 @@
   <el-scrollbar max-height="60vh">
     <el-form :model="this.addData" :rules="this.myRule" ref="addRequireForm" label-width="150px" label-position="top">
       <el-form-item label="需求标题:" prop="title" required>
-        <el-input v-model="addData.title" style="width: 100%;height: 40px"></el-input>
+        <el-input v-model="addData.title" style="width: 100%;height: 40px" placeholder=" 输入需求标题"></el-input>
       </el-form-item>
       <el-form-item label="需求描述:" prop="description" style="height: 90px">
-        <el-input type="textarea" v-model="addData.description" style="width: 100%"></el-input>
+        <el-input type="textarea" v-model="addData.description" style="width: 100%" placeholder=" 点此编辑需求描述"></el-input>
       </el-form-item>
       <div style="display: flex;width:100%;justify-content: space-between;align-items: center">
         <el-form-item label="状态:" prop="status" style="width: 40%;">
@@ -23,9 +23,13 @@
                   :type="
                         item.id === 0
                             ? 'primary'
-                            : item.id === 1
-                            ? 'warning'
-                            : 'success'
+                            : item.id===1
+                            ? 'info'
+                            : item.id===6
+                            ? 'danger'
+                            : item.id === 7
+                            ? 'success'
+                            : 'warning'
                     "
               >
                 {{ item.name }}
@@ -57,8 +61,8 @@
               size="large"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="负责人:" prop="processerId" style="width: 40%">
-          <el-select v-model="addData.processerId" placeholder="----请选择----" >
+        <el-form-item label="处理人:" prop="processerId" style="width: 40%">
+          <el-select v-model="addData.processerId" placeholder="----未指定----" >
             <el-option
                 v-for="item in allUserList"
                 :key="item.id"
@@ -70,7 +74,7 @@
       </div>
       <div style="display: flex;width:100%;justify-content: space-between;align-items: center">
         <el-form-item label="所属迭代:" prop="iteration_id" style="width: 40%">
-          <el-select v-model="addData.iteration_id" placeholder="----请选择----" >
+          <el-select v-model="addData.iteration_id" placeholder="未规划进迭代" >
             <el-option
                 v-for="item in allIterationList"
                 :key="item.id"
@@ -107,10 +111,12 @@ import {mapState} from 'pinia'
 import {useProjRequirementStore} from "@/store/ProjRequirement.js";
 import {useUserStore} from "@/store/user.js";
 import {useProjIterationStore} from "@/store/ProjIteration.js";
+import {useProjItemStore} from "@/store/ProjItem.js";
 import SvgIcons from "@/assets/svg/index.vue";
 
 const projRequirementStore = useProjRequirementStore()
 const projIterationStore = useProjIterationStore()
+const projItemStore= useProjItemStore()
 const userStore = useUserStore()
 export default {
   components: {SvgIcons},
@@ -141,6 +147,7 @@ export default {
         status: [{ required: true, message: '请选择需求状态', trigger: 'change' }],
         priority: [{ required: true, message: '请选择需求优先级', trigger: 'change' }],
         processerId: [{ required: true, message: '请选择处理人', trigger: 'change' }],
+        iteration_id: [{ required: true, message: '请选择所属迭代', trigger: 'change' }],
         endTime: [
           { type: 'date', required: true, message: '请选择截止日期', trigger: 'change' }
         ]
@@ -152,13 +159,20 @@ export default {
       this.$refs.addRequireForm.validate((valid) => {
         if (valid) {
           projRequirementStore.handleAddRequire(this.addData)
+          if (projItemStore.itemPageOpenFlag){
+            projItemStore.$state.itemPageOpenFlag=false
+            projItemStore.getLoading().then(r => {})
+          }else {
+            projRequirementStore.getLoading().then(r => {})
+          }
         } else {
           return false
         }
       })
     },
     closeForm() {
-      projRequirementStore.$state.dialogAddVisible = false
+      projRequirementStore.$state.dialogAddRequire = false
+      projItemStore.$state.itemPageOpenFlag=false
       this.resetForm()
     },
     resetForm() {

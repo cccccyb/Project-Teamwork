@@ -33,9 +33,13 @@
                 :type="
                         item.id === 0
                             ? 'primary'
-                            : item.id === 1
-                            ? 'warning'
-                            : 'success'
+                            : item.id===1
+                            ? 'info'
+                            : item.id===6
+                            ? 'danger'
+                            : item.id === 7
+                            ? 'success'
+                            : 'warning'
                     "
             >
               {{ item.name }}
@@ -171,9 +175,13 @@
                     :type="
                         item.id === 0
                             ? 'primary'
-                            : item.id === 1
-                            ? 'warning'
-                            : 'success'
+                            : item.id===1
+                            ? 'info'
+                            : item.id===6
+                            ? 'danger'
+                            : item.id === 7
+                            ? 'success'
+                            : 'warning'
                     "
                 >
                   {{ item.name }}
@@ -188,8 +196,12 @@
                         scope.row.status === 0
                             ? 'primary'
                             : scope.row.status === 1
-                            ? 'warning'
-                            : 'success'
+                            ? 'info'
+                            : scope.row.status === 6
+                            ? 'danger'
+                            : scope.row.status === 7
+                            ? 'success'
+                            : 'warning'
                     "
                 >
                   {{ formatStatus(scope.row.status) }}
@@ -201,7 +213,7 @@
         </el-table-column>
         <el-table-column
             prop="processer.username"
-            label="负责人"
+            label="处理人"
             align="center"
             width="140"
         >
@@ -292,9 +304,10 @@
 
     <!--添加需求对话框-->
     <el-dialog
-        v-model="this.dialogAddVisible"
+        v-model="this.dialogAddRequire"
         center
         :close-on-click-modal="false"
+        :show-close="false"
         :before-close="handleDialogClose"
         style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
     >
@@ -310,9 +323,15 @@
           ref="drawerRef"
           v-model="drawerVisible"
           @close="handleDrawerClose"
-          size="45%"
+          size="48%"
       >
-        <RequireDrawerForm ref="drawerRequireForm"/>
+        <template #header style="margin-bottom: 0">
+          <div style="display: flex;align-items: center">
+            <SvgIcons width="32px" height="32px" color="#ffffff" icon-class="require_menu"/>
+            <span style="font-weight: bolder;font-size: 25px;color: #2b2929;margin-left: 10px">#{{ clickRequirement.id}} </span>
+          </div>
+        </template>
+        <RequireDrawerForm/>
       </el-drawer>
     </div>
 
@@ -325,14 +344,15 @@ import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
 import RequireAddForm from "@/components/require/RequireAddForm.vue";
 import RequireDrawerForm from "@/components/require/RequireDrawerForm.vue";
+import SvgIcons from "@/assets/svg/index.vue";
 
 const projRequirementStore = useProjRequirementStore()
 
 export default {
   computed: {
-    ...mapState(useProjRequirementStore, ['requireStatus', 'requirePriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData', 'dialogAddVisible', 'drawerVisible'])
+    ...mapState(useProjRequirementStore, ['requireStatus', 'requirePriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData', 'dialogAddRequire', 'drawerVisible','clickRequirement'])
   },
-  components: {DeleteFilled, RefreshLeft, RequireAddForm, RequireDrawerForm},
+  components: {SvgIcons, DeleteFilled, RefreshLeft, RequireAddForm, RequireDrawerForm},
   data() {
     return {
       input_search: '',
@@ -344,7 +364,7 @@ export default {
   methods: {
     // 打开添加需求对话框
     openAddRequireDialog() {
-      projRequirementStore.$state.dialogAddVisible = true
+      projRequirementStore.$state.dialogAddRequire = true
       this.$refs.addRequireForm.resetForm()
     },
     handleDialogClose() {
@@ -448,7 +468,26 @@ export default {
       }
     },
     formatStatus(status) {
-      return status === 0 ? '未开始' : status === 1 ? '进行中' : '已完成'
+      switch (status) {
+        case 0:
+          return '待处理'
+        case 1:
+          return '待评审'
+        case 2:
+          return '开发中'
+        case 3:
+          return '待验收'
+        case 4:
+          return '验收中'
+        case 5:
+          return '待测试'
+        case 6:
+          return '变更'
+        case 7:
+          return '已完成'
+        default:
+          return ''
+      }
     },
     formatPriority(priority){
       switch (priority) {
@@ -528,5 +567,8 @@ export default {
 
 .el-tag {
   font-size: 16px;
+}
+/deep/ .el-drawer__header{
+  margin-bottom: 5px !important;
 }
 </style>

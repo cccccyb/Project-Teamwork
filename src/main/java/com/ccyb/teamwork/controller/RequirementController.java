@@ -116,4 +116,13 @@ public class RequirementController {
         return ResponseResult.build(code, msg, requirementIPage.getRecords());
     }
 
+    //根据项目id查所有需求
+    @GetMapping("/getAllRequirement")
+    public ResponseResult<List<Requirement>> getAllRequirement(Long projectId) {
+        List<Requirement> allRequirement = requirementService.getAllRequirement(projectId);
+        int code = allRequirement != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = allRequirement != null ? "" : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, allRequirement);
+    }
+
 }

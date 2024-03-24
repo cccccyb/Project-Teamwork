@@ -47,7 +47,6 @@ public class BugServiceImpl extends ServiceImpl<BugMapper, Bug> implements IBugS
     public Boolean updateBug(Bug bug) {
         Bug selectById = bugMapper.selectById(bug.getId());
         bug.setVersion(selectById.getVersion());
-        bug.setModifyTime(LocalDateTime.now());
         return bugMapper.updateById(bug) > 0;
     }
 
@@ -58,7 +57,7 @@ public class BugServiceImpl extends ServiceImpl<BugMapper, Bug> implements IBugS
 
     @Override
     public IPage<Bug> selectPageBug(IPage<?> page, String title, Integer status, Integer priority, Long creatorId, Long processerId, Long projectId, Long discoveryIteId) {
-        return bugMapper.selectPageBug(page,title,status,priority,creatorId,processerId,projectId,discoveryIteId);
+        return bugMapper.selectPageBug(page, title, status, priority, creatorId, processerId, projectId, discoveryIteId);
     }
 
     @Override
@@ -83,11 +82,34 @@ public class BugServiceImpl extends ServiceImpl<BugMapper, Bug> implements IBugS
 
     @Override
     public List<Bug> selectRelationBugById(Long requireId) {
-        if (null==requireId){
+        if (null == requireId) {
             return null;
         }
         LambdaQueryWrapper<Bug> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Bug::getRequirementId, requireId);
+        lqw.orderByAsc(Bug::getCreateTime);
         return bugMapper.selectList(lqw);
     }
+
+    @Override
+    public List<Bug> getAllBug(Long projectId,Long requireId) {
+        if (null == projectId) {
+            return null;
+        }
+        LambdaQueryWrapper<Bug> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Bug::getProjectId, projectId).ne(Bug::getRequirementId,requireId);
+        return bugMapper.selectList(lqw);
+    }
+
+    @Override
+    public Boolean addRelationBugById(Long requireId, List<Long> bugIds) {
+        boolean flag = false;
+        for(Long bId:bugIds){
+            LambdaUpdateWrapper<Bug> luw = new LambdaUpdateWrapper<>();
+            luw.eq(Bug::getId, bId).set(Bug::getRequirementId, requireId);
+            flag = bugMapper.update(null, luw) > 0;
+        }
+        return flag;
+    }
 }
+

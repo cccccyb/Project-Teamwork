@@ -38,7 +38,7 @@
         bt.name btName,
         req.id reqId,
         req.title reqName,
-        bug.*
+        bug.id, bug.title, bug.description, bug.status, bug.priority, bug.level, bug.reappear, bug.create_time, bug.modify_time, bug.creator_id, bug.processer_id, bug.bug_type_id btId, bug.project_id, bug.discovery_iterate_id disIteId, bug.requirement_id, bug.origin, bug.item_type, bug.deleted, bug.version
         from t_bug bug
         left join t_user u1 on bug.creator_id = u1.id
         left join t_user u2 on bug.processer_id = u2.id
@@ -74,6 +74,8 @@
     </select>
     <resultMap id="BugAllResultMap" type="bug" autoMapping="true">
         <id property="id" column="id"/>
+        <result property="discoveryIterateId" column="disIteId"/>
+        <result property="bug_type_id" column="btId"/>
         <association property="creator" javaType="user" autoMapping="true">
             <id property="id" column="ucId"/>
             <result property="username" column="ucName"/>

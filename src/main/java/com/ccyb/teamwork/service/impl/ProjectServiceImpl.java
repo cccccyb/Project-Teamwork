@@ -45,6 +45,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     BugMapper bugMapper;
 
     @Override
+    @Transactional
     public Boolean addProject(Project project) {
         boolean addFlag;
         addFlag = projectMapper.insert(project) > 0;
@@ -64,6 +65,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     @Override
+    @Transactional
     public Boolean deleteById(Long pid) {
         LambdaQueryWrapper<ProjectUser> lqw = new LambdaQueryWrapper<>();
         lqw.eq(ProjectUser::getProjectId, pid);
@@ -72,6 +74,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     @Override
+    @Transactional
     public Boolean deleteBatchByIds(List<Long> pIds) {
         for (Long pid :
                 pIds) {
@@ -117,6 +120,7 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     }
 
     @Override
+    @Transactional
     public Boolean updateProjectStatusById(Long pid, Integer status) {
         if ((null == pid) || (null == status)) {
             return false;

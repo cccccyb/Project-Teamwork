@@ -15,7 +15,7 @@ export const useProjTaskStore = defineStore('projTask', {
             pageSize: 10,
             currentPage: 1,
             loading: false,
-            dialogAddVisible: false,
+            dialogAddTask: false,
             multiDeleteSelection: [],
             taskStatus: [
                 {
@@ -99,27 +99,6 @@ export const useProjTaskStore = defineStore('projTask', {
                 .then((response) => {
                     if (response.data.code === DATABASE_SELECT_OK) {
                         this.selectData = response.data.data
-                        for (let i = 0; i < this.selectData.length; i++) {
-                            let data = this.selectData[i];
-                            data.status = parseInt(data.status) === 0 ? '未开始' : parseInt(data.status) === 1 ? '进行中' : '已完成'
-                            switch (data.priority) {
-                                case 2:
-                                    data.priority = '低';
-                                    break;
-                                case 3:
-                                    data.priority = '中';
-                                    break;
-                                case 4:
-                                    data.priority = '高';
-                                    break;
-                                case 5:
-                                    data.priority = '紧急';
-                                    break;
-                                default:
-                                    data.priority = '无';
-                                    break;
-                            }
-                        }
                         this.total = parseInt(response.data.msg)
                         this.loading = false
                     } else {

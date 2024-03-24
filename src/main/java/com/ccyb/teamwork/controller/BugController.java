@@ -116,12 +116,32 @@ public class BugController {
     }
 
     //根据需求id查所关联的缺陷
-    @GetMapping("/{requireId}")
-    public ResponseResult<List<Bug>> selectRelationBugById(@PathVariable Long requireId) {
-        List<Bug> relationBug = bugService.selectRelationBugById(requireId);
+    @GetMapping("/getRelationBugs")
+    public ResponseResult<List<Bug>> selectRelationBugById(String requireId) {
+        Long rId = StringUtils.hasText(requireId)?Long.parseLong(requireId):null;
+        List<Bug> relationBug = bugService.selectRelationBugById(rId);
         int code = relationBug != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = relationBug != null ? "" : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, relationBug);
     }
 
+    //根据项目id查所有缺陷
+    @GetMapping("/getAllBug")
+    public ResponseResult<List<Bug>> getAllBug(Long projectId,Long requireId) {
+        List<Bug> allBug = bugService.getAllBug(projectId,requireId);
+        int code = allBug != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = allBug != null ? "" : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, allBug);
+    }
+
+    //根据需求id添加关联缺陷
+    @PostMapping("/addRelationBugs/{requireId}")
+    public ResponseResult<?> addRelationBugById(@PathVariable String requireId,@RequestBody List<String> bugsIdList) {
+        Long rId = StringUtils.hasText(requireId)?Long.parseLong(requireId):null;
+        List<Long> bIds = WebUtil.convertStringToLong(bugsIdList);
+        Boolean addRelationBugById = bugService.addRelationBugById(rId, bIds);
+        int code = addRelationBugById != null ? ResponseCode.DATABASE_SAVE_OK : ResponseCode.DATABASE_SAVE_ERROR;
+        String msg = addRelationBugById != null ? "缺陷关联成功！" : "关联缺陷失败，请重试！";
+        return ResponseResult.build(code, msg, addRelationBugById);
+    }
 }

@@ -149,7 +149,7 @@
                     :color="getPriorityColor(scope.row.priority)"
                 >
                 </el-tag>
-                <span style="color: #181818;font-size: 17px">{{ scope.row.priority }}</span>
+                <span style="color: #181818;font-size: 17px">{{ formatPriority(scope.row.priority) }}</span>
               </template>
             </el-select>
           </template>
@@ -184,14 +184,14 @@
                     style="font-size: 15px"
                     size="small"
                     :type="
-                        scope.row.status === '未开始'
+                        scope.row.status === 0
                             ? 'primary'
-                            : scope.row.status === '进行中'
+                            : scope.row.status === 1
                             ? 'warning'
                             : 'success'
                     "
                 >
-                  {{ scope.row.status }}
+                  {{ formatStatus(scope.row.status) }}
                 </el-tag>
               </template>
             </el-select>
@@ -200,7 +200,7 @@
         </el-table-column>
         <el-table-column
             prop="processer.username"
-            label="负责人"
+            label="处理人"
             align="center"
             width="140"
         >
@@ -388,16 +388,33 @@ export default {
     //获得优先级颜色
     getPriorityColor(priority) {
       switch (priority) {
-        case '低':
+        case 2:
           return '#1EC79D';
-        case '中':
+        case 3:
           return '#FFDE0A';
-        case '高':
+        case 4:
           return '#FF6600';
-        case '紧急':
+        case 5:
           return '#E63415';
         default:
           return '#394049';
+      }
+    },
+    formatStatus(status) {
+      return status === 0 ? '未开始' : status === 1 ? '进行中' : '已完成'
+    },
+    formatPriority(priority) {
+      switch (priority) {
+        case 2:
+          return '低'
+        case 3:
+          return '中'
+        case 4:
+          return '高'
+        case 5:
+          return '紧急'
+        default:
+          return '无'
       }
     }
   },
@@ -407,7 +424,7 @@ export default {
     this.task_priority = ''
     projTaskStore.$state.currentPage = 1
     projTaskStore.$state.pageSize = 10
-    this.isShowAdd_bt=this.$route.name!=='projectIteration'
+    this.isShowAdd_bt = this.$route.name !== 'projectIteration'
     projTaskStore.selectAllTask(this.currentPage, this.pageSize, '', '', '', projTaskStore.getCurrentPage())
   }
 }

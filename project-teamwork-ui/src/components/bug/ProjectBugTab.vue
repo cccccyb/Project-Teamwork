@@ -26,7 +26,7 @@
               :label="item.name"
               :value="item.id"
           >
-            <el-tag :color="getStatusColor(item.name)" style="margin-right: 8px" size="default"/>
+            <el-tag :color="getStatusColor(item.id)" style="margin-right: 8px" size="default"/>
             {{ item.name }}
           </el-option>
         </el-select>
@@ -53,7 +53,7 @@
         </el-button
         >
       </div>
-      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="" style="font-size: 16px"
+      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="openAddRequireDialog" style="font-size: 16px"
       >
         创建缺陷
       </el-button
@@ -107,7 +107,7 @@
             width="320"
         >
           <template #default="scope">
-            <div style="display: flex;align-items: center">
+            <div style="display: flex;align-items: center" @click="openBugDrawer(scope.row)">
               <SvgIcons width="22px" height="22px" color="#ffffff" icon-class="bug_menu"/>
               <a class="jump">{{ formatterName(scope.row.title) }} </a>
             </div>
@@ -137,7 +137,7 @@
                     :color="getPriorityColor(scope.row.priority)"
                 >
                 </el-tag>
-                <span style="color: #181818;font-size: 17px">{{ scope.row.priority }}</span>
+                <span style="color: #181818;font-size: 17px">{{ formatPriority(scope.row.priority) }}</span>
               </template>
             </el-select>
           </template>
@@ -155,7 +155,7 @@
                     disable-transitions
                     style="font-size: 16px"
                     size="large"
-                    :color="getStatusColor(item.name)"
+                    :color="getStatusColor(item.id)"
                 >
                   <span style="color: white;font-weight: bolder">{{ item.name }}</span>
                 </el-tag>
@@ -167,7 +167,7 @@
                     size="default"
                     :color="getStatusColor(scope.row.status)"
                 >
-                  <span style="color: white;font-weight: bolder">{{ scope.row.status }}</span>
+                  <span style="color: white;font-weight: bolder">{{ formatStatus(scope.row.status) }}</span>
                 </el-tag>
               </template>
             </el-select>
@@ -182,8 +182,9 @@
         >
           <template #default="scope">
             <el-tag disable-transitions
-                    :type="scope.row.level==='致命'?'danger':scope.row.level==='严重'?'warning':scope.row.level==='一般'?'primary':'info'"
-            >{{ scope.row.level }}</el-tag>
+                    :type="scope.row.level===4?'danger':scope.row.level===3?'warning':scope.row.level===2?'primary':'info'"
+            >{{ formatLevel(scope.row.level) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -191,10 +192,14 @@
             label="重现规律"
             align="center"
             width="120"
-        />
+        >
+          <template #default="scope">
+            {{formatReappear(scope.row.reappear)}}
+          </template>
+        </el-table-column>
         <el-table-column
             prop="processer.username"
-            label="负责人"
+            label="处理人"
             align="center"
             width="140"
         >
@@ -247,12 +252,6 @@
         </el-table-column>
         <el-table-column label="操作" align="center" fixed="right">
           <template #default="scope">
-            <!--        <el-button size="small" color="#626aef" @click="handleShow(scope.row)"-->
-            <!--        >查看-->
-            <!--        </el-button>-->
-            <!--        <el-button size="small" type="primary" @click="handleEdit(scope.row)"-->
-            <!--        >编辑-->
-            <!--        </el-button>-->
             <el-button size="small" type="danger" @click="handleDeleteById(scope.row.id)"
             >删除
             </el-button>
@@ -276,6 +275,39 @@
       </div>
     </div>
 
+    <!--创建缺陷对话框-->
+    <el-dialog
+        v-model="this.dialogAddBug"
+        center
+        :close-on-click-modal="false"
+        :show-close="false"
+        :before-close="handleDialogClose"
+        style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
+    >
+      <template #header>
+        <h2 style="color: rgba(71,138,173,0.85);font-size: 22px;font-weight: bolder">创建缺陷</h2>
+      </template>
+      <BugAddForm ref="addForm"/>
+    </el-dialog>
+
+    <!-- 展示and编辑缺陷抽屉   -->
+    <div v-if="drawerVisible">
+      <el-drawer
+          ref="drawerRef"
+          v-model="drawerVisible"
+          @close="handleDrawerClose"
+          size="48%"
+      >
+        <template #header style="margin-bottom: 0">
+          <div style="display: flex;align-items: center">
+            <SvgIcons width="32px" height="32px" color="#ffffff" icon-class="bug_menu"/>
+            <span style="font-weight: bolder;font-size: 25px;color: #2b2929;margin-left: 10px">#{{ clickBug.id}} </span>
+          </div>
+        </template>
+        <BugDrawerForm/>
+      </el-drawer>
+    </div>
+
 
   </div>
 </template>
@@ -284,14 +316,17 @@
 import {useProjBugStore} from "@/store/ProjBug.js";
 import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
+import BugAddForm from "@/components/bug/BugAddForm.vue";
+import BugDrawerForm from "@/components/bug/BugDrawerForm.vue";
+import SvgIcons from "@/assets/svg/index.vue";
 
 const projBugStore = useProjBugStore()
 
 export default {
   computed: {
-    ...mapState(useProjBugStore, ['bugStatus', 'bugPriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData'])
+    ...mapState(useProjBugStore, ['bugStatus', 'bugPriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData','dialogAddBug','clickBug','drawerVisible'])
   },
-  components: {DeleteFilled, RefreshLeft},
+  components: {SvgIcons, BugDrawerForm, DeleteFilled, RefreshLeft,BugAddForm},
   data() {
     return {
       input_search: '',
@@ -301,6 +336,24 @@ export default {
     }
   },
   methods: {
+    // 打开添加缺陷对话框
+    openAddRequireDialog() {
+      projBugStore.$state.dialogAddBug = true
+      this.$refs.addForm.resetForm()
+    },
+    handleDialogClose() {
+      projBugStore.$state.dialogAddBug = false
+      this.$refs.addForm.resetForm()
+    },
+    // 打开缺陷抽屉
+    openBugDrawer(row) {
+      //若直接赋值是浅拷贝，编辑修改时原表格数据也跟着改变
+      projBugStore.$state.clickBug = JSON.parse(JSON.stringify(row))
+      projBugStore.$state.drawerVisible = true
+    },
+    handleDrawerClose() {
+      projBugStore.$state.drawerVisible = false
+    },
     //表格多选，批量删除
     handleSelectionChange(val) {
       // val的值为所勾选行的数组对象
@@ -376,13 +429,13 @@ export default {
     //获得优先级颜色
     getPriorityColor(priority) {
       switch (priority) {
-        case '低':
+        case 2:
           return '#1EC79D';
-        case '中':
+        case 3:
           return '#FFDE0A';
-        case '高':
+        case 4:
           return '#FF6600';
-        case '紧急':
+        case 5:
           return '#E63415';
         default:
           return '#394049';
@@ -391,22 +444,80 @@ export default {
     //获得bug状态颜色
     getStatusColor(status) {
       switch (status) {
-        case '未开始':
+        case 0:
           return '#409dfd';
-        case '处理中':
+        case 1:
           return 'rgba(110,215,206,0.85)';
-        case '已解决':
+        case 2:
           return '#7ac555';
-        case '被拒绝':
+        case 3:
           return '#e7a94b';
-        case '重新打开':
+        case 4:
           return '#bd6a5c';
-        case '已关闭':
+        case 5:
           return '#a1a6ad';
         default:
-          return '#645151';
+          return '#7e7070';
       }
     },
+    formatStatus(status) {
+      switch (status) {
+        case 0:
+          return '未开始'
+        case 1:
+          return '处理中'
+        case 2:
+          return '已解决'
+        case 3:
+          return '被拒绝'
+        case 4:
+          return '重新打开'
+        case 5:
+          return '已关闭'
+        default:
+          return ''
+      }
+    },
+    formatPriority(priority) {
+      switch (priority) {
+        case 2:
+          return '低'
+        case 3:
+          return '中'
+        case 4:
+          return '高'
+        case 5:
+          return '紧急'
+        default:
+          return '无'
+      }
+    },
+    formatLevel(level){
+      switch (level) {
+        case 1:
+          return '提示/建议'
+        case 2:
+          return '一般'
+        case 3:
+          return '严重'
+        case 4:
+          return '致命'
+        default:
+          return ''
+      }
+    },
+    formatReappear(reappear){
+      switch (reappear) {
+        case 1:
+          return '必然重现'
+        case 2:
+          return '随机重现'
+        case 3:
+          return '很难重现'
+        default:
+          return ''
+      }
+    }
   },
   created() {
     this.input_search = ''

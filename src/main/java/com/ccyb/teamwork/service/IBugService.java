@@ -32,4 +32,8 @@ public interface IBugService extends IService<Bug> {
 
     List<Bug> selectRelationBugById(Long requireId);
 
+    List<Bug> getAllBug(Long projectId, Long requireId);
+
+    Boolean addRelationBugById(Long requireId, List<Long> bugIds);
+
 }

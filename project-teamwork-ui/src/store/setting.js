@@ -6,7 +6,6 @@ export const useSettingStore=defineStore('setting',{
             isCollapse:false
         }
     },
-    persist:true,
     getters:{},
     actions:{
     }

@@ -30,4 +30,7 @@ public interface IRequirementService extends IService<Requirement> {
 
     Boolean updateRequirementPriorityById(Long reqId,Integer priority);
 
+    List<Requirement> getAllRequirement(Long projectId);
+
+
 }
