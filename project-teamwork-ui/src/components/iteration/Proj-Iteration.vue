@@ -49,7 +49,7 @@
         </el-button
         >
       </div>
-      <el-button type="primary" :size="'large'" @click="" style="font-size: 16px"
+      <el-button type="primary" :size="'large'" @click="openAddIterationDialog" style="font-size: 16px"
       >
         创建迭代
       </el-button
@@ -137,17 +137,17 @@
               <template #prefix>
                 <el-tag
                     disable-transitions
-                    size="small"
                     style="font-size: 15px"
+                    size="small"
                     :type="
-                        scope.row.status === '未开始'
+                        scope.row.status === 0
                             ? 'primary'
-                            : scope.row.status === '进行中'
+                            : scope.row.status === 1
                             ? 'warning'
                             : 'success'
                     "
                 >
-                  {{ scope.row.status }}
+                  {{ formatStatus(scope.row.status) }}
                 </el-tag>
               </template>
             </el-select>
@@ -179,12 +179,9 @@
         </el-table-column>
         <el-table-column label="操作" align="center">
           <template #default="scope">
-            <!--        <el-button size="small" color="#626aef" @click="handleShow(scope.row)"-->
-            <!--        >查看-->
-            <!--        </el-button>-->
-            <!--        <el-button size="small" type="primary" @click="handleEdit(scope.row)"-->
-            <!--        >编辑-->
-            <!--        </el-button>-->
+            <el-button size="small" type="info" @click="openEditIterationDialog(scope.row)"
+            >详情
+            </el-button>
             <el-button size="small" type="danger" @click="handleDeleteById(scope.row.id)"
             >删除
             </el-button>
@@ -208,6 +205,33 @@
       </div>
     </div>
 
+    <!--创建迭代对话框-->
+    <el-dialog
+        v-model="this.dialogAddVisible"
+        center
+        :close-on-click-modal="false"
+        :before-close="handleDialogClose"
+        style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
+    >
+      <template #header>
+        <h2 style="color: rgba(71,138,173,0.85);font-size: 22px;font-weight: bolder">创建迭代</h2>
+      </template>
+      <IterationAddForm ref="addIterationForm"/>
+    </el-dialog>
+
+    <!--编辑迭代对话框-->
+    <el-dialog
+        v-model="this.dialogEditVisible"
+        center
+        :close-on-click-modal="false"
+        :before-close="handleEditClose"
+        style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
+    >
+      <template #header>
+        <h2 style="color: rgba(71,138,173,0.85);font-size: 22px;font-weight: bolder">详情</h2>
+      </template>
+      <IterationEditForm ref="editIterationForm"/>
+    </el-dialog>
 
   </div>
 </template>
@@ -216,6 +240,8 @@
 import {useProjIterationStore} from "@/store/ProjIteration.js";
 import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
+import IterationAddForm from "@/components/iteration/IterationAddForm.vue";
+import IterationEditForm from "@/components/iteration/IterationEditForm.vue";
 
 
 const projIteration = useProjIterationStore()
@@ -225,9 +251,9 @@ export default {
     Search() {
       return Search
     },
-    ...mapState(useProjIterationStore, ['iterationStatus', 'loading', 'total', 'currentPage', 'pageSize','multiDeleteSelection', 'selectData'])
+    ...mapState(useProjIterationStore, ['iterationStatus', 'loading', 'total', 'currentPage', 'pageSize','multiDeleteSelection', 'selectData','editIteration','dialogAddVisible','dialogEditVisible'])
   },
-  components: {DeleteFilled, RefreshLeft},
+  components: {IterationAddForm,IterationEditForm, DeleteFilled, RefreshLeft},
   data() {
     return {
       input_search: '',
@@ -235,6 +261,24 @@ export default {
     }
   },
   methods: {
+    // 打开添加迭代对话框
+    openAddIterationDialog() {
+      projIteration.$state.dialogAddVisible = true
+      this.$refs.addIterationForm.resetForm()
+    },
+    handleDialogClose() {
+      projIteration.$state.dialogAddVisible = false
+      this.$refs.addIterationForm.resetForm()
+    },
+    // 打开编辑迭代对话框
+    openEditIterationDialog(row) {
+      //若直接赋值是浅拷贝，编辑修改时原表格数据也跟着改变
+      projIteration.$state.editIteration = JSON.parse(JSON.stringify(row))
+      projIteration.$state.dialogEditVisible = true
+    },
+    handleEditClose() {
+      projIteration.$state.dialogEditVisible = false
+    },
     //表格多选，批量删除
     handleSelectionChange(val) {
       // val的值为所勾选行的数组对象
@@ -296,7 +340,9 @@ export default {
       await projIteration.sleep(300)
       projIteration.selectAllIteration(this.currentPage,this.pageSize,this.input_search,this.iteration_status)
     },
-    //
+    formatStatus(status) {
+      return status === 0 ? '未开始' : status === 1 ? '进行中' : '已完成'
+    }
   },
   created() {
     this.input_search=''

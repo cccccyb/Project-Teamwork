@@ -65,7 +65,7 @@
         </el-button
         >
       </div>
-      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="" style="font-size: 16px"
+      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="openAddTaskDialog" style="font-size: 16px"
       >
         创建任务
       </el-button
@@ -119,7 +119,7 @@
             width="320"
         >
           <template #default="scope">
-            <div style="display: flex;align-items: center">
+            <div style="display: flex;align-items: center" @click="openTaskDrawer(scope.row)">
               <SvgIcons width="22px" height="22px" color="#ffffff" icon-class="task_menu"/>
               <a class="jump">{{ formatterName(scope.row.title) }} </a>
             </div>
@@ -259,12 +259,6 @@
         </el-table-column>
         <el-table-column label="操作" align="center" fixed="right">
           <template #default="scope">
-            <!--        <el-button size="small" color="#626aef" @click="handleShow(scope.row)"-->
-            <!--        >查看-->
-            <!--        </el-button>-->
-            <!--        <el-button size="small" type="primary" @click="handleEdit(scope.row)"-->
-            <!--        >编辑-->
-            <!--        </el-button>-->
             <el-button size="small" type="danger" @click="handleDeleteById(scope.row.id)"
             >删除
             </el-button>
@@ -288,22 +282,61 @@
       </div>
     </div>
 
+    <!--创建任务对话框-->
+    <el-dialog
+        v-model="this.dialogAddTask"
+        center
+        :close-on-click-modal="false"
+        :show-close="false"
+        :before-close="handleDialogClose"
+        style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
+    >
+      <template #header>
+        <h2 style="color: rgba(71,138,173,0.85);font-size: 22px;font-weight: bolder">创建任务</h2>
+      </template>
+      <TaskAddForm ref="addTaskForm"/>
+    </el-dialog>
+
+    <!-- 展示and编辑任务抽屉   -->
+    <div v-if="drawerVisible">
+      <el-drawer
+          ref="drawerRef"
+          v-model="drawerVisible"
+          @close="handleDrawerClose"
+          size="48%"
+      >
+        <template #header style="margin-bottom: 0">
+          <div style="display: flex;align-items: center">
+            <SvgIcons width="32px" height="32px" color="#ffffff" icon-class="bug_menu"/>
+            <span
+                style="font-weight: bolder;font-size: 25px;color: #2b2929;margin-left: 10px">#{{ clickTask.id }} </span>
+          </div>
+        </template>
+        <TaskDrawerForm/>
+      </el-drawer>
+    </div>
+
 
   </div>
 </template>
 
 <script>
 import {useProjTaskStore} from "@/store/ProjTask.js";
+import {useProjItemStore} from "@/store/ProjItem.js";
 import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
+import SvgIcons from "@/assets/svg/index.vue";
+import TaskAddForm from "@/components/task/TaskAddForm.vue";
+import TaskDrawerForm from "@/components/task/TaskDrawerForm.vue";
 
 const projTaskStore = useProjTaskStore()
+const projItemStore = useProjItemStore()
 
 export default {
   computed: {
-    ...mapState(useProjTaskStore, ['taskStatus', 'taskPriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData'])
+    ...mapState(useProjTaskStore, ['taskStatus', 'taskPriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData','dialogAddTask','drawerVisible','clickTask'])
   },
-  components: {DeleteFilled, RefreshLeft},
+  components: {TaskAddForm,TaskDrawerForm,SvgIcons, DeleteFilled, RefreshLeft},
   data() {
     return {
       input_search: '',
@@ -313,6 +346,25 @@ export default {
     }
   },
   methods: {
+    // 打开添加任务对话框
+    openAddTaskDialog() {
+      projTaskStore.$state.dialogAddTask = true
+      this.$refs.addTaskForm.resetForm()
+    },
+    handleDialogClose() {
+      projTaskStore.$state.dialogAddTask = false
+      projItemStore.$state.itemAddFlag=false
+      this.$refs.addTaskForm.resetForm()
+    },
+    // 打开任务抽屉
+    openTaskDrawer(row) {
+      //若直接赋值是浅拷贝，编辑修改时原表格数据也跟着改变
+      projTaskStore.$state.clickTask = JSON.parse(JSON.stringify(row))
+      projTaskStore.$state.drawerVisible = true
+    },
+    handleDrawerClose() {
+      projTaskStore.$state.drawerVisible = false
+    },
     //表格多选，批量删除
     handleSelectionChange(val) {
       // val的值为所勾选行的数组对象
@@ -419,6 +471,8 @@ export default {
     }
   },
   created() {
+    projTaskStore.$state.loading=true
+    projTaskStore.$state.selectData=[]
     this.input_search = ''
     this.task_status = ''
     this.task_priority = ''

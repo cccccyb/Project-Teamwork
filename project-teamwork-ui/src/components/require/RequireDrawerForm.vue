@@ -239,6 +239,7 @@ export default {
           // 更新最新修改时间
           this.clickRequirement.modifyTime=new Date()
           projRequirementStore.handleUpdateRequire(this.clickRequirement)
+          projRequirementStore.getLoading().then(r => {})
         } else {
           return false
         }

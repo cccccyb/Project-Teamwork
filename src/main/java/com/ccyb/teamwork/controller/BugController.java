@@ -96,10 +96,10 @@ public class BugController {
 
     //分页查询所有缺陷或分页模糊查询
     @GetMapping("/page")
-    public ResponseResult<List<Bug>> selectPageBug(Integer currentPage, Integer pageSize,  String title, Integer status, Integer priority, String creatorId, String processerId, String projecbugId, String discoveryIteId) {
+    public ResponseResult<List<Bug>> selectPageBug(Integer currentPage, Integer pageSize,  String title, Integer status, Integer priority, String creatorId, String processerId, String projectId, String discoveryIteId) {
         Long creId = StringUtils.hasText(creatorId)?Long.parseLong(creatorId):null;
         Long proId = StringUtils.hasText(processerId)?Long.parseLong(processerId):null;
-        Long pId = StringUtils.hasText(projecbugId)?Long.parseLong(projecbugId):null;
+        Long pId = StringUtils.hasText(projectId)?Long.parseLong(projectId):null;
         Long iteId = StringUtils.hasText(discoveryIteId)?Long.parseLong(discoveryIteId):null;
 
         Page<Bug> bugtPage;

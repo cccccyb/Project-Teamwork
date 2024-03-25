@@ -25,29 +25,34 @@
         </el-button
         >
       </div>
-      <el-dropdown trigger="click" placement="bottom">
-        <el-button v-if="isShowAdd_bt" type="primary" :size="'default'"
+      <el-dropdown v-if="isShowAdd_bt" trigger="click" placement="bottom">
+        <el-button type="primary" :size="'default'"
                    style="font-size: 16px;margin-right: 20px">
           新建
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item divided @click="openItem(1)"><SvgIcons width="22px" height="22px" color="#ffffff" icon-class="require_menu"/><span style="font-size: 16px;margin-left: 5px;font-weight: bold">需求</span></el-dropdown-item>
-            <el-dropdown-item divided @click="openItem(2)"><SvgIcons width="22px" height="22px" color="#ffffff" icon-class="task_menu"/><span style="font-size: 16px;margin-left: 5px;font-weight: bold">任务</span></el-dropdown-item>
-            <el-dropdown-item divided @click="openItem(3)"><SvgIcons width="22px" height="22px" color="#ffffff" icon-class="bug_menu"/><span style="font-size: 16px;margin-left: 5px;font-weight: bold">缺陷</span></el-dropdown-item>
+            <el-dropdown-item divided @click="openAddItem(1)">
+              <SvgIcons width="22px" height="22px" color="#ffffff" icon-class="require_menu"/>
+              <span style="font-size: 16px;margin-left: 5px;font-weight: bold">需求</span></el-dropdown-item>
+            <el-dropdown-item divided @click="openAddItem(2)">
+              <SvgIcons width="22px" height="22px" color="#ffffff" icon-class="task_menu"/>
+              <span style="font-size: 16px;margin-left: 5px;font-weight: bold">任务</span></el-dropdown-item>
+            <el-dropdown-item divided @click="openAddItem(3)">
+              <SvgIcons width="22px" height="22px" color="#ffffff" icon-class="bug_menu"/>
+              <span style="font-size: 16px;margin-left: 5px;font-weight: bold">缺陷</span></el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
 
     </div>
-
     <div class="table_show">
       <el-table
           style="width: 100%;font-size: 17px"
           v-loading="loading"
+          height="730"
           stripe
           element-loading-text="加载中..."
-          ref="tableRef"
           :data="selectData"
           border
           table-layout="auto"
@@ -94,7 +99,7 @@
             <el-select placeholder="" style="width: 110px"
                        @change="changePriority($event,scope.row.item_type,scope.row.id)">
               <el-option
-                  v-for="item in itemPriority"
+                  v-for="item in bugPriority"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -109,18 +114,18 @@
                     :color="getPriorityColor(scope.row.priority)"
                 >
                 </el-tag>
-                <span style="color: #181818;font-size: 17px">{{ scope.row.priority }}</span>
+                <span style="color: #181818;font-size: 17px">{{ formatPriority(scope.row.priority) }}</span>
               </template>
             </el-select>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" align="center" width="150">
           <template #default="scope">
-            <!--   缺陷状态         -->
-            <el-select v-if='scope.row.item_type===3' placeholder="" size="large"
+            <!--  需求状态  -->
+            <el-select v-if='scope.row.item_type===1' placeholder="" size="large"
                        @change="changeStatus($event,scope.row.item_type,scope.row.id)">
               <el-option
-                  v-for="item in bugStatus"
+                  v-for="item in requireStatus"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -128,28 +133,45 @@
                 <el-tag
                     disable-transitions
                     style="font-size: 16px"
-                    size="large"
-                    :color="getStatusColor(item.name)"
+                    size="small"
+                    :type="item.id === 0
+                            ? 'primary'
+                            : item.id===1
+                            ? 'info'
+                            : item.id===6
+                            ? 'danger'
+                            : item.id === 7
+                            ? 'success'
+                            : 'warning'
+                    "
                 >
-                  <span style="color: white;font-weight: bolder">{{ item.name }}</span>
+                  {{ item.name }}
                 </el-tag>
               </el-option>
               <template #prefix>
                 <el-tag
                     disable-transitions
                     style="font-size: 15px"
-                    size="default"
-                    :color="getStatusColor(scope.row.status)"
+                    size="small"
+                    :type="scope.row.status === 0
+                            ? 'primary'
+                            : scope.row.status === 1
+                            ? 'info'
+                            : scope.row.status === 6
+                            ? 'danger'
+                            : scope.row.status === 7
+                            ? 'success'
+                            : 'warning'"
                 >
-                  <span style="color: white;font-weight: bolder">{{ scope.row.status }}</span>
+                  {{ formatStatus(scope.row.item_type, scope.row.status) }}
                 </el-tag>
               </template>
             </el-select>
-            <!--  需求or任务状态  -->
-            <el-select v-else placeholder="" size="large"
+            <!--   任务状态         -->
+            <el-select v-if='scope.row.item_type===2' placeholder="" size="large"
                        @change="changeStatus($event,scope.row.item_type,scope.row.id)">
               <el-option
-                  v-for="item in itemStatus"
+                  v-for="item in taskStatus"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
@@ -157,7 +179,7 @@
                 <el-tag
                     disable-transitions
                     style="font-size: 16px"
-                    size="default"
+                    size="small"
                     :type="
                         item.id === 0
                             ? 'primary'
@@ -173,19 +195,51 @@
                 <el-tag
                     disable-transitions
                     style="font-size: 15px"
-                    size="default"
+                    size="small"
                     :type="
-                        scope.row.status === '未开始'
+                        scope.row.status === 0
                             ? 'primary'
-                            : scope.row.status === '进行中'
+                            : scope.row.status === 1
                             ? 'warning'
                             : 'success'
                     "
                 >
-                  {{ scope.row.status }}
+                  {{ formatStatus(scope.row.item_type, scope.row.status) }}
                 </el-tag>
               </template>
             </el-select>
+            <!--   缺陷状态         -->
+            <el-select v-if='scope.row.item_type===3' placeholder="" size="large"
+                       @change="changeStatus($event,scope.row.item_type,scope.row.id)">
+              <el-option
+                  v-for="item in bugStatus"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+              >
+                <el-tag
+                    disable-transitions
+                    style="font-size: 16px"
+                    size="small"
+                    :color="getStatusColor(item.id)"
+                >
+                  <span style="color: white;font-weight: bolder">{{ item.name }}</span>
+                </el-tag>
+              </el-option>
+              <template #prefix>
+                <el-tag
+                    disable-transitions
+                    style="font-size: 15px"
+                    size="small"
+                    :color="getStatusColor(scope.row.status)"
+                >
+                  <span style="color: white;font-weight: bolder">{{
+                      formatStatus(scope.row.item_type, scope.row.status)
+                    }}</span>
+                </el-tag>
+              </template>
+            </el-select>
+
 
           </template>
         </el-table-column>
@@ -261,6 +315,21 @@
       <RequireAddForm ref="addRequireForm"/>
     </el-dialog>
 
+    <!--创建任务对话框-->
+    <el-dialog
+        v-model="this.dialogAddTask"
+        center
+        :close-on-click-modal="false"
+        :show-close="false"
+        :before-close="handleTaskDialogClose"
+        style="min-width: 400px; max-width: 900px;z-index: 10;padding: 30px"
+    >
+      <template #header>
+        <h2 style="color: rgba(71,138,173,0.85);font-size: 22px;font-weight: bolder">创建任务</h2>
+      </template>
+      <TaskAddForm ref="addTaskForm"/>
+    </el-dialog>
+
     <!--创建缺陷对话框-->
     <el-dialog
         v-model="this.dialogAddBug"
@@ -276,6 +345,7 @@
       <BugAddForm ref="addForm"/>
     </el-dialog>
 
+
   </div>
 </template>
 
@@ -289,6 +359,7 @@ import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
 import RequireAddForm from "@/components/require/RequireAddForm.vue";
 import BugAddForm from "@/components/bug/BugAddForm.vue";
 import SvgIcons from "@/assets/svg/index.vue";
+import TaskAddForm from "@/components/task/TaskAddForm.vue";
 
 const projItemStore = useProjItemStore()
 const projBugStore = useProjBugStore()
@@ -297,12 +368,12 @@ const projTaskStore = useProjTaskStore()
 
 export default {
   computed: {
-    ...mapState(useProjItemStore, ['itemStatus', 'itemPriority', 'loading', 'multiDeleteSelection', 'selectData', 'bugStatus']),
-    ...mapState(useProjRequirementStore, ['dialogAddRequire']),
-    ...mapState(useProjBugStore, ['dialogAddBug']),
-    ...mapState(useProjTaskStore, ['dialogAddTask'])
+    ...mapState(useProjItemStore, ['loading', 'multiDeleteSelection', 'selectData','itemAddFlag']),
+    ...mapState(useProjRequirementStore, ['dialogAddRequire','requireStatus']),
+    ...mapState(useProjBugStore, ['dialogAddBug','bugStatus','bugPriority']),
+    ...mapState(useProjTaskStore, ['dialogAddTask','taskStatus'])
   },
-  components: {SvgIcons, BugAddForm, RequireAddForm, DeleteFilled, RefreshLeft},
+  components: {TaskAddForm, SvgIcons, BugAddForm, RequireAddForm, DeleteFilled, RefreshLeft},
   data() {
     return {
       input_search: '',
@@ -312,18 +383,18 @@ export default {
   methods: {
     handleRequireDialogClose() {
       projRequirementStore.$state.dialogAddRequire = false
+      projItemStore.$state.itemAddFlag=false
       this.$refs.addRequireForm.resetForm()
-      projItemStore.$state.itemPageOpenFlag = true
     },
     handleTaskDialogClose() {
       projTaskStore.$state.dialogAddTask = false
+      projItemStore.$state.itemAddFlag=false
       this.$refs.addTaskForm.resetForm()
-      projItemStore.$state.itemPageOpenFlag = true
     },
     handleBugDialogClose() {
       projBugStore.$state.dialogAddBug = false
+      projItemStore.$state.itemAddFlag=false
       this.$refs.addForm.resetForm()
-      projItemStore.$state.itemPageOpenFlag = true
     },
     //修改事项状态
     changeStatus(value, item_type, id) {
@@ -365,13 +436,13 @@ export default {
     //获得优先级颜色
     getPriorityColor(priority) {
       switch (priority) {
-        case '低':
+        case 2:
           return '#1EC79D';
-        case '中':
+        case 3:
           return '#FFDE0A';
-        case '高':
+        case 4:
           return '#FF6600';
-        case '紧急':
+        case 5:
           return '#E63415';
         default:
           return '#394049';
@@ -391,24 +462,81 @@ export default {
     //获得bug状态颜色
     getStatusColor(status) {
       switch (status) {
-        case '未开始':
+        case 0:
           return '#409dfd';
-        case '处理中':
+        case 1:
           return 'rgba(110,215,206,0.85)';
-        case '已解决':
+        case 2:
           return '#7ac555';
-        case '被拒绝':
+        case 3:
           return '#e7a94b';
-        case '重新打开':
+        case 4:
           return '#bd6a5c';
-        case '已关闭':
+        case 5:
           return '#a1a6ad';
         default:
           return '#645151';
       }
     },
-    openItem(item) {
-      projItemStore.$state.itemPageOpenFlag = true
+    formatStatus(item_type, status) {
+      if (item_type === 1) {
+        switch (status) {
+          case 0:
+            return '待处理'
+          case 1:
+            return '待评审'
+          case 2:
+            return '开发中'
+          case 3:
+            return '待验收'
+          case 4:
+            return '验收中'
+          case 5:
+            return '待测试'
+          case 6:
+            return '变更'
+          case 7:
+            return '已完成'
+          default:
+            return ''
+        }
+      } else if (item_type === 3) {
+        switch (status) {
+          case 0:
+            return '未开始'
+          case 1:
+            return '处理中'
+          case 2:
+            return '已解决'
+          case 3:
+            return '被拒绝'
+          case 4:
+            return '重新打开'
+          case 5:
+            return '已关闭'
+          default:
+            return ''
+        }
+      } else {
+        return status === 0 ? '未开始' : status === 1 ? '进行中' : '已完成'
+      }
+    },
+    formatPriority(priority){
+      switch (priority) {
+        case 2:
+          return '低'
+        case 3:
+          return '中'
+        case 4:
+          return '高'
+        case 5:
+          return '紧急'
+        default:
+          return '无'
+      }
+    },
+    openAddItem(item) {
+      projItemStore.$state.itemAddFlag=true
       switch (item) {
         case 1:
           projRequirementStore.$state.dialogAddRequire = true
@@ -423,6 +551,8 @@ export default {
     }
   },
   created() {
+    projItemStore.$state.loading=true
+    projItemStore.$state.selectData=[]
     this.input_search = ''
     this.isShowAdd_bt = this.$route.name !== 'projectIteration'
     projItemStore.selectAllItem('', projItemStore.getCurrentPage())
@@ -463,14 +593,6 @@ export default {
   font-size: 16px;
   font-weight: bold;
   margin-left: 5px;
-}
-
-.jump:hover {
-  color: #0052cb;
-  font-weight: bolder;
-  font-size: 16px;
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 .el-tag {

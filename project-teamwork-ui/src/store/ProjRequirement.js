@@ -167,7 +167,6 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                     })
                 }
             })
-            this.getLoading().then(r => {})
         },
         //根据当前项目id分页查询需求
         selectAllRequirement(currentPage, pageSize, title, status, priority,iterationId) {

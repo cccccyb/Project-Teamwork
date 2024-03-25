@@ -190,8 +190,6 @@ export const useProjBugStore = defineStore('projBug', {
                     })
                 }
             })
-            this.getLoading().then(r => {
-            })
         },
         //根据当前项目id分页查询缺陷
         selectAllBug(currentPage, pageSize, title, status, priority, discoveryIteId) {

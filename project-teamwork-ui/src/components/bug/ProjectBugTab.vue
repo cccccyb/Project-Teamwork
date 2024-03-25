@@ -53,7 +53,8 @@
         </el-button
         >
       </div>
-      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="openAddRequireDialog" style="font-size: 16px"
+      <el-button v-if="isShowAdd_bt" type="primary" :size="'large'" @click="openAddBugDialog"
+                 style="font-size: 16px"
       >
         创建缺陷
       </el-button
@@ -194,7 +195,7 @@
             width="120"
         >
           <template #default="scope">
-            {{formatReappear(scope.row.reappear)}}
+            {{ formatReappear(scope.row.reappear) }}
           </template>
         </el-table-column>
         <el-table-column
@@ -301,7 +302,8 @@
         <template #header style="margin-bottom: 0">
           <div style="display: flex;align-items: center">
             <SvgIcons width="32px" height="32px" color="#ffffff" icon-class="bug_menu"/>
-            <span style="font-weight: bolder;font-size: 25px;color: #2b2929;margin-left: 10px">#{{ clickBug.id}} </span>
+            <span
+                style="font-weight: bolder;font-size: 25px;color: #2b2929;margin-left: 10px">#{{ clickBug.id }} </span>
           </div>
         </template>
         <BugDrawerForm/>
@@ -314,6 +316,7 @@
 
 <script>
 import {useProjBugStore} from "@/store/ProjBug.js";
+import {useProjItemStore} from "@/store/ProjItem.js";
 import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
 import BugAddForm from "@/components/bug/BugAddForm.vue";
@@ -321,12 +324,13 @@ import BugDrawerForm from "@/components/bug/BugDrawerForm.vue";
 import SvgIcons from "@/assets/svg/index.vue";
 
 const projBugStore = useProjBugStore()
+const projItemStore = useProjItemStore()
 
 export default {
   computed: {
-    ...mapState(useProjBugStore, ['bugStatus', 'bugPriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData','dialogAddBug','clickBug','drawerVisible'])
+    ...mapState(useProjBugStore, ['bugStatus', 'bugPriority', 'loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData', 'dialogAddBug', 'clickBug', 'drawerVisible'])
   },
-  components: {SvgIcons, BugDrawerForm, DeleteFilled, RefreshLeft,BugAddForm},
+  components: {SvgIcons, BugDrawerForm, DeleteFilled, RefreshLeft, BugAddForm},
   data() {
     return {
       input_search: '',
@@ -337,12 +341,14 @@ export default {
   },
   methods: {
     // 打开添加缺陷对话框
-    openAddRequireDialog() {
+    openAddBugDialog() {
       projBugStore.$state.dialogAddBug = true
       this.$refs.addForm.resetForm()
     },
     handleDialogClose() {
       projBugStore.$state.dialogAddBug = false
+      projItemStore.$state.itemAddFlag=false
+
       this.$refs.addForm.resetForm()
     },
     // 打开缺陷抽屉
@@ -492,7 +498,7 @@ export default {
           return '无'
       }
     },
-    formatLevel(level){
+    formatLevel(level) {
       switch (level) {
         case 1:
           return '提示/建议'
@@ -506,7 +512,7 @@ export default {
           return ''
       }
     },
-    formatReappear(reappear){
+    formatReappear(reappear) {
       switch (reappear) {
         case 1:
           return '必然重现'
@@ -520,6 +526,8 @@ export default {
     }
   },
   created() {
+    projBugStore.$state.loading = true
+    projBugStore.$state.selectData = []
     this.input_search = ''
     this.bug_status = ''
     this.bug_priority = ''

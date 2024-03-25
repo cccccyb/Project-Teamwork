@@ -178,7 +178,6 @@ const userStore = useUserStore()
 const bugTypeStore = useBugTypeStore()
 export default {
   components: {SvgIcons},
-  expose:['closeForm'],
   computed: {
     ...mapState(useProjBugStore, ['bugStatus', 'bugPriority', 'bugOrigins', 'clickBug','bugLevel','bugReappear']),
     ...mapState(useUserStore, ['allUserList']),
@@ -188,8 +187,6 @@ export default {
   },
   data() {
     return {
-      innerVisible:false,
-      relationBugs:[],
       myRule: {
         title: [
           {required: true, message: '请输入缺陷标题', trigger: 'blur'},
@@ -211,6 +208,7 @@ export default {
           // 更新最新修改时间
           this.clickBug.modifyTime=new Date()
           projBugStore.handleUpdateBug(this.clickBug)
+          projBugStore.getLoading().then(r => {})
         } else {
           return false
         }

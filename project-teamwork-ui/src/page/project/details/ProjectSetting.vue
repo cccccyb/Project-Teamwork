@@ -4,10 +4,10 @@
       <h2 style="font-size: 23px;margin-left: 10px;color: #646161">项目与成员&nbsp&nbsp&nbsp|</h2>
     </div>
     <div class="tab_head">
-      <el-tabs v-model="activeName" class="demo-tabs">
-        <el-tab-pane label="基本信息" name="info"><ProjectInfo/></el-tab-pane>
-        <el-tab-pane label="成员" name="members">Role</el-tab-pane>
-        <el-tab-pane label="角色" name="role">Task</el-tab-pane>
+      <el-tabs v-model="activeName" @tab-click="handleTabClick">
+        <el-tab-pane label="基本信息" name="info"><ProjectInfo v-if="infoTab"/></el-tab-pane>
+        <el-tab-pane label="成员" name="members"><span v-if="membersTab"/></el-tab-pane>
+        <el-tab-pane label="角色" name="role"><span v-if="roleTab"/></el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -18,13 +18,36 @@ import ProjIteration from "@/components/iteration/Proj-Iteration.vue";
 import ProjectInfo from "@/components/project/details/ProjectInfo.vue";
 
 export default {
-  components: {ProjIteration,ProjectInfo},
+  components: {ProjectInfo},
   data() {
     return {
-      activeName:'info'
+      activeName:'info',
+      infoTab: true,
+      membersTab: false,
+      roleTab: false,
     }
   },
-  methods: {},
+  methods: {
+    handleTabClick(tab) {
+      switch (tab.props.name) {
+        case 'info':
+          this.infoTab = true
+          this.membersTab = false
+          this.roleTab = false
+          break;
+        case 'members':
+          this.infoTab = false
+          this.membersTab = true
+          this.roleTab = false
+          break;
+        case 'role':
+          this.infoTab = false
+          this.membersTab = false
+          this.roleTab = true
+          break;
+      }
+    }
+  },
   created() {
   }
 }

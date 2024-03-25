@@ -13,75 +13,8 @@ export const useProjItemStore = defineStore('projItem', {
         return {
             loading: false,
             dialogAddVisible: false,
+            itemAddFlag:false,
             multiDeleteSelection: [],
-            itemPageOpenFlag:false,
-            itemStatus: [
-                {
-                    id: 0,
-                    name: '未开始'
-                },
-                {
-                    id: 1,
-                    name: '进行中'
-                },
-                {
-                    id: 2,
-                    name: '已完成'
-                },
-            ],
-            itemPriority: [
-                {
-                    id: 5,
-                    name: '紧急',
-                    color: '#E63415'
-                },
-                {
-                    id: 4,
-                    name: '高',
-                    color: '#FF6600'
-                },
-                {
-                    id: 3,
-                    name: '中',
-                    color: '#FFDE0A'
-                },
-                {
-                    id: 2,
-                    name: '低',
-                    color: '#1EC79D'
-                },
-                {
-                    id: 1,
-                    name: '无',
-                    color: '#394049'
-                }
-            ],
-            bugStatus: [
-                {
-                    id: 0,
-                    name: '未开始'
-                },
-                {
-                    id: 1,
-                    name: '处理中'
-                },
-                {
-                    id: 2,
-                    name: '已解决'
-                },
-                {
-                    id: 3,
-                    name: '被拒绝'
-                },
-                {
-                    id: 4,
-                    name: '重新打开'
-                },
-                {
-                    id: 5,
-                    name: '已关闭'
-                }
-            ],
             selectData: []
         }
     },
@@ -113,53 +46,6 @@ export const useProjItemStore = defineStore('projItem', {
                 .then((response) => {
                     if (response.data.code === DATABASE_SELECT_OK) {
                         this.selectData = response.data.data
-                        for (let i = 0; i < this.selectData.length; i++) {
-                            let data = this.selectData[i];
-                            if (data.item_type === 3) {
-                                switch (data.status) {
-                                    case 0:
-                                        data.status = '未开始';
-                                        break;
-                                    case 1:
-                                        data.status = '处理中';
-                                        break;
-                                    case 2:
-                                        data.status = '已解决';
-                                        break;
-                                    case 3:
-                                        data.status = '被拒绝';
-                                        break;
-                                    case 4:
-                                        data.status = '重新打开';
-                                        break;
-                                    case 5:
-                                        data.status = '已关闭';
-                                        break;
-                                    default:
-                                        data.status = '';
-                                        break;
-                                }
-                            } else {
-                                data.status = parseInt(data.status) === 0 ? '未开始' : parseInt(data.status) === 1 ? '进行中' : '已完成'
-                            }
-                            switch (data.priority) {
-                                case 2:
-                                    data.priority = '低';
-                                    break;
-                                case 3:
-                                    data.priority = '中';
-                                    break;
-                                case 4:
-                                    data.priority = '高';
-                                    break;
-                                case 5:
-                                    data.priority = '紧急';
-                                    break;
-                                default:
-                                    data.priority = '无';
-                                    break;
-                            }
-                        }
                         this.total = parseInt(response.data.msg)
                         this.loading = false
                     } else {

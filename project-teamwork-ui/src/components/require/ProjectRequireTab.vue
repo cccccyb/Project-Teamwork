@@ -340,6 +340,7 @@
 
 <script>
 import {useProjRequirementStore} from "@/store/ProjRequirement.js";
+import {useProjItemStore} from "@/store/ProjItem.js";
 import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
 import RequireAddForm from "@/components/require/RequireAddForm.vue";
@@ -347,6 +348,8 @@ import RequireDrawerForm from "@/components/require/RequireDrawerForm.vue";
 import SvgIcons from "@/assets/svg/index.vue";
 
 const projRequirementStore = useProjRequirementStore()
+const projItemStore = useProjItemStore()
+
 
 export default {
   computed: {
@@ -369,6 +372,7 @@ export default {
     },
     handleDialogClose() {
       projRequirementStore.$state.dialogAddVisible = false
+      projItemStore.$state.itemAddFlag=false
       this.$refs.addRequireForm.resetForm()
     },
     // 打开需求抽屉
@@ -505,6 +509,8 @@ export default {
     }
   },
   created() {
+    projRequirementStore.$state.loading=true
+    projRequirementStore.$state.selectData=[]
     this.input_search = ''
     this.require_status = ''
     this.require_priority = ''

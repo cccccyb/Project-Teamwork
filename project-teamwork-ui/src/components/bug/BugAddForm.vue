@@ -5,11 +5,12 @@
         <el-input v-model="addData.title" style="width: 100%;height: 40px" placeholder=" 输入缺陷标题"></el-input>
       </el-form-item>
       <el-form-item label="缺陷描述:" prop="description" style="height: 90px">
-        <el-input type="textarea" v-model="addData.description" style="width: 100%" placeholder=" 点此编辑缺陷描述"></el-input>
+        <el-input type="textarea" v-model="addData.description" style="width: 100%"
+                  placeholder=" 点此编辑缺陷描述"></el-input>
       </el-form-item>
       <div style="display: flex;width:100%;justify-content: space-between;align-items: center">
         <el-form-item label="状态:" prop="status" style="width: 40%;">
-          <el-select v-model="addData.status" placeholder="----请选择----" >
+          <el-select v-model="addData.status" placeholder="----请选择----">
             <el-option
                 v-for="item in bugStatus"
                 :key="item.id"
@@ -22,7 +23,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="优先级:" prop="priority" style="width: 40%">
-          <el-select v-model="addData.priority" placeholder="----请选择----" >
+          <el-select v-model="addData.priority" placeholder="----请选择----">
             <el-option
                 v-for="item in bugPriority"
                 :key="item.id"
@@ -37,7 +38,7 @@
       </div>
       <div style="display: flex;width:100%;justify-content: space-between;align-items: center">
         <el-form-item label="严重程度:" prop="level" style="width: 40%;">
-          <el-select v-model="addData.level" placeholder="----未指定----" >
+          <el-select v-model="addData.level" placeholder="----未指定----">
             <el-option
                 v-for="item in bugLevel"
                 :key="item.id"
@@ -49,7 +50,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="重现规律:" prop="reappear" style="width: 40%">
-          <el-select v-model="addData.reappear" placeholder="----未指定----" >
+          <el-select v-model="addData.reappear" placeholder="----未指定----">
             <el-option
                 v-for="item in bugReappear"
                 :key="item.id"
@@ -63,7 +64,7 @@
       </div>
       <div style="display: flex;width:100%;justify-content: space-between;align-items: center">
         <el-form-item label="缺陷类型:" prop="bug_type_id" style="width: 40%;">
-          <el-select v-model="addData.bug_type_id" placeholder="----未指定----" >
+          <el-select v-model="addData.bug_type_id" placeholder="----未指定----">
             <el-option
                 v-for="item in allBugTypeList"
                 :key="item.id"
@@ -75,19 +76,19 @@
           </el-select>
         </el-form-item>
         <el-form-item label="处理人:" prop="processerId" style="width: 40%">
-          <el-select v-model="addData.processerId" placeholder="----未指定----" >
+          <el-select v-model="addData.processerId" placeholder="----未指定----">
             <el-option
                 v-for="item in allUserList"
                 :key="item.id"
                 :label="item.username"
                 :value="item.id"
-           />
+            />
           </el-select>
         </el-form-item>
       </div>
       <div style="display: flex;width:100%;justify-content: space-between;align-items: center">
         <el-form-item label="缺陷发现迭代:" prop="discoveryIterateId" style="width: 40%">
-          <el-select v-model="addData.discoveryIterateId" placeholder="----请选择----" >
+          <el-select v-model="addData.discoveryIterateId" placeholder="----请选择----">
             <el-option
                 v-for="item in allIterationList"
                 :key="item.id"
@@ -97,7 +98,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="缺陷来源:" prop="origin" style="width: 40%">
-          <el-select v-model="addData.origin" placeholder="----请选择----" >
+          <el-select v-model="addData.origin" placeholder="----请选择----">
             <el-option
                 v-for="item in bugOrigins"
                 :key="item.id"
@@ -117,13 +118,12 @@
           >
             <div style="display: flex;justify-content: flex-start;align-items: center">
               <SvgIcons width="20px" height="20px" color="#ffffff" icon-class="require_menu"/>
-              <span style="color: black;font-weight: bold;font-size: 17px;margin-left: 4px">#{{item.id}}</span>
-              <span style="font-size: 17px;margin-left: 3px">{{formatterRequireTitle(item.title)}}</span>
+              <span style="color: black;font-weight: bold;font-size: 17px;margin-left: 4px">#{{ item.id }}</span>
+              <span style="font-size: 17px;margin-left: 3px">{{ formatterRequireTitle(item.title) }}</span>
             </div>
           </el-option>
         </el-select>
       </el-form-item>
-
 
 
       <el-form-item class="formFooter">
@@ -155,7 +155,7 @@ const userStore = useUserStore()
 export default {
   components: {SvgIcons},
   computed: {
-    ...mapState(useProjBugStore, ['bugStatus','bugPriority','bugOrigins','bugLevel','bugReappear']),
+    ...mapState(useProjBugStore, ['bugStatus', 'bugPriority', 'bugOrigins', 'bugLevel', 'bugReappear']),
     ...mapState(useUserStore, ['allUserList']),
     ...mapState(useProjIterationStore, ['allIterationList']),
     ...mapState(useProjRequirementStore, ['allRequirementList']),
@@ -167,28 +167,28 @@ export default {
         title: '',
         description: '',
         status: '',
-        priority:'',
-        level:'',
-        reappear:'',
+        priority: '',
+        level: '',
+        reappear: '',
         creatorId: localStorage.getItem('uid'),
-        processerId:'',
-        discoveryIterateId:'',
-        projectId:localStorage.getItem('pid'),
-        requirementId:'',
-        bug_type_id:'',
-        origin:''
+        processerId: '',
+        discoveryIterateId: '',
+        projectId: localStorage.getItem('pid'),
+        requirementId: '',
+        bug_type_id: '',
+        origin: ''
       },
       myRule: {
         title: [
           {required: true, message: '请输入缺陷标题', trigger: 'blur'},
           {min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur'}
         ],
-        status: [{ required: true, message: '请选择缺陷状态', trigger: 'change' }],
-        priority: [{ required: true, message: '请选择缺陷优先级', trigger: 'change' }],
-        processerId: [{ required: true, message: '请选择处理人', trigger: 'change' }],
-        discoveryIterateId: [{ required: true, message: '请选择缺陷发现迭代', trigger: 'change' }],
-        requirementId: [{ required: true, message: '请关联需求', trigger: 'change' }],
-        bug_type_id: [{ required: true, message: '请选择缺陷类型', trigger: 'change' }]
+        status: [{required: true, message: '请选择缺陷状态', trigger: 'change'}],
+        priority: [{required: true, message: '请选择缺陷优先级', trigger: 'change'}],
+        processerId: [{required: true, message: '请选择处理人', trigger: 'change'}],
+        discoveryIterateId: [{required: true, message: '请选择缺陷发现迭代', trigger: 'change'}],
+        requirementId: [{required: true, message: '请关联需求', trigger: 'change'}],
+        bug_type_id: [{required: true, message: '请选择缺陷类型', trigger: 'change'}]
       }
     }
   },
@@ -197,11 +197,12 @@ export default {
       this.$refs.addBugForm.validate((valid) => {
         if (valid) {
           projBugStore.handleAddBug(this.addData)
-          if (projItemStore.itemPageOpenFlag){
-            projItemStore.$state.itemPageOpenFlag=false
+          if (projItemStore.itemAddFlag===true){
             projItemStore.getLoading().then(r => {})
+            projItemStore.$state.itemAddFlag=false
           }else {
-            projBugStore.getLoading().then(r => {})
+            projBugStore.getLoading().then(r => {
+            })
           }
         } else {
           return false
@@ -210,7 +211,7 @@ export default {
     },
     closeForm() {
       projBugStore.$state.dialogAddBug = false
-      projItemStore.$state.itemPageOpenFlag=false
+      projItemStore.$state.itemAddFlag=false
       this.resetForm()
     },
     resetForm() {
@@ -279,17 +280,20 @@ export default {
   margin: 20px 0;
   justify-content: center;
 }
+
 .transfer-footer {
   margin-left: 75px;
   padding: 6px 5px;
 }
-.member_name{
+
+.member_name {
   display: inline-block;
   font-weight: bold;
   font-size: 22px;
   color: rgb(51, 118, 253);
 }
-/deep/ .el-form-item__label{
+
+/deep/ .el-form-item__label {
   font-size: 17px;
 }
 </style>

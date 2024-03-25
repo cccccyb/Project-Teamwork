@@ -2,8 +2,8 @@ import { defineStore } from 'pinia';
 import request from "@/util/request.js";
 import {
     DATABASE_DELETE_ERROR,
-    DATABASE_DELETE_OK,
-    DATABASE_SELECT_OK,
+    DATABASE_DELETE_OK, DATABASE_SAVE_ERROR, DATABASE_SAVE_OK,
+    DATABASE_SELECT_OK, DATABASE_UPDATE_ERROR,
     DATABASE_UPDATE_OK
 } from "@/constants/Common.constants.js";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -15,6 +15,8 @@ export const useProjIterationStore=defineStore('projIteration',{
             currentPage: 1,
             loading: false,
             dialogAddVisible: false,
+            dialogEditVisible: false,
+            editIteration:{},
             multiDeleteSelection: [],
             currentIteration:{},
             allIterationList:[],
@@ -68,10 +70,6 @@ export const useProjIterationStore=defineStore('projIteration',{
                 .then((response) => {
                     if (response.data.code === DATABASE_SELECT_OK) {
                         this.selectData = response.data.data
-                        for (let i = 0; i < this.selectData.length; i++) {
-                            let data = this.selectData[i];
-                            data.status = parseInt(data.status) === 0 ? '未开始' : parseInt(data.status) === 1 ? '进行中' : '已完成'
-                        }
                         this.total = parseInt(response.data.msg)
                         this.loading = false
                     } else {
@@ -82,6 +80,40 @@ export const useProjIterationStore=defineStore('projIteration',{
                         })
                     }
                 })
+        },
+        //添加迭代
+        handleAddIteration(addFormData) {
+            request.post('/iteration/addIteration', addFormData).then((response) => {
+                if (response.data.code === DATABASE_SAVE_OK) {
+                    this.dialogAddVisible = false
+                    ElMessage({
+                        message: '添加成功.',
+                        type: 'success'
+                    })
+                } else if (response.data.code === DATABASE_SAVE_ERROR) {
+                    ElMessage({
+                        message: response.data.msg,
+                        type: 'error'
+                    })
+                }
+            })
+        },
+        //修改迭代
+        handleUpdateIteration(updateIteration) {
+            request.put('/iteration/updateIteration', updateIteration).then((response) => {
+                if (response.data.code === DATABASE_UPDATE_OK) {
+                    this.dialogEditVisible = false
+                    ElMessage({
+                        message: '修改成功.',
+                        type: 'success'
+                    })
+                } else if (response.data.code === DATABASE_UPDATE_ERROR) {
+                    ElMessage({
+                        message: response.data.msg,
+                        type: 'error'
+                    })
+                }
+            })
         },
         // 根据迭代id修改状态
         async updateStatusById(iteId, status) {

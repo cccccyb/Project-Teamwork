@@ -4,9 +4,10 @@ import {ElMessage, ElMessageBox} from "element-plus";
 import {
     DATABASE_DELETE_ERROR,
     DATABASE_DELETE_OK, DATABASE_SAVE_ERROR, DATABASE_SAVE_OK,
-    DATABASE_SELECT_OK,
+    DATABASE_SELECT_OK, DATABASE_UPDATE_ERROR,
     DATABASE_UPDATE_OK
 } from "@/constants/Common.constants.js";
+import router from "@/router/index.js";
 
 export const useProjectStore = defineStore('project', {
     state: () => ({
@@ -14,6 +15,7 @@ export const useProjectStore = defineStore('project', {
         pageSize: 10,
         currentPage: 1,
         loading: true,
+        editLoading:false,
         dialogAddVisible: false,
         currentViewPage: 'All',
         multiDeleteSelection: [],
@@ -78,10 +80,6 @@ export const useProjectStore = defineStore('project', {
                 .then((response) => {
                     if (response.data.code === DATABASE_SELECT_OK) {
                         this.selectData = response.data.data
-                        for (let i = 0; i < this.selectData.length; i++) {
-                            let data = this.selectData[i];
-                            data.status = parseInt(data.status) === 0 ? '未开始' : parseInt(data.status) === 1 ? '进行中' : '已完成'
-                        }
                         this.total = parseInt(response.data.msg)
                         this.loading = false
                     } else {
@@ -118,7 +116,7 @@ export const useProjectStore = defineStore('project', {
             this.selectAllProject(this.currentPage, this.pageSize, this.getCurrentViewPage(),'', '', '', '',  this.getCurrentViewPage())
         },
         //根据项目id删除项目
-        handleDeleteById(pid) {
+        handleDeleteById(pid,is) {
             ElMessageBox.confirm('确定是否要删除？该操作将无法回退', '警告', {
                 confirmButtonText: '确定',
                 cancelButtonText: '我再想想',
@@ -127,6 +125,10 @@ export const useProjectStore = defineStore('project', {
                 .then(() => {
                     request.delete('/project/' + pid).then((response) => {
                         if (response.data.code === DATABASE_DELETE_OK) {
+                            if (this.isProjectSettingDelete(is)){
+                                localStorage.removeItem('pid')
+                                router.replace('/main/projectManage/projectPerson').then(r => {})
+                            }
                             ElMessage({
                                 message: '删除成功.',
                                 type: 'success'
@@ -151,6 +153,10 @@ export const useProjectStore = defineStore('project', {
                 })
                 .catch(() => {
                 })
+        },
+        //判断是否为项目设置页面删除
+        isProjectSettingDelete(is){
+          return is===1
         },
         //批量删除项目
         deleteBatchByIds() {
@@ -218,7 +224,25 @@ export const useProjectStore = defineStore('project', {
                 }
             })
             this.getLoading().then(r => {})
-        }
+        },
+        //修改项目
+        async handleUpdateProject(updateProject) {
+            await this.sleep(400)
+            request.put('/project/updateProject', updateProject).then((response) => {
+                if (response.data.code === DATABASE_UPDATE_OK) {
+                    this.editLoading = false
+                    ElMessage({
+                        message: '操作成功.',
+                        type: 'success'
+                    })
+                } else if (response.data.code === DATABASE_UPDATE_ERROR) {
+                    ElMessage({
+                        message: response.data.msg,
+                        type: 'error'
+                    })
+                }
+            })
+        },
     }
 })
 

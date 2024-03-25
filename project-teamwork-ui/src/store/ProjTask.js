@@ -2,8 +2,8 @@ import {defineStore} from 'pinia';
 import request from "@/util/request.js";
 import {
     DATABASE_DELETE_ERROR,
-    DATABASE_DELETE_OK,
-    DATABASE_SELECT_OK,
+    DATABASE_DELETE_OK, DATABASE_SAVE_ERROR, DATABASE_SAVE_OK,
+    DATABASE_SELECT_OK, DATABASE_UPDATE_ERROR,
     DATABASE_UPDATE_OK
 } from "@/constants/Common.constants.js";
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -16,6 +16,8 @@ export const useProjTaskStore = defineStore('projTask', {
             currentPage: 1,
             loading: false,
             dialogAddTask: false,
+            drawerVisible:false,
+            clickTask:{},
             multiDeleteSelection: [],
             taskStatus: [
                 {
@@ -109,6 +111,40 @@ export const useProjTaskStore = defineStore('projTask', {
                         })
                     }
                 })
+        },
+        //添加任务
+        handleAddTask(addFormData) {
+            request.post('/task/addTask', addFormData).then((response) => {
+                if (response.data.code === DATABASE_SAVE_OK) {
+                    this.dialogAddTask = false
+                    ElMessage({
+                        message: '添加成功.',
+                        type: 'success'
+                    })
+                } else if (response.data.code === DATABASE_SAVE_ERROR) {
+                    ElMessage({
+                        message: response.data.msg,
+                        type: 'error'
+                    })
+                }
+            })
+        },
+        //修改任务
+        handleUpdateTask(updateTask) {
+            request.put('/task/updateTask', updateTask).then((response) => {
+                if (response.data.code === DATABASE_UPDATE_OK) {
+                    this.drawerVisible = false
+                    ElMessage({
+                        message: '修改成功.',
+                        type: 'success'
+                    })
+                } else if (response.data.code === DATABASE_UPDATE_ERROR) {
+                    ElMessage({
+                        message: response.data.msg,
+                        type: 'error'
+                    })
+                }
+            })
         },
         // 根据任务id修改状态
         async updateStatusById(tId, status) {

@@ -68,9 +68,9 @@ export default {
       return COLOR_FONT_MAIN
     },
     goBack(){
-      // detailProjectStore.$state.currentPid=''
       localStorage.removeItem('pid')
       router.push('/main/projectManage/projectPerson')
+      // router.go(-1)
     }
   },
   computed: {
