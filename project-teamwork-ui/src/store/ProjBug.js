@@ -18,6 +18,7 @@ export const useProjBugStore = defineStore('projBug', {
             dialogAddBug: false,
             drawerVisible:false,
             multiDeleteSelection: [],
+            cardSelectData:[],
             clickBug:{},
             allBugList: [],
             bugStatus: [
@@ -346,6 +347,12 @@ export const useProjBugStore = defineStore('projBug', {
                 }
             }).then((response) => {
                 this.allBugList = response.data.data
+            })
+        },
+        //获得卡片数据
+        getCardSelectData(){
+            request.get('/bug/cardLimit').then((response) => {
+                this.cardSelectData = response.data.data
             })
         }
     }

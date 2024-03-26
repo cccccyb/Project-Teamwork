@@ -83,4 +83,17 @@
             <result property="name" column="iteName"/>
         </association>
     </resultMap>
+
+    <!--     任务卡片前五条   -->
+    <select id="selectTaskLimit" resultMap="TaskLimitResultMap">
+        select *
+        from t_task t
+                 left join t_user u1 on t.creator_id = u1.id
+        where t.deleted = 0
+        order by t.create_time desc
+        limit 5;
+    </select>
+    <resultMap id="TaskLimitResultMap" type="task" autoMapping="true">
+        <association property="creator" javaType="user" autoMapping="true"/>
+    </resultMap>
 </mapper>

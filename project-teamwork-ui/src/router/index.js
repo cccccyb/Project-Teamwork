@@ -200,12 +200,36 @@ let routes = [
                 }
             },
             {
-                path: 'powerManage',
-                name: 'powerManage',
-                component: () => import('@/page/power/PowerManage.vue'),
+                path: 'userManage',
+                name: 'userManage',
+                component: () => import('@/page/user/UserManage.vue'),
                 meta: {
-                    title: '权限管理',
-                    icon: 'power_menu',
+                    title: '用户管理',
+                    icon: 'user_manage',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'groupManage',
+                name: 'groupManage',
+                component: () => import('@/page/group/GroupManage.vue'),
+                meta: {
+                    title: '用户组管理',
+                    icon: 'group_menu',
+                    hasChildren: false,
+                    isShow: true,
+                    isMenu: true
+                }
+            },
+            {
+                path: 'roleManage',
+                name: 'roleManage',
+                component: () => import('@/page/role/RoleManage.vue'),
+                meta: {
+                    title: '角色管理',
+                    icon: 'role_menu',
                     hasChildren: false,
                     isShow: true,
                     isMenu: true

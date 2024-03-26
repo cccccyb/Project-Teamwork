@@ -89,4 +89,9 @@ public class RequirementServiceImpl extends ServiceImpl<RequirementMapper, Requi
         lqw.eq(Requirement::getProjectId, projectId);
         return requirementMapper.selectList(lqw);
     }
+
+    @Override
+    public List<Requirement> selectRequirementLimit() {
+        return requirementMapper.selectRequirementLimit();
+    }
 }

@@ -92,7 +92,7 @@ public class BugServiceImpl extends ServiceImpl<BugMapper, Bug> implements IBugS
     }
 
     @Override
-    public List<Bug> getAllBug(Long projectId,Long requireId) {
+    public List<Bug> getAllBug(Long projectId, Long requireId) {
         if (null == projectId) {
             return null;
         }
@@ -110,6 +110,11 @@ public class BugServiceImpl extends ServiceImpl<BugMapper, Bug> implements IBugS
             flag = bugMapper.update(null, luw) > 0;
         }
         return flag;
+    }
+
+    @Override
+    public List<Bug> selectBugLimit() {
+        return bugMapper.selectBugLimit();
     }
 }
 

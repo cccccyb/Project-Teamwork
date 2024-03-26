@@ -20,6 +20,7 @@ export const useProjIterationStore=defineStore('projIteration',{
             multiDeleteSelection: [],
             currentIteration:{},
             allIterationList:[],
+            cardSelectData:[],
             iterationStatus: [
                 {
                     id: 0,
@@ -214,6 +215,12 @@ export const useProjIterationStore=defineStore('projIteration',{
                 projectId
                 }}).then((response) => {
                 this.allIterationList = response.data.data
+            })
+        },
+        //获得卡片数据
+        getCardSelectData(){
+            request.get('/iteration/cardLimit').then((response) => {
+                this.cardSelectData = response.data.data
             })
         }
     }

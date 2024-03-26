@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'cyb';
+    src: url("./CYB.ttf");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'TeamWork';
+    src: url("./TeamWork.ttf");
+    font-weight: bold;
+    font-style: normal;
+}
+

@@ -110,4 +110,13 @@ public class IterationController {
         return ResponseResult.build(code, msg, allIteration);
     }
 
+    //迭代卡片前五条
+    @GetMapping("/cardLimit")
+    public ResponseResult<List<Iteration>> selectIterationLimit() {
+        List<Iteration> iterationLimit = iIterationService.selectIterationLimit();
+        int code = iterationLimit != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = iterationLimit != null ? "" : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, iterationLimit);
+    }
+
 }

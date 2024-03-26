@@ -144,4 +144,13 @@ public class BugController {
         String msg = addRelationBugById != null ? "缺陷关联成功！" : "关联缺陷失败，请重试！";
         return ResponseResult.build(code, msg, addRelationBugById);
     }
+
+    //缺陷卡片前五条
+    @GetMapping("/cardLimit")
+    public ResponseResult<List<Bug>> selectBugLimit() {
+        List<Bug> bugLimit = bugService.selectBugLimit();
+        int code = bugLimit != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = bugLimit != null ? "" : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, bugLimit);
+    }
 }

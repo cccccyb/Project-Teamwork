@@ -69,7 +69,7 @@ export default {
     },
     goBack(){
       localStorage.removeItem('pid')
-      router.push('/main/projectManage/projectPerson')
+      router.replace('/main/projectManage/projectPerson')
       // router.go(-1)
     }
   },

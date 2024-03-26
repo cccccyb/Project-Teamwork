@@ -115,4 +115,13 @@ public class TaskController {
         String msg = taskIPage.getRecords() != null ? String.valueOf(taskIPage.getTotal()) : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, taskIPage.getRecords());
     }
+
+    //任务卡片前五条
+    @GetMapping("/cardLimit")
+    public ResponseResult<List<Task>> selectTaskLimit() {
+        List<Task> taskLimit = taskService.selectTaskLimit();
+        int code = taskLimit != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = taskLimit != null ? "" : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, taskLimit);
+    }
 }

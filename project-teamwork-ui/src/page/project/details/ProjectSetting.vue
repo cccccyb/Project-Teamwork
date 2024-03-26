@@ -6,8 +6,7 @@
     <div class="tab_head">
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
         <el-tab-pane label="基本信息" name="info"><ProjectInfo v-if="infoTab"/></el-tab-pane>
-        <el-tab-pane label="成员" name="members"><span v-if="membersTab"/></el-tab-pane>
-        <el-tab-pane label="角色" name="role"><span v-if="roleTab"/></el-tab-pane>
+        <el-tab-pane label="项目成员" name="members"><span v-if="membersTab"/></el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -23,8 +22,7 @@ export default {
     return {
       activeName:'info',
       infoTab: true,
-      membersTab: false,
-      roleTab: false,
+      membersTab: false
     }
   },
   methods: {
@@ -33,17 +31,10 @@ export default {
         case 'info':
           this.infoTab = true
           this.membersTab = false
-          this.roleTab = false
           break;
         case 'members':
           this.infoTab = false
           this.membersTab = true
-          this.roleTab = false
-          break;
-        case 'role':
-          this.infoTab = false
-          this.membersTab = false
-          this.roleTab = true
           break;
       }
     }

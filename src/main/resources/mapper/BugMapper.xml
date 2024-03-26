@@ -101,4 +101,17 @@
             <result property="title" column="reqName"/>
         </association>
     </resultMap>
+
+    <!--     缺陷卡片前五条   -->
+    <select id="selectBugLimit" resultMap="BugLimitResultMap">
+        select *
+        from t_bug b
+                 left join t_user u1 on b.creator_id = u1.id
+        where b.deleted = 0
+        order by b.create_time desc
+        limit 5;
+    </select>
+    <resultMap id="BugLimitResultMap" type="bug" autoMapping="true">
+        <association property="creator" javaType="user" autoMapping="true"/>
+    </resultMap>
 </mapper>

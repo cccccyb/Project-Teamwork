@@ -31,11 +31,10 @@ export const useUserStore = defineStore('user', {
                         type: 'success'
                     });
                 } else {
-                    console.log(response.data);
                     ElMessage({
                         message: '用户不存在，请重新登录！',
                         type: 'error'
-                    });
+                    })
                 }
             })
         },

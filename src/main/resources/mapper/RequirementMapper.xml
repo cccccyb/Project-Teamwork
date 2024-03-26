@@ -82,4 +82,18 @@
             <result property="name" column="iteName"/>
         </association>
     </resultMap>
+
+
+    <!--     需求卡片前五条   -->
+    <select id="selectRequirementLimit" resultMap="RequirementLimitResultMap">
+        select *
+        from t_requirement req
+                 left join t_user u1 on req.creator_id = u1.id
+        where req.deleted = 0
+        order by req.create_time desc
+        limit 5;
+    </select>
+    <resultMap id="RequirementLimitResultMap" type="requirement" autoMapping="true">
+        <association property="creator" javaType="user" autoMapping="true"/>
+    </resultMap>
 </mapper>

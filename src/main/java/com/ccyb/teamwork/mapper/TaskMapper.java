@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Task;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * <p>
  * 事项 Mapper 接口
@@ -19,4 +21,6 @@ public interface TaskMapper extends BaseMapper<Task> {
     Task selectTaskById(Long tId);
 
     IPage<Task> selectPageTask(IPage<?> page, String title, Integer status, Integer priority, Long creatorId, Long processerId, Long projectId, Long iterationId);
+
+    List<Task> selectTaskLimit();
 }

@@ -5,6 +5,8 @@ import com.ccyb.teamwork.entity.Iteration;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -19,5 +21,7 @@ public interface IterationMapper extends BaseMapper<Iteration> {
     Iteration selectIterationById(Long iteId);
 
     IPage<Iteration> selectPageIteration(IPage<?> page, String name, Integer status, Long directorId, Long projectId);
+
+    List<Iteration> selectIterationLimit();
 
 }

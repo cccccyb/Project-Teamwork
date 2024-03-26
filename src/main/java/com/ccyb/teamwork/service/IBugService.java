@@ -36,4 +36,6 @@ public interface IBugService extends IService<Bug> {
 
     Boolean addRelationBugById(Long requireId, List<Long> bugIds);
 
+    List<Bug> selectBugLimit();
+
 }

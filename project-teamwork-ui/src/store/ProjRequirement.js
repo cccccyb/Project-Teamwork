@@ -21,6 +21,7 @@ export const useProjRequirementStore = defineStore('projRequirement', {
             allRequirementList:[],
             relationBugsList:[],
             multiDeleteSelection: [],
+            cardSelectData:[],
             requireStatus: [
                 {
                     id: 0,
@@ -347,6 +348,12 @@ export const useProjRequirementStore = defineStore('projRequirement', {
                         type: 'error'
                     })
                 }
+            })
+        },
+        //获得卡片数据
+        getCardSelectData(){
+            request.get('/requirement/cardLimit').then((response) => {
+                this.cardSelectData = response.data.data
             })
         }
     }

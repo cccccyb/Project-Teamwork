@@ -19,6 +19,7 @@ export const useProjTaskStore = defineStore('projTask', {
             drawerVisible:false,
             clickTask:{},
             multiDeleteSelection: [],
+            cardSelectData:[],
             taskStatus: [
                 {
                     id: 0,
@@ -262,6 +263,12 @@ export const useProjTaskStore = defineStore('projTask', {
         getCurrentPage() {
             return localStorage.getItem('iterateId')===null?'':localStorage.getItem('iterateId')
         },
+        //获得卡片数据
+        getCardSelectData(){
+            request.get('/task/cardLimit').then((response) => {
+                this.cardSelectData = response.data.data
+            })
+        }
     }
 })
 

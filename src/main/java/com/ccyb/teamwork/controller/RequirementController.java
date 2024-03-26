@@ -56,7 +56,6 @@ public class RequirementController {
     //修改需求
     @PutMapping("/updateRequirement")
     public ResponseResult<?> updateRequirement(@RequestBody Requirement requirement) {
-        System.out.println("666:"+requirement.toString());
         Boolean updateById = requirementService.updateRequirement(requirement);
         String msg = updateById ? "" : "数据修改失败，请重试！";
         return ResponseResult.build(updateById ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
@@ -123,6 +122,15 @@ public class RequirementController {
         int code = allRequirement != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = allRequirement != null ? "" : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, allRequirement);
+    }
+
+    //需求卡片前五条
+    @GetMapping("/cardLimit")
+    public ResponseResult<List<Requirement>> selectBugLimit() {
+        List<Requirement> requirementLimit = requirementService.selectRequirementLimit();
+        int code = requirementLimit != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = requirementLimit != null ? "" : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, requirementLimit);
     }
 
 }

@@ -7,6 +7,7 @@ import '@/assets/css/index.scss'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import "virtual:svg-icons-register";
 import svgIcon from '@/assets/svg/index.vue'
+import '@/assets/font/Logo.css'
 
 const pinia = createPinia()
 const app = createApp(App)

@@ -54,4 +54,22 @@
             <result property="name" column="pName"/>
         </association>
     </resultMap>
+
+    <!--     迭代卡片前五条   -->
+    <select id="selectIterationLimit" resultMap="IterationLimitResultMap">
+        select p.id pId,
+               p.name pName,
+               ite.*
+        from t_iteration ite
+                 left join t_project p on ite.project_id = p.id
+        where ite.deleted = 0
+        order by ite.start_time desc
+        limit 5;
+    </select>
+    <resultMap id="IterationLimitResultMap" type="iteration" autoMapping="true">
+        <association property="project" javaType="project" autoMapping="true">
+            <id property="id" column="pId"/>
+            <result property="name" column="pName"/>
+        </association>
+    </resultMap>
 </mapper>

@@ -78,4 +78,9 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task> implements IT
         luw.eq(Task::getId, tId).set(Task::getPriority, priority).set(Task::getModifyTime, LocalDateTime.now());
         return taskMapper.update(null, luw) > 0;
     }
+
+    @Override
+    public List<Task> selectTaskLimit() {
+        return taskMapper.selectTaskLimit();
+    }
 }

@@ -30,4 +30,6 @@ public interface ITaskService extends IService<Task> {
 
     Boolean updateTaskPriorityById(Long tId,Integer priority);
 
+    List<Task> selectTaskLimit();
+
 }

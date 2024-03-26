@@ -32,5 +32,7 @@ public interface IRequirementService extends IService<Requirement> {
 
     List<Requirement> getAllRequirement(Long projectId);
 
+    List<Requirement> selectRequirementLimit();
+
 
 }

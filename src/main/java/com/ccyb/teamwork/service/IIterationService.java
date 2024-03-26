@@ -31,4 +31,6 @@ public interface IIterationService extends IService<Iteration> {
 
     List<Iteration> getAllIteration(Long projectId);
 
+    List<Iteration> selectIterationLimit();
+
 }

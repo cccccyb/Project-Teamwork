@@ -77,4 +77,9 @@ public class IterationServiceImpl extends ServiceImpl<IterationMapper, Iteration
         lqw.eq(Iteration::getProjectId, projectId);
         return iterationMapper.selectList(lqw);
     }
+
+    @Override
+    public List<Iteration> selectIterationLimit() {
+        return iterationMapper.selectIterationLimit();
+    }
 }

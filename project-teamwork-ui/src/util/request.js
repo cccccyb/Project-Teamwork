@@ -106,7 +106,7 @@ request.interceptors.response.use(
                 ElMessage({
                     dangerouslyUseHTMLString: true,
                     message: '<strong>用户不存在，请重新登录</strong>',
-                    type: 'warning'
+                    type: 'error'
                 });
                 router.replace("/login").then(r => {});
                 return  Promise.reject(response?.data)
