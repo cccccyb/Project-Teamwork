@@ -1,10 +1,14 @@
 package com.ccyb.teamwork.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.ccyb.teamwork.entity.User;
 import com.ccyb.teamwork.entity.common.ResponseCode;
 import com.ccyb.teamwork.entity.common.ResponseResult;
 import com.ccyb.teamwork.service.IUserService;
 import com.ccyb.teamwork.util.JWTUtils;
+import com.ccyb.teamwork.util.WebUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -58,5 +62,23 @@ public class UserController {
         return ResponseResult.build(code, msg, allUser);
     }
 
+    //分页查询所有用户，及其用户组、角色及模糊查询
+    @GetMapping("/page")
+    public ResponseResult<List<User>> getAllUserPage(Integer currentPage, Integer pageSize, String username, String searchRole, String searchGroup, Integer enable) {
+        List<Long> roleIds = WebUtil.convertStringToList(searchRole, Long.class);
+        List<Long> groupIds = WebUtil.convertStringToList(searchGroup, Long.class);
+
+        Page<User> userPage;
+        if (null != currentPage && null != pageSize) {
+            userPage = PageDTO.of(currentPage, pageSize);
+        } else {
+            // 不进行分页
+            userPage = PageDTO.of(1, -1);
+        }
+        IPage<User> allUserPage = userService.getAllUserPage(userPage, username.trim(), roleIds, groupIds, enable);
+        int code = allUserPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = allUserPage.getRecords() != null ? String.valueOf(allUserPage.getRecords().size()) : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, allUserPage.getRecords());
+    }
 
 }

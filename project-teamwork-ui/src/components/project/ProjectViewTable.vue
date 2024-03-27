@@ -15,7 +15,10 @@
       @selection-change="handleSelectionChange"
   >
     <el-table-column type="selection" align="center"/>
-    <el-table-column type="index" label="序号" align="center">
+    <el-table-column type="index" width="80" label="序号" align="center">
+      <template #default="scope">
+        {{ (this.currentPage - 1) * this.pageSize + scope.$index + 1 }}
+      </template>
     </el-table-column>
     <el-table-column
         prop="name"

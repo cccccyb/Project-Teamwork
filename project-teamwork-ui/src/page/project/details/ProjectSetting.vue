@@ -6,18 +6,18 @@
     <div class="tab_head">
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
         <el-tab-pane label="基本信息" name="info"><ProjectInfo v-if="infoTab"/></el-tab-pane>
-        <el-tab-pane label="项目成员" name="members"><span v-if="membersTab"/></el-tab-pane>
+        <el-tab-pane label="项目成员" name="members"><ProjectMembers v-if="membersTab"/></el-tab-pane>
       </el-tabs>
     </div>
   </div>
 </template>
 
 <script>
-import ProjIteration from "@/components/iteration/Proj-Iteration.vue";
 import ProjectInfo from "@/components/project/details/ProjectInfo.vue";
+import ProjectMembers from "@/components/project/details/ProjectMembers.vue";
 
 export default {
-  components: {ProjectInfo},
+  components: {ProjectInfo,ProjectMembers},
   data() {
     return {
       activeName:'info',

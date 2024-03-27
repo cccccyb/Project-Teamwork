@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.ProjectUser;
 import com.ccyb.teamwork.entity.Requirement;
+import com.ccyb.teamwork.entity.User;
 import com.ccyb.teamwork.mapper.*;
 import com.ccyb.teamwork.service.IProjectService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -128,6 +129,11 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
         LambdaUpdateWrapper<Project> luw = new LambdaUpdateWrapper<>();
         luw.eq(Project::getId, pid).set(Project::getStatus, status);
         return projectMapper.update(null, luw) > 0;
+    }
+
+    @Override
+    public IPage<User> selectPageProjectMembers(IPage<?> page, String username, Long projectId) {
+        return projectUserMapper.selectPageProjectMembers(page,username,projectId);
     }
 
 }

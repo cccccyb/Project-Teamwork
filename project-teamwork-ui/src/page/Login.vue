@@ -4,7 +4,7 @@
       <span class="cyb">CYB</span>
       <span class="TeamWork">-TeamWork</span>
     </div>
-    <el-form ref="loginForm" :model="loginForm" :rules="this.loginRules" label width=" 80px" class="login-box">
+    <el-form ref="loginForm" :model="loginForm" :rules="this.loginRules" label class="login-box">
       <h3 class="login-title">欢迎登录</h3>
       <el-form-item label="账号" prop="username">
         <el-input type="text" placeholder=" 请输入账号" v-model="loginForm.username"/>
@@ -73,6 +73,7 @@ export default {
 .main{
   width: 100vw;
   height: 100vh;
+  min-width: 900px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -83,6 +84,7 @@ export default {
   border: 1px solid #DCDFE6;
   width: 25%;
   height: 32%;
+  min-width: 400px;
   margin: 50px auto;
   padding: 35px 80px;
   border-radius: 8px;
@@ -130,15 +132,16 @@ export default {
 }
 .cyb{
   position: absolute;
-  top: 1%;
-  left: 15%;
+  top: 0;
+  left: 14%;
   font-family: 'cyb',sans-serif;
 }
 .TeamWork{
   position: absolute;
-  top: 19%;
-  left: 43%;
-  font-size: 120px;
+  top: 17%;
+  left: 42%;
+  font-size: 165px;
   font-family: 'TeamWork',sans-serif;
+  font-weight: bolder;
 }
 </style>

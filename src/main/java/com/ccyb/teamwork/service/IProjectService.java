@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Project;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ccyb.teamwork.entity.Requirement;
+import com.ccyb.teamwork.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,5 +33,7 @@ public interface IProjectService extends IService<Project> {
 
     List<Requirement> selectAllItem(String title, Long projectId, Long iterationId);
     Boolean updateProjectStatusById(Long pid,Integer status);
+
+    IPage<User> selectPageProjectMembers(IPage<?> page, String username, Long projectId);
 
 }

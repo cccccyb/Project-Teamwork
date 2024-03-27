@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.Requirement;
+import com.ccyb.teamwork.entity.User;
 import com.ccyb.teamwork.entity.common.ResponseCode;
 import com.ccyb.teamwork.entity.common.ResponseResult;
 import com.ccyb.teamwork.service.*;
@@ -73,12 +74,12 @@ public class ProjectController {
 
     //根据项目id修改项目状态
     @GetMapping("/updateStatus")
-    public ResponseResult<?> updateProjectStatusById(String pid,Integer status) {
+    public ResponseResult<?> updateProjectStatusById(String pid, Integer status) {
         Long proId = null;
         if (StringUtils.hasText(pid)) {
             proId = Long.parseLong(pid);
         }
-        Boolean updateStatusById = projectService.updateProjectStatusById(proId,status);
+        Boolean updateStatusById = projectService.updateProjectStatusById(proId, status);
         String msg = updateStatusById ? "" : "数据修改失败，请重试！";
         return ResponseResult.build(updateStatusById ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
     }
@@ -94,9 +95,9 @@ public class ProjectController {
 
     //分页查询所有项目或分页模糊查询、根据userId分页查询所参与的项目
     @GetMapping("/page")
-    public ResponseResult<List<Project>> selectPageProject(Integer currentPage, Integer pageSize,String userId, String name, Integer status, String startTime, String endTime, String creatorId) {
-        Long crId = StringUtils.hasText(creatorId)?Long.parseLong(creatorId):null;
-        Long uId = StringUtils.hasText(userId)?Long.parseLong(userId):null;
+    public ResponseResult<List<Project>> selectPageProject(Integer currentPage, Integer pageSize, String userId, String name, Integer status, String startTime, String endTime, String creatorId) {
+        Long crId = StringUtils.hasText(creatorId) ? Long.parseLong(creatorId) : null;
+        Long uId = StringUtils.hasText(userId) ? Long.parseLong(userId) : null;
 
         Page<Project> projectPage;
         if (null != currentPage && null != pageSize) {
@@ -105,7 +106,7 @@ public class ProjectController {
             // 不进行分页
             projectPage = PageDTO.of(1, -1);
         }
-        IPage<Project> projectIPage = projectService.selectPageProject(projectPage, uId,name.trim(), status, startTime.trim(), endTime.trim(), crId);
+        IPage<Project> projectIPage = projectService.selectPageProject(projectPage, uId, name.trim(), status, startTime.trim(), endTime.trim(), crId);
         int code = projectIPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = projectIPage.getRecords() != null ? String.valueOf(projectIPage.getTotal()) : "数据查询失败，请重试！";
         return ResponseResult.build(code, msg, projectIPage.getRecords());
@@ -113,9 +114,9 @@ public class ProjectController {
 
     //分页查询所有需求、任务、缺陷及模糊查询
     @GetMapping("/getAllItem")
-    public ResponseResult<List<?>> selectAllItem(String title, String projectId,String iterationId) {
-        Long pId = StringUtils.hasText(projectId)?Long.parseLong(projectId):null;
-        Long iteId = StringUtils.hasText(iterationId)?Long.parseLong(iterationId):null;
+    public ResponseResult<List<?>> selectAllItem(String title, String projectId, String iterationId) {
+        Long pId = StringUtils.hasText(projectId) ? Long.parseLong(projectId) : null;
+        Long iteId = StringUtils.hasText(iterationId) ? Long.parseLong(iterationId) : null;
         List<Requirement> selectAllItem = projectService.selectAllItem(title.trim(), pId, iteId);
         int code = selectAllItem != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
         String msg = selectAllItem != null ? "" : "数据查询失败，请重试！";
@@ -124,7 +125,7 @@ public class ProjectController {
 
     //根据事项类型删除事项
     @GetMapping("/deleteItem")
-    public ResponseResult<?> deleteItemById(Integer itemType,Long itemId){
+    public ResponseResult<?> deleteItemById(Integer itemType, Long itemId) {
         Boolean removeItem = switch (itemType) {
             case 1 -> requirementService.deleteById(itemId);
             case 2 -> taskService.deleteById(itemId);
@@ -137,11 +138,11 @@ public class ProjectController {
 
     //根据事项类型更改事项状态
     @GetMapping("/updateItemStatus")
-    public ResponseResult<?> updateItemStatus(Integer itemType,Long itemId,Integer status){
+    public ResponseResult<?> updateItemStatus(Integer itemType, Long itemId, Integer status) {
         Boolean updateItemPriority = switch (itemType) {
-            case 1 -> requirementService.updateRequirementStatusById(itemId,status);
-            case 2 -> taskService.updateTaskStatusById(itemId,status);
-            case 3 -> bugService.updateBugStatusById(itemId,status);
+            case 1 -> requirementService.updateRequirementStatusById(itemId, status);
+            case 2 -> taskService.updateTaskStatusById(itemId, status);
+            case 3 -> bugService.updateBugStatusById(itemId, status);
             default -> false;
         };
         String msg = updateItemPriority ? "" : "数据修改失败，请重试！";
@@ -150,16 +151,31 @@ public class ProjectController {
 
     //根据事项类型更改事项优先级
     @GetMapping("/updateItemPriority")
-    public ResponseResult<?> updateItemPriority(Integer itemType,Long itemId,Integer priority){
+    public ResponseResult<?> updateItemPriority(Integer itemType, Long itemId, Integer priority) {
         Boolean updateItemPriority = switch (itemType) {
-            case 1 -> requirementService.updateRequirementPriorityById(itemId,priority);
-            case 2 -> taskService.updateTaskPriorityById(itemId,priority);
-            case 3 -> bugService.updateBugPriorityById(itemId,priority);
+            case 1 -> requirementService.updateRequirementPriorityById(itemId, priority);
+            case 2 -> taskService.updateTaskPriorityById(itemId, priority);
+            case 3 -> bugService.updateBugPriorityById(itemId, priority);
             default -> false;
         };
         String msg = updateItemPriority ? "" : "数据修改失败，请重试！";
         return ResponseResult.build(updateItemPriority ? ResponseCode.DATABASE_UPDATE_OK : ResponseCode.DATABASE_UPDATE_ERROR, msg, null);
     }
 
-
+    //分页查询项目成员以及每个成员的用户组和角色及模糊查询
+    @GetMapping("/selectPageProjectMembers")
+    public ResponseResult<List<User>> selectPageProjectMembers(Integer currentPage, Integer pageSize, String username, String projectId) {
+        Long pId = StringUtils.hasText(projectId) ? Long.parseLong(projectId) : null;
+        Page<User> userPage;
+        if (null != currentPage && null != pageSize) {
+            userPage = PageDTO.of(currentPage, pageSize);
+        } else {
+            // 不进行分页
+            userPage = PageDTO.of(1, -1);
+        }
+        IPage<User> iPage = projectService.selectPageProjectMembers(userPage, username.trim(), pId);
+        int code = iPage.getRecords() != null ? ResponseCode.DATABASE_SELECT_OK : ResponseCode.DATABASE_SELECT_ERROR;
+        String msg = iPage.getRecords() != null ? String.valueOf(iPage.getRecords().size()) : "数据查询失败，请重试！";
+        return ResponseResult.build(code, msg, iPage.getRecords());
+    }
 }

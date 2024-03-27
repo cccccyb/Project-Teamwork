@@ -43,4 +43,52 @@
             <id property="id" column="uid"/>
         </association>
     </resultMap>
+
+    <!--   分页查询项目成员以及每个成员的用户组和角色及模糊查询-->
+    <select id="selectPageProjectMembers" resultMap="MembersAllResultMap" resultType="user">
+        select distinct
+        tpu.id tpu_id,
+        tpu.project_id tpu_project_id,
+        tpu.user_id tpu_user_id,
+        u.id u_id,
+        u.username,
+        u.passwd,
+        u.email,
+        u.enable u_enable,
+        g.id g_id,
+        g.name g_name,
+        g.enable g_enable,
+        r.id r_id,
+        r.name r_name,
+        r.enable r_enable
+        from t_project_user tpu
+        left join (select * from t_user where enable=1 and deleted=0)as u on tpu.user_id=u.id
+        left join (select * from t_user_group where deleted=0)as ug on u.id=ug.user_id
+        left join (select * from t_group where deleted=0)as g on g.id=ug.group_id
+        left join (select * from t_user_role where deleted=0)as ur on u.id=ur.user_id
+        left join (select * from t_role where deleted=0)as r on r.id=ur.role_id
+        <where>
+            <if test="null!=username and username!=''">
+                and u.username like concat(concat("%",#{username}),"%")
+            </if>
+            <if test="null!=projectId">
+                and tpu.project_id=#{projectId}
+            </if>
+            and tpu.deleted = 0
+        </where>
+    </select>
+    <resultMap id="MembersAllResultMap" type="user" autoMapping="true">
+        <id property="id" column="u_id"/>
+        <result property="enable" column="u_enable"/>
+        <collection property="groups" ofType="group">
+            <id property="id" column="g_id"/>
+            <result property="name" column="g_name"/>
+            <result property="enable" column="g_enable"/>
+        </collection>
+        <collection property="roles" ofType="role">
+            <id property="id" column="r_id"/>
+            <result property="name" column="r_name"/>
+            <result property="enable" column="r_enable"/>
+        </collection>
+    </resultMap>
 </mapper>

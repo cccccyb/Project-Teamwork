@@ -5,7 +5,7 @@
         <el-input
             v-model="input_search"
             style="width: 300px;height: 40px"
-            placeholder="请输入用户名称"
+            placeholder="请输入成员名称"
             class="input_search"
         >
           <template #append>
@@ -27,7 +27,7 @@
       </div>
       <el-button type="primary" color="#0052cb" :size="'large'" @click="openAddIterationDialog" style="font-size: 16px"
       >
-        添加用户
+        添加成员
       </el-button
       >
       <el-button type="primary" color="#0052cb" :size="'large'" @click="deleteBatchByIds"
@@ -66,7 +66,7 @@
         </el-table-column>
         <el-table-column
             prop="username"
-            label="名称"
+            label="成员名称"
             show-overflow-tooltip
             align="center"
         />
@@ -93,7 +93,6 @@
         <el-table-column
             prop="groups"
             label="所属用户组"
-            align="center"
         >
           <template #default="scope">
             <el-tag
@@ -107,7 +106,7 @@
                 :content="group.name"
             >
               <el-tag>{{
-                  group.name.length > 6 ? group.name.substring(0, 5) + '...' : group.name
+                  group.name.length > 5 ? group.name.substring(0, 4) + '...' : group.name
                 }}
               </el-tag>
             </el-tooltip>
@@ -131,7 +130,7 @@
                 :content="role.name"
             >
               <el-tag type="warning" size="default">{{
-                  role.name.length > 6 ? role.name.substring(0, 5) + '...' : role.name
+                  role.name.length > 5 ? role.name.substring(0, 4) + '...' : role.name
                 }}
               </el-tag>
             </el-tooltip>
@@ -143,7 +142,7 @@
             <!--            >详情-->
             <!--            </el-button>-->
             <el-button size="small" type="danger" @click="handleDeleteById(scope.row.id)"
-            >删除
+            >退出项目
             </el-button>
           </template>
         </el-table-column>
@@ -197,128 +196,107 @@
 </template>
 
 <script>
-import {useUserStore} from "@/store/user.js";
+import {useProjectMembersStore} from "@/store/ProjectMembers.js";
 import {mapState} from "pinia";
 import {DeleteFilled, RefreshLeft, Search} from "@element-plus/icons-vue";
 
 
-const userStore = useUserStore()
+const projectMembers = useProjectMembersStore()
 
 export default {
   computed: {
     Search() {
       return Search
     },
-    ...mapState(useUserStore, ['loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData', 'switchLoading'])
+    ...mapState(useProjectMembersStore, ['loading', 'total', 'currentPage', 'pageSize', 'multiDeleteSelection', 'selectData', 'switchLoading'])
   },
   components: {DeleteFilled, RefreshLeft},
   data() {
     return {
       input_search: '',
-      select_roles: [],
-      select_groups: [],
-      select_enable: ''
     }
   },
   methods: {
     // 打开添加迭代对话框
     openAddIterationDialog() {
-      // userStore.$state.dialogAddVisible = true
+      // projIteration.$state.dialogAddVisible = true
       // this.$refs.addIterationForm.resetForm()
     },
     handleDialogClose() {
-      userStore.$state.dialogAddVisible = false
+      projIteration.$state.dialogAddVisible = false
       this.$refs.addIterationForm.resetForm()
     },
     // 打开编辑迭代对话框
     openEditIterationDialog(row) {
       //若直接赋值是浅拷贝，编辑修改时原表格数据也跟着改变
-      userStore.$state.editIteration = JSON.parse(JSON.stringify(row))
-      userStore.$state.dialogEditVisible = true
+      projIteration.$state.editIteration = JSON.parse(JSON.stringify(row))
+      projIteration.$state.dialogEditVisible = true
     },
     handleEditClose() {
-      userStore.$state.dialogEditVisible = false
+      projIteration.$state.dialogEditVisible = false
     },
     //表格多选，批量删除
     handleSelectionChange(val) {
       // val的值为所勾选行的数组对象
-      userStore.$state.multiDeleteSelection = val
+      projectMembers.$state.multiDeleteSelection = val
     },
     changeStatus(value, id) {
-      userStore.$state.loading = true;
-      // userStore.updateStatusById(id, value)
+      projectMembers.$state.loading = true;
+      // projectMembers.updateStatusById(id, value)
     },
     handleDeleteById(deleteId) {
-      // userStore.handleDeleteById(deleteId)
+      // projIteration.handleDeleteById(deleteId)
     },
     handleSizeChange(size) {
       // pageSize：每页多少条数据
-      userStore.$state.pageSize = size
-      userStore.getAllUserPage(
+      projectMembers.$state.pageSize = size
+      projectMembers.selectPageProjectMembers(
           this.currentPage,
           parseInt(size),
-          this.input_search,
-          this.select_roles+'',
-          this.select_groups+'',
-          this.select_enable
+          this.input_search
       )
     },
     handleCurrentChange(current) {
       // currentPage：当前第几页
-      userStore.$state.currentPage = current
-      userStore.getAllUserPage(
+      projectMembers.$state.currentPage = current
+      projectMembers.selectPageProjectMembers(
           parseInt(current),
           this.pageSize,
-          this.input_search,
-          this.select_roles+'',
-          this.select_groups+'',
-          this.select_enable
+          this.input_search
       )
     },
     //重置按钮操作
     resetForm() {
       this.input_search = ''
-      this.select_roles = []
-      this.select_groups = []
-      this.select_enable = ''
-      userStore.getLoading()
+      projectMembers.getLoading()
     },
     //批量删除项目
     deleteBatchByIds() {
-      // userStore.deleteBatchByIds()
+      // projIteration.deleteBatchByIds()
     },
     //模糊查询
     async selectByCondition() {
-      userStore.$state.loading = true
-      await userStore.sleep(300)
-      userStore.getAllUserPage(this.currentPage, this.pageSize, this.input_search,
-          this.select_roles+'',
-          this.select_groups+'',
-          this.select_enable)
+      projectMembers.$state.loading = true
+      await projectMembers.sleep(300)
+      projectMembers.selectPageProjectMembers(this.currentPage, this.pageSize, this.input_search)
     },
     //改变启用状态
     async switchChang(id, value) {
-      userStore.$state.switchLoading = true
-      userStore.$state.loading = true
+      projectMembers.$state.switchLoading = true
+      projectMembers.$state.loading = true
       // await noticeTypeStore.updateNoticeTypeEnable(id, value)
-      await userStore.getAllUserPage(
+      await projectMembers.selectPageProjectMembers(
           this.currentPage,
           this.pageSize,
-          this.input_search,
-          this.select_roles,
-          this.select_groups,
-          this.select_enable
+          this.input_search
       )
     },
   },
   created() {
     this.input_search = ''
-    this.select_roles = []
-    this.select_groups = []
-    this.select_enable = ''
-    userStore.$state.currentPage = 1
-    userStore.$state.pageSize = 10
-    userStore.getAllUserPage(this.currentPage, this.pageSize, '', '', '', '')
+    projectMembers.$state.currentPage = 1
+    projectMembers.$state.pageSize = 10
+    projectMembers.selectPageProjectMembers(this.currentPage, this.pageSize, '')
   }
 }
 </script>

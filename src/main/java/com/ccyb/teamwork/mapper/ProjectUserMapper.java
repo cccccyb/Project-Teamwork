@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.Project;
 import com.ccyb.teamwork.entity.ProjectUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.ccyb.teamwork.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.time.LocalDateTime;
@@ -21,5 +22,7 @@ import java.util.List;
 public interface ProjectUserMapper extends BaseMapper<ProjectUser> {
 
     IPage<Project> selectPageMyAttend(IPage<?> page,Long userId, String name, Integer status, LocalDateTime startTime, LocalDateTime endTime, Long creatorId);
+
+    IPage<User> selectPageProjectMembers(IPage<?> page, String username, Long projectId);
 
 }

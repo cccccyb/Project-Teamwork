@@ -2,4 +2,57 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ccyb.teamwork.mapper.UserMapper">
 
+    <!--   分页查询所有用户，及其用户组、角色及模糊查询-->
+    <select id="getAllUserPage" resultMap="UserAllResultMap" resultType="user">
+        select distinct
+        u.id u_id,
+        u.username,
+        u.passwd,
+        u.email,
+        u.enable u_enable,
+        g.id g_id,
+        g.name g_name,
+        g.enable g_enable,
+        r.id r_id,
+        r.name r_name,
+        r.enable r_enable
+        from t_user u
+        left join (select * from t_user_group where deleted=0)as ug on u.id=ug.user_id
+        left join (select * from t_group where enable=1 and deleted=0)as g on g.id=ug.group_id
+        left join (select * from t_user_role where deleted=0)as ur on u.id=ur.user_id
+        left join (select * from t_role where enable=1 and deleted=0)as r on r.id=ur.role_id
+        <where>
+            <if test="null!=username and username!=''">
+                and u.username like concat(concat("%",#{username}),"%")
+            </if>
+            <if test="null!=enable and enable >= 0">
+                and u.enable=#{enable}
+            </if>
+            <foreach collection="searchRole" item="item" index="index" open="and t_role.id in (" separator="," close=")"
+                     nullable="true">
+                #{item}
+            </foreach>
+            <foreach collection="searchGroup" item="item" index="index" open="and t_group.id in (" separator=","
+                     close=")"
+                     nullable="true">
+                #{item}
+            </foreach>
+            and u.deleted = 0
+        </where>
+    </select>
+    <resultMap id="UserAllResultMap" type="user" autoMapping="true">
+        <id property="id" column="u_id"/>
+        <result property="enable" column="u_enable"/>
+        <collection property="groups" ofType="group">
+            <id property="id" column="g_id"/>
+            <result property="name" column="g_name"/>
+            <result property="enable" column="g_enable"/>
+        </collection>
+        <collection property="roles" ofType="role">
+            <id property="id" column="r_id"/>
+            <result property="name" column="r_name"/>
+            <result property="enable" column="r_enable"/>
+        </collection>
+    </resultMap>
+
 </mapper>

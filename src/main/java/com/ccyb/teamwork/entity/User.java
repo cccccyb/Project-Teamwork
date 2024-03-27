@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.annotation.Version;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -59,6 +60,12 @@ public class User implements Serializable {
      */
     @TableField("enable")
     private Integer enable;
+
+    @TableField(exist = false)
+    private List<Group> groups;
+
+    @TableField(exist = false)
+    private List<Role> roles;
 
     @TableField("deleted")
     @TableLogic

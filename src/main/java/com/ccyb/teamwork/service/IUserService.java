@@ -1,5 +1,6 @@
 package com.ccyb.teamwork.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.ccyb.teamwork.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -16,10 +17,15 @@ import java.util.List;
 public interface IUserService extends IService<User> {
     User getByNameAndPassword(String name,String password);
 
-    User getByName(String name);
-
-    void addUser(User user);
-
     List<User> getAllUser();
+
+    IPage<User> getAllUserPage(IPage<?> page, String username, List<Long> searchRole, List<Long> searchGroup, Integer enable);
+
+    User getUserById(long id);
+
+
+    boolean addUser(User user);
+
+    boolean modifyUser(User user);
 
 }

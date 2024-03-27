@@ -1,7 +1,6 @@
 package com.ccyb.teamwork.util;
 
 
-
 import com.ccyb.teamwork.exception.DataValidationFailedException;
 
 import java.util.ArrayList;
@@ -31,8 +30,12 @@ public class WebUtil {
         return tList;
     }
 
-//    List<String>转List<Long>
-    public static List<Long> convertStringToLong(List<String> stringList){
-        return stringList.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+    //    List<String>转List<Long>
+    public static List<Long> convertStringToLong(List<String> stringList) {
+        if (null == stringList || stringList.isEmpty()) {
+            return null;
+        } else {
+            return stringList.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        }
     }
 }

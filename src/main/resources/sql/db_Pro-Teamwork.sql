@@ -24,7 +24,7 @@ create table `t_user`
     `username`      varchar(20) not null comment '用户名',
     `passwd`        char(70)    not null comment '密码',
     `email`         varchar(50) not null comment '邮箱',
-    `enable`        int         not null comment '启用',
+    `enable`        int         not null default 1 comment '启用',
     `deleted`       int         not null default 0,
     `version`       int         not null default 0,
     constraint t_user_unique unique (username, deleted)
@@ -34,7 +34,7 @@ create table `t_group`
 (
     `id`      bigint      not null primary key,
     `name`    varchar(30) not null comment '用户组名',
-    `enable`  int         not null comment '启用',
+    `enable`  int         not null default 1 comment '启用',
     `deleted` int         not null default 0,
     `version` int         not null default 0,
     constraint t_group_unique unique (name, deleted)
@@ -55,7 +55,7 @@ create table `t_role`
 (
     `id`      bigint      not null primary key,
     `name`    varchar(20) not null comment '角色名',
-    `enable`  int         not null comment '启用',
+    `enable`  int         not null default 1 comment '启用',
     `deleted` int         not null default 0,
     `version` int         not null default 0,
     constraint t_role_unique unique (name, deleted)
@@ -124,17 +124,6 @@ create table `t_project`
     `version`     int         not null default 0,
     constraint t_project_creator_id_fk foreign key (creator_id) references t_user (id)
 ) comment '项目';
-
-create table `t_group_project`
-(
-    `id`         bigint not null primary key,
-    `project_id` bigint not null comment '项目',
-    `group_id`   bigint not null comment '用户组',
-    `deleted`    int    not null default 0,
-    `version`    int    not null default 0,
-    constraint t_group_project_project_id_fk foreign key (project_id) references t_project (id),
-    constraint t_group_project_group_id_fk foreign key (group_id) references t_group (id)
-) comment '中间表-用户组-项目';
 
 create table `t_project_user`
 (
